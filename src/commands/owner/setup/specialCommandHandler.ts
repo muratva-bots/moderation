@@ -142,7 +142,7 @@ export async function specialCommandHandler(
                             components: [
                                 new TextInputBuilder({
                                     custom_id: 'description',
-                                    placeholder: 'Komutu kullandığınızda canzadeye oç der',
+                                    placeholder: 'İçeriğini belirttiğiniz mesajı atar',
                                     label: 'Açıklama:',
                                     required: true,
                                     style: TextInputStyle.Short,
@@ -154,7 +154,7 @@ export async function specialCommandHandler(
                             components: [
                                 new TextInputBuilder({
                                     custom_id: 'content',
-                                    placeholder: '<@331846231514939392>, oçtur.',
+                                    placeholder: 'canzade adamdır.',
                                     label: 'İçerik:',
                                     required: true,
                                     style: TextInputStyle.Short,

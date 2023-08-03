@@ -1,9 +1,10 @@
 import { ModerationClass } from '@/models';
 import { Events } from 'discord.js';
 import checkRealAcc from './checkRealAcc';
-import memberPanel from './memberPanel';
-import roleSelect from './roleSelect';
 import checkSuspect from './checkSuspect';
+import memberPanel from './memberPanel';
+import monthlyRolesAdd from './monthlyRolesAdd';
+import roleSelect from './roleSelect';
 import solvingAuthCall from './solvingAuthCall';
 
 const InteractionCreate: Moderation.IEvent<Events.InteractionCreate> = {
@@ -29,6 +30,8 @@ const InteractionCreate: Moderation.IEvent<Events.InteractionCreate> = {
             if (interaction.isButton() || interaction.isStringSelectMenu()) roleSelect(client, interaction, guildData);
             if (interaction.isButton() && interaction.customId === 'suspect-control')
                 checkSuspect(client, interaction, guildData);
+            if (interaction.isButton()) monthlyRolesAdd(client, interaction, guildData);
+
         }
         if (interaction.isButton() && interaction.customId === 'solvingauth-call')
             solvingAuthCall(client, interaction, guildData);

@@ -1,12 +1,10 @@
 import {
     ActionRowBuilder,
-    Team,
     ButtonBuilder,
-    channelMention,
-    EmbedBuilder,
     ButtonStyle,
+    Team,
     bold,
-    italic,
+    italic
 } from 'discord.js';
 import ms from 'ms';
 
@@ -35,13 +33,13 @@ const Command: Moderation.ICommand = {
             components: [
                 new ButtonBuilder({
                     custom_id: 'monthlyroles-yes',
-                    emoji: { id: '✔️' },
+                    emoji: { name: '✔️' },
                     label: 'Evet (Varsayılan)',
                     style: ButtonStyle.Success,
                 }),
                 new ButtonBuilder({
                     custom_id: 'monthlyroles-no',
-                    emoji: { id: '❌' },
+                    emoji: { name: '❌' },
                     label: 'Hayır',
                     style: ButtonStyle.Success,
                 }),

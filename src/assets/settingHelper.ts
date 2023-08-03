@@ -145,7 +145,7 @@ export const SETTINGS = {
             name: 'Aylık Üye Sistemi',
             value: 'monthlyRolesSystem',
             description: 'Aylık üye sistemini açarsınız.',
-            type: 'monthly-roles',
+            type: 'boolean',
         },
 
         {

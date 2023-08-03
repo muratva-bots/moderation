@@ -1,9 +1,9 @@
+import { ModerationClass } from '@/models';
+import { Events, bold, inlineCode } from 'discord.js';
 import afkHandler from './afkHandler';
+import botCommandHandler from './botCommandHandler';
 import complimentHandler from './complimentHandler';
 import guildCommandHandler from './guildCommandHandler';
-import botCommandHandler from './botCommandHandler';
-import { Events, bold, inlineCode } from 'discord.js';
-import { ModerationClass } from '@/models';
 
 const MessageCreate: Moderation.IEvent<Events.MessageCreate> = {
     name: Events.MessageCreate,
@@ -16,7 +16,7 @@ const MessageCreate: Moderation.IEvent<Events.MessageCreate> = {
             return;
         }
 
-        if (message.content.trim() === `${client.config.PREFIX}link`) {
+        if (message.content.trim() === `${client.config.PREFIX}link` || message.content.trim() === `${client.config.PREFIX}url`) {
             const vanityURL = await message.guild.fetchVanityData();
             if (!vanityURL) {
                 client.utils.sendTimedMessage(message, 'Bu sunucunun bir özel davet linki bulunmuyor.');

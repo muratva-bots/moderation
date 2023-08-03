@@ -1,4 +1,5 @@
 import { GuildModel, ModerationClass } from '@/models';
+import { Client } from '@/structures';
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -12,9 +13,8 @@ import {
     bold,
     inlineCode,
 } from 'discord.js';
-import { Client } from '@/structures';
-import createMenu from './createMenu';
 import ms from 'ms';
+import createMenu from './createMenu';
 
 export interface ILimitOption {
     name: string;

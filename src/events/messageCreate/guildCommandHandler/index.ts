@@ -19,7 +19,7 @@ async function guildCommandHandler(client: Client, message: Message, guildData: 
     const canExecute = command.auth.some((a) => message.member.roles.cache.has(a) || message.author.id === a);
     if (!canExecute && !message.member.permissions.has(PermissionFlagsBits.Administrator)) return;
 
-    const limit = client.utils.checkLimit(message.author.id, 1000, 3, 1000 * 60);
+    const limit = client.utils.checkLimit(message.author.id, 1000, 3, 1000 * 20);
     if (limit.hasLimit) {
         client.utils.sendTimedMessage(message, `bokunu çıkardın knk ${limit.time} bekle.`);
         return;

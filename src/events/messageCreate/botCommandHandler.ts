@@ -1,12 +1,13 @@
 import { Message, PermissionFlagsBits, Team } from 'discord.js';
 
-import { Client } from '@/structures';
 import { ModerationClass } from '@/models';
+import { Client } from '@/structures';
 
 function botCommandHandler(client: Client, message: Message, guildData: ModerationClass) {
-    if (message.author.bot || !message.guild || !message.content.startsWith(client.config.PREFIX)) return;
+    const prefix = client.config.PREFIX.find(prefix => message.content.startsWith(prefix))
+    if (message.author.bot || !message.guild || !prefix) return;
 
-    const [commandName, ...args] = message.content.slice(client.config.PREFIX.length).trim().split(' ');
+    const [commandName, ...args] = message.content.slice(prefix.length).trim().split(' ');
     const command = client.commands.find(
         (command) => command.usages.includes(commandName?.toLowerCase()) && !command.isDisabled,
     );
@@ -53,7 +54,7 @@ function botCommandHandler(client: Client, message: Message, guildData: Moderati
         message.author.id !== message.guild.ownerId &&
         message.member.permissions.has(PermissionFlagsBits.Administrator)
     ) {
-        const limit = client.utils.checkLimit(message.author.id, 1000, 3, 1000 * 60);
+        const limit = client.utils.checkLimit(message.author.id, 1000, 3, 1000 * 20);
         if (limit.hasLimit) {
             client.utils.sendTimedMessage(message, `bokunu çıkardın knk ${limit.time} bekle.`);
             return;

@@ -36,7 +36,7 @@ export async function monthlyRolesHandler(
 ) {
     await question.edit({
         content: '',
-        components: createRow(message, option.name, guildData.monthlyRoles),
+        components: createRow(message, option.name, guildData.monthlyRoles || []),
     });
 
     const filter = (i: Interaction) => i.user.id === authorId;
@@ -101,7 +101,7 @@ export async function monthlyRolesHandler(
                         .some((r) => r.time === timing)
                 ) {
                     modalCollector.reply({
-                        content: 'Belirtilen uyarı sayısına sahip uyarı rolü bulunuyor.',
+                        content: 'Belirtilen ay sayısına sahip ay rolü bulunuyor.',
                         ephemeral: true,
                     });
                     return;

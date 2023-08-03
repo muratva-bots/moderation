@@ -2,7 +2,7 @@ import { ModerationClass } from '@/models';
 import { Client } from '@/structures';
 import { ButtonInteraction, channelMention, TextChannel } from 'discord.js';
 
-async function checkSuspect(client: Client, interaction: ButtonInteraction, guildData: ModerationClass) {
+async function solvingAuthCall(client: Client, interaction: ButtonInteraction, guildData: ModerationClass) {
     if (interaction.customId == 'solvingauth-call') {
         const interactionMember = interaction.guild.members.cache.get(interaction.user.id);
         if (!interactionMember) return;
@@ -90,4 +90,4 @@ ${solvingAuth.map((x) => `${x}`).join(',')}
     }
 }
 
-export default checkSuspect;
+export default solvingAuthCall;
