@@ -146,6 +146,9 @@ export class GuildClass {
         },
     })
     public moderation: ModerationClass;
+
+    @prop({ type: Object, default: {} })
+    public guard: object;
 }
 
 export const GuildModel = getModelForClass(GuildClass);
