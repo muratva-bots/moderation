@@ -16,7 +16,10 @@ const MessageCreate: Moderation.IEvent<Events.MessageCreate> = {
             return;
         }
 
-        if (message.content.trim() === `${client.config.PREFIX}link` || message.content.trim() === `${client.config.PREFIX}url`) {
+        if (
+            message.content.trim() === `${client.config.PREFIX}link` ||
+            message.content.trim() === `${client.config.PREFIX}url`
+        ) {
             const vanityURL = await message.guild.fetchVanityData();
             if (!vanityURL) {
                 client.utils.sendTimedMessage(message, 'Bu sunucunun bir özel davet linki bulunmuyor.');

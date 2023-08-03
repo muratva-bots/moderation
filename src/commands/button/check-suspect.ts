@@ -1,4 +1,4 @@
-import { ActionRowBuilder, Team, ButtonBuilder, codeBlock, EmbedBuilder, ButtonStyle, bold } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Team, codeBlock } from 'discord.js';
 
 const Command: Moderation.ICommand = {
     usages: ['suspectcontrol'],
@@ -27,11 +27,11 @@ const Command: Moderation.ICommand = {
 
         message.channel.send({
             content: `${codeBlock(
-                'md',
+                'fix',
                 `Merhaba;
-Sunucumuz 5 gün içinde kurulan hesapları hiçbir şekilde kabul etmemektedir. Lütfen "Cezalıdan çıkarır mısın?" ya da "Şüpheli hesap kaldırır mısın?" yazmayın.
+Sunucumuz 7 gün içinde kurulan hesapları hiçbir şekilde kabul etmemektedir. Lütfen "Cezalıdan çıkarır mısın?" ya da "Şüpheli hesap kaldırır mısın?" yazmayın.
 
-Eğer hesabının kurulma süresinden en az 5 gün geçtiğini düşünüyorsan ve hala buradaysan sunucudan çıkıp tekrardan girmeyi veya aşağıdaki butona tıklayarak tekrar kayıt olabilirsin, iyi günler.
+Eğer hesabının kurulma süresinden en az 7 gün geçtiğini düşünüyorsan ve hala buradaysan sunucudan çıkıp tekrardan girmeyi veya aşağıdaki butona tıklayarak tekrar kayıt olabilirsin, iyi günler.
 
 ${message.guild.name}
 `,

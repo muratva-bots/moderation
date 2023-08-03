@@ -4,7 +4,7 @@ import { ModerationClass } from '@/models';
 import { Client } from '@/structures';
 
 function botCommandHandler(client: Client, message: Message, guildData: ModerationClass) {
-    const prefix = client.config.PREFIX.find(prefix => message.content.startsWith(prefix))
+    const prefix = client.config.PREFIX.find((prefix) => message.content.startsWith(prefix));
     if (message.author.bot || !message.guild || !prefix) return;
 
     const [commandName, ...args] = message.content.slice(prefix.length).trim().split(' ');

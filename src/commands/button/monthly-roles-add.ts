@@ -1,11 +1,4 @@
-import {
-    ActionRowBuilder,
-    ButtonBuilder,
-    ButtonStyle,
-    Team,
-    bold,
-    italic
-} from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Team, bold, italic } from 'discord.js';
 import ms from 'ms';
 
 const Command: Moderation.ICommand = {
@@ -35,13 +28,13 @@ const Command: Moderation.ICommand = {
                     custom_id: 'monthlyroles-yes',
                     emoji: { name: '✔️' },
                     label: 'Evet (Varsayılan)',
-                    style: ButtonStyle.Success,
+                    style: ButtonStyle.Secondary,
                 }),
                 new ButtonBuilder({
                     custom_id: 'monthlyroles-no',
                     emoji: { name: '❌' },
                     label: 'Hayır',
-                    style: ButtonStyle.Success,
+                    style: ButtonStyle.Secondary,
                 }),
             ],
         });

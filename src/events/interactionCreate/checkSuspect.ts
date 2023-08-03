@@ -1,6 +1,6 @@
 import { ModerationClass } from '@/models';
 import { Client } from '@/structures';
-import { ButtonInteraction, EmbedBuilder, time, bold } from 'discord.js';
+import { ButtonInteraction, EmbedBuilder, bold, time } from 'discord.js';
 
 async function checkSuspect(client: Client, interaction: ButtonInteraction, guildData: ModerationClass) {
     const interactionMember = interaction.guild.members.cache.get(interaction.user.id);
@@ -23,12 +23,20 @@ async function checkSuspect(client: Client, interaction: ButtonInteraction, guil
             return;
         }
 
+        if (!interactionMember.roles.cache.has(guildData.suspectedRole)) {
+            interaction.reply({
+                content: `Bu butonu kullanabilmen için üzerinde şüpheli rolü bulunması gerekiyor!`,
+                ephemeral: true,
+            });
+            return;
+        }
+
         if (Date.now() - interaction.user.createdTimestamp < 1000 * 60 * 60 * 24 * 7) {
             const embed = new EmbedBuilder()
                 .setTitle(`Merhaba ${interaction.user.username}`)
                 .setDescription(
                     `
-Hesabının kuruluş tarihi: ${time(Math.floor(interaction.user.createdTimestamp / 1000))}*
+Hesabının kuruluş tarihi: ${time(Math.floor(interaction.user.createdTimestamp / 1000))}
 Hesabın: ${time(Math.floor(interaction.user.createdTimestamp / 1000), 'R')} kurulmuş
 ${bold(
     'Hesabının kuruluş tarihi 7 günü geçmediği için seni şüpheliden çıkartamadım. Daha sonra tekrar kontrol edebilirsin.',
@@ -48,7 +56,7 @@ ${bold(
 Hesabının kuruluş tarihi: ${time(Math.floor(interaction.user.createdTimestamp / 1000))}
 Hesabın: ${time(Math.floor(interaction.user.createdTimestamp / 1000), 'R')} kurulmuş
 ${bold(
-    'Hesabının kuruluş tarihi 5 günü geçtiği için seni şüpheliden çıkarttım.** Teyit kanallarımıza girip kayıt olabilirsin.',
+    'Hesabının kuruluş tarihi 7 günü geçtiği için seni şüpheliden çıkarttım. Teyit kanallarımıza girip kayıt olabilirsin.',
 )}
 					`,
                 );

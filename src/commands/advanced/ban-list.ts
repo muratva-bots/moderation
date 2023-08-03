@@ -15,7 +15,7 @@ const Command: Moderation.ICommand = {
         message.channel.send({
             content: [
                 codeBlock(
-                    `Sunucumuzda toplam ${bans.size} yasaklı kullanıcı bulunmakta. Kişilerin ban nedenlerini öğrenmek icin ${client.config.PREFIX}banbilgi <id> komutunu kullanabilirsin.`,
+                    `Sunucumuzda toplam ${bans.size} yasaklı kullanıcı bulunmakta. Kişilerin ban nedenlerini öğrenmek icin ${client.config.PREFIX[0]}banbilgi <id> komutunu kullanabilirsin.`,
                 ),
                 firstContent,
             ].join('\n'),

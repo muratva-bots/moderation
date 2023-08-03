@@ -216,6 +216,7 @@ export const DEFAULTS = {
             count: 5,
             time: 900000,
         },
+        image: 'https://cdn.discordapp.com/attachments/839954721187037184/848339514052706344/can.gif',
     },
     unregistered: {
         limit: {

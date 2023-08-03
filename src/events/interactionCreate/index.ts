@@ -13,7 +13,7 @@ const InteractionCreate: Moderation.IEvent<Events.InteractionCreate> = {
         const guildData = client.servers.get(interaction.guildId) || new ModerationClass();
         if (
             (interaction.isButton() || interaction.isStringSelectMenu()) &&
-            ['fastlogin', 'suspect-control'].includes(interaction.customId)
+            ['fastlogin', 'suspect-control', 'monthlyroles-yes', 'monthlyroles-no'].includes(interaction.customId)
         ) {
             const limit = client.utils.checkLimit(interaction.user.id, 1011, 3, 1000 * 60 * 60);
             if (limit.hasLimit) {
@@ -23,16 +23,14 @@ const InteractionCreate: Moderation.IEvent<Events.InteractionCreate> = {
                 });
                 return;
             }
-
             if (interaction.isButton() && interaction.customId === 'fastlogin')
                 checkRealAcc(client, interaction, guildData);
-            if (interaction.isButton()) memberPanel(client, interaction, guildData);
-            if (interaction.isButton() || interaction.isStringSelectMenu()) roleSelect(client, interaction, guildData);
             if (interaction.isButton() && interaction.customId === 'suspect-control')
                 checkSuspect(client, interaction, guildData);
-            if (interaction.isButton()) monthlyRolesAdd(client, interaction, guildData);
-
         }
+        if (interaction.isButton() || interaction.isStringSelectMenu()) roleSelect(client, interaction, guildData);
+        if (interaction.isButton()) monthlyRolesAdd(client, interaction, guildData);
+        if (interaction.isButton()) memberPanel(client, interaction, guildData);
         if (interaction.isButton() && interaction.customId === 'solvingauth-call')
             solvingAuthCall(client, interaction, guildData);
     },

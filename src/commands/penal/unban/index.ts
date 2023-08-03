@@ -5,7 +5,7 @@ import banHandler from './banHandler';
 import underworldHandler from './underworldHandler';
 
 const Command: Moderation.ICommand = {
-    usages: ['unban', 'underworld'],
+    usages: ['unban', 'ununderworld'],
     description: 'Yasaklı kullanıcının banını kaldırırsın.',
     examples: ['unban 123456789123456789'],
     checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.BanMembers),

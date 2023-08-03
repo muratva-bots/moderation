@@ -1,9 +1,10 @@
+import { DEFAULTS } from '@/assets';
 import { PenalFlags } from '@/enums';
 import { PenalModel } from '@/models';
 import { EmbedBuilder, PermissionFlagsBits } from 'discord.js';
 
 const Command: Moderation.ICommand = {
-    usages: ['yargı', 'açılmazban', 'açılmaz-ban'],
+    usages: ['yargı', 'açılmazban', 'açılmaz-ban', 'forceban', 'force-ban'],
     description: 'Belirttiğiniz kullanıcının banını açılmaz olarak işaretlersiniz.',
     examples: ['yargı @kullanıcı', 'yargı 123456789123456789'],
     chatUsable: true,
@@ -45,10 +46,14 @@ const Command: Moderation.ICommand = {
         message.channel.send({
             embeds: [
                 new EmbedBuilder({
+                    author: {
+                        name: message.author.username,
+                        icon_url: message.author.displayAvatarURL({ forceStatic: true }),
+                    },
                     color: client.utils.getRandomColor(),
                     description: `${user} adlı orospu çocuğu sunucudan siktir edildi.`,
                     image: {
-                        url: guildData.banImage && guildData.banImage.length ? guildData.banImage : undefined,
+                        url: DEFAULTS.underworld.image,
                     },
                 }),
             ],

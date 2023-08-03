@@ -22,36 +22,36 @@ const Command: Moderation.ICommand = {
                     label: '1',
                     style: ButtonStyle.Success,
                 }),
-                   new ButtonBuilder({
+                new ButtonBuilder({
                     custom_id: 'historyName',
                     label: '2',
                     style: ButtonStyle.Success,
                 }),
-                   new ButtonBuilder({
+                new ButtonBuilder({
                     custom_id: 'activePenalties',
                     label: '3',
                     style: ButtonStyle.Success,
                 }),
-                   new ButtonBuilder({
+                new ButtonBuilder({
                     custom_id: 'historyPenalties',
                     label: '4',
                     style: ButtonStyle.Success,
                 }),
             ],
         });
-         const row2 = new ActionRowBuilder<ButtonBuilder>({
+        const row2 = new ActionRowBuilder<ButtonBuilder>({
             components: [
                 new ButtonBuilder({
                     custom_id: 'penaltiesNumber',
                     label: '5',
                     style: ButtonStyle.Success,
                 }),
-                   new ButtonBuilder({
+                new ButtonBuilder({
                     custom_id: 'memberRoles',
                     label: '6',
                     style: ButtonStyle.Success,
                 }),
-                   new ButtonBuilder({
+                new ButtonBuilder({
                     custom_id: 'createdAt',
                     label: '7',
                     style: ButtonStyle.Success,

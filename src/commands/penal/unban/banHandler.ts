@@ -4,7 +4,7 @@ import { Message, User } from 'discord.js';
 
 async function banHandler(client: Client, message: Message, user: User, penals: PenalClass[]) {
     if (!penals.length) {
-        const ban = message.guild.bans.fetch({ user: user.id });
+        const ban = message.guild.bans.fetch(user.id);
         if (!ban) {
             client.utils.sendTimedMessage(message, 'Kullanıcının yasaklaması yok.');
             return;

@@ -143,7 +143,7 @@ export class GuildClass {
             changeName: true,
             minAgePunish: true,
             maxMuteSystem: true,
-            extraMute: true
+            extraMute: true,
         },
     })
     public moderation: ModerationClass;

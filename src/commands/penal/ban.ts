@@ -3,22 +3,22 @@ import { LimitFlags, NeedFlags, PenalFlags } from '@/enums';
 import { ModerationClass, PenalModel } from '@/models';
 import { Client } from '@/structures';
 import {
-    EmbedBuilder,
-    PermissionFlagsBits,
-    bold,
-    inlineCode,
-    ActionRowBuilder,
-    StringSelectMenuBuilder,
-    StringSelectMenuInteraction,
-    ComponentType,
     APISelectMenuOption,
-    ModalSubmitInteraction,
-    TextInputBuilder,
-    TextInputStyle,
-    ModalBuilder,
+    ActionRowBuilder,
+    ComponentType,
+    EmbedBuilder,
     GuildMember,
     Message,
+    ModalBuilder,
+    ModalSubmitInteraction,
+    PermissionFlagsBits,
+    StringSelectMenuBuilder,
+    StringSelectMenuInteraction,
+    TextInputBuilder,
+    TextInputStyle,
     User,
+    bold,
+    inlineCode,
     time,
 } from 'discord.js';
 import ms from 'ms';
@@ -61,7 +61,7 @@ const Command: Moderation.ICommand = {
                     return;
                 }
             } else {
-                const ban = await message.guild.bans.fetch({ user: user.id });
+                const ban = await message.guild.bans.fetch(user.id);
                 if (ban) {
                     client.utils.sendTimedMessage(message, 'Belirttiğin kişi zaten cezalı?');
                     return;
@@ -324,14 +324,22 @@ export async function banUser(
         content: '',
         embeds: [
             new EmbedBuilder({
+                author: {
+                    name: message.author.username,
+                    icon_url: message.author.displayAvatarURL({ forceStatic: true }),
+                },
                 color: client.utils.getRandomColor(),
                 description: `${user} (${inlineCode(user.id)}) adlı kullanıcı ${
                     system ? reason : `"${bold(reason)}" sebebiyle`
-                } ${time(Math.floor(penal.finish / 1000), 'R')} karantina cezası aldı. (Ceza Numarası: ${inlineCode(
-                    `#${newID}`,
-                )})`,
-                thumbnail: {
-                    url: 'https://cdn.discordapp.com/attachments/839954721187037184/848339514052706344/can.gif',
+                } ${
+                    guildData.underworldRole
+                        ? message.guild.members.cache.get(user.id)
+                            ? `${time(Math.floor(penal.finish / 1000), 'R')} karantina cezası aldı.`
+                            : 'banlandı'
+                        : `banlandı`
+                } (Ceza Numarası: ${inlineCode(`#${newID}`)})`,
+                image: {
+                    url: DEFAULTS.underworld.image,
                 },
             }),
         ],
