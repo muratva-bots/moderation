@@ -21,7 +21,8 @@ const Command: Moderation.ICommand = {
     usages: ['register', 'woman', 'kız', 'kadın', 'bayan', 'k'],
     description: 'Belirttiğiniz üyeyi kadın olarak kayıt edersiniz.',
     examples: ['k @kullanıcı isim yaş', 'k 123456789123456789 isim yaş'],
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers),
+    checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
+        (guildData.registerAuth && guildData.registerAuth.some(r => message.member.roles.cache.has(r))), 
     execute: async ({ client, message, args, guildData }) => {
         if (!guildData.menuRegister) return;
 
@@ -282,9 +283,19 @@ const Command: Moderation.ICommand = {
                 components: [],
             });
         } else {
+            const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+                components: [
+                    new ButtonBuilder({
+                        custom_id: 'timefinished',
+                        disabled: true,
+                        emoji: { name: '⏱️' },
+                        style: ButtonStyle.Danger,
+                    }),
+                ],
+            });
             question.edit({
                 embeds: [embed.setDescription('İşlem süresi dolduğu için işlem kapatıldı.')],
-                components: [],
+                components: [timeFinished],
             });
         }
     },

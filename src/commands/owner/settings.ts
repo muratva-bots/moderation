@@ -129,19 +129,18 @@ async function createCollector(client: Client, message: Message, content: string
     });
     collector.on('end', (_, reason) => {
         if (reason === 'time') {
-            const row = new ActionRowBuilder<ButtonBuilder>({
+            const timeFinished = new ActionRowBuilder<ButtonBuilder>({
                 components: [
                     new ButtonBuilder({
-                        custom_id: 'button-end',
-                        label: 'Mesajın Geçerlilik Süresi Doldu.',
+                        custom_id: 'timefinished',
+                        disabled: true,
                         emoji: { name: '⏱️' },
                         style: ButtonStyle.Danger,
-                        disabled: true,
                     }),
                 ],
             });
 
-            question.edit({ components: [row] });
+            question.edit({ components: [timeFinished] });
         }
     });
 }
@@ -159,10 +158,16 @@ function generateSettingsDescription(
             .map((s) => {
                 if (s.type === 'string' && !s.isMultiple)
                     return `→ ${s.name}: ${guildData[s.value] || 'Ayarlanmamış!'}`;
-                if (s.type === 'string' && s.isMultiple)
+                if ((s.type === 'string' && s.isMultiple))
                     return `→ ${s.name}: ${
                         guildData[s.value] && guildData[s.value].length
                             ? guildData[s.value].join(', ')
+                            : 'Ayarlanmamış!'
+                    }`;
+                if (s.type === "warn-roles" || s.type === "monthly-roles")
+                    return `→ ${s.name}: ${
+                        guildData[s.value] && guildData[s.value].length
+                            ? guildData[s.value].filter(d => message.guild.roles.cache.has(d.role)).map(d => message.guild.roles.cache.get(d.role).name).join(', ')
                             : 'Ayarlanmamış!'
                     }`;
                 if (s.type === 'boolean') return `→ ${s.name}: ${guildData[s.value] ? 'Açık!' : 'Kapalı!'}`;

@@ -3,8 +3,10 @@ const Command: Moderation.ICommand = {
     usages: ['dağıt', 'dagit'],
     description: 'Bulunduğunuz ses kanalındaki üyeleri public odalara dağıtmaya yarar.',
     examples: ['dagit'],
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.Administrator),
-    execute: async ({ client, message, args, guildData }) => {
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.Administrator) ||
+        (guildData.ownerRoles && guildData.ownerRoles.some(r => message.member.roles.cache.has(r))),
+            execute: async ({ client, message, args, guildData }) => {
         const embed = new EmbedBuilder({
             color: client.utils.getRandomColor(),
             author: {

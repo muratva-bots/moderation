@@ -11,13 +11,17 @@ import {
     time,
     PermissionFlagsBits,
     TextChannel,
+    ButtonBuilder,
+    ButtonStyle
 } from 'discord.js';
 
 const Command: Moderation.ICommand = {
     usages: ['re', 'rolekle', 'r', 'rolver', 'rol-ver', 'rver', 'rol-ekle', 'r-ver'],
     description: 'Belirttiğiniz kullanıcıya menüden seçtiğiniz rolleri ekler/kaldırır.',
     examples: ['re @kullanıcı <menüden rol seçiniz>', 're 123456789123456789 <menüden rol seçiniz>'],
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers),
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
+        (guildData.banAuth && guildData.banAuth.some(r => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
         const member =
             (await client.utils.getMember(message.guild, args[0])) ||
@@ -214,9 +218,19 @@ const Command: Moderation.ICommand = {
                 components: [],
             });
         } else {
+            const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+                components: [
+                    new ButtonBuilder({
+                        custom_id: 'timefinished',
+                        disabled: true,
+                        emoji: { name: '⏱️' },
+                        style: ButtonStyle.Danger,
+                    }),
+                ],
+            });
             question.edit({
                 embeds: [embed.setDescription('İşlem süresi dolduğu için işlem kapatıldı.')],
-                components: [],
+                components: [timeFinished],
             });
         }
     },

@@ -97,10 +97,10 @@ export async function roleHandler(
                 guildData[option.value] = newData.filter((r) => !i.values.includes(r));
             } else guildData[option.value] = undefined;
 
-            await GuildModel.updateOne(
-                { id: message.guildId },
-                { $set: { [`moderation.${option.value}`]: undefined } },
-            );
+            const updateQuery = option.isMultiple ? 
+                { [`moderation.${option.value}`]: guildData[option.value] } : 
+                { $unset: { [`moderation.${option.value}`]: 1 } };
+            await GuildModel.updateOne({ id: message.guildId }, updateQuery);
 
             i.reply({
                 content: `Başarıyla ${bold(option.name)} adlı ayardan ${roleMention(i.values[0])} (${inlineCode(
@@ -117,19 +117,18 @@ export async function roleHandler(
 
     collector.on('end', (_, reason) => {
         if (reason === 'time') {
-            const row = new ActionRowBuilder<ButtonBuilder>({
+            const timeFinished = new ActionRowBuilder<ButtonBuilder>({
                 components: [
                     new ButtonBuilder({
-                        custom_id: 'button-end',
-                        label: 'Mesajın Geçerlilik Süresi Doldu.',
+                        custom_id: 'timefinished',
+                        disabled: true,
                         emoji: { name: '⏱️' },
                         style: ButtonStyle.Danger,
-                        disabled: true,
                     }),
                 ],
             });
 
-            question.edit({ components: [row] });
+            question.edit({ components: [timeFinished] });
         }
     });
 }
@@ -147,19 +146,19 @@ function createComponent(message: Message, option: IRoleOption, guildData: Moder
                 max_values: roles.length === 0 ? 1 : roles.length,
                 options: roles.length
                     ? roles.map((r) => ({
-                          label: message.guild.roles.cache.get(r).name,
-                          value: r,
-                          description: 'Kaldırmak için tıkla!',
-                          emoji: {
-                              id: '1135214115804172338',
-                          },
-                      }))
+                        label: message.guild.roles.cache.get(r).name,
+                        value: r,
+                        description: 'Kaldırmak için tıkla!',
+                        emoji: {
+                            id: '1135214115804172338',
+                        },
+                    }))
                     : [
-                          {
-                              label: 'no setting',
-                              value: 'no-setting',
-                          },
-                      ],
+                        {
+                            label: 'no setting',
+                            value: 'no-setting',
+                        },
+                    ],
             }),
         ],
     });

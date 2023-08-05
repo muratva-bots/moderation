@@ -7,8 +7,6 @@ import {
     ButtonStyle,
     ComponentType,
     ButtonInteraction,
-    inlineCode,
-    userMention,
     PermissionFlagsBits,
     Message,
     codeBlock,
@@ -28,7 +26,8 @@ const Command: Moderation.ICommand = {
     ],
     description: 'Sunucu kayıt top listesini görüntülersiniz.',
     examples: ['topteyit'],
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers),
+    checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
+        (guildData.registerAuth && guildData.registerAuth.some(r => message.member.roles.cache.has(r))), 
     execute: async ({ client, message }) => {
         const datas = await UserModel.find({
             $or: [{ 'registers.man': { $gt: 0 } }, { 'registers.woman': { $gt: 0 } }],
@@ -65,7 +64,7 @@ const Command: Moderation.ICommand = {
 
         const question = await message.channel.send({
             embeds: [embed],
-            components: [paginationButtons(page, totalData)],
+            components: [client.utils.paginationButtons(page, totalData)],
         });
 
         const filter = (i) => i.user.id === message.author.id;
@@ -100,16 +99,16 @@ const Command: Moderation.ICommand = {
                             text: `${page}/${totalData}`,
                         }),
                 ],
-                components: [paginationButtons(page, totalData)],
+                components: [client.utils.paginationButtons(page, totalData)],
             });
         });
 
         collector.on('end', (_, reason) => {
             if (reason === 'time') {
-                const row = new ActionRowBuilder<ButtonBuilder>({
+                const timeFinished = new ActionRowBuilder<ButtonBuilder>({
                     components: [
                         new ButtonBuilder({
-                            custom_id: 'button-end',
+                            custom_id: 'timefinished',
                             label: 'Mesajın Geçerlilik Süresi Doldu.',
                             emoji: { name: '⏱️' },
                             style: ButtonStyle.Danger,
@@ -118,7 +117,7 @@ const Command: Moderation.ICommand = {
                     ],
                 });
 
-                question.edit({ components: [row] });
+                question.edit({ components: [timeFinished] });
             }
         });
     },
@@ -174,49 +173,4 @@ async function createContent(
             }),
         ].join('\n'),
     );
-}
-
-function paginationButtons(page: number, totalData: number) {
-    return new ActionRowBuilder<ButtonBuilder>({
-        components: [
-            new ButtonBuilder({
-                custom_id: 'first',
-                emoji: {
-                    id: '1070037431690211359',
-                },
-                style: ButtonStyle.Secondary,
-                disabled: page === 1,
-            }),
-            new ButtonBuilder({
-                custom_id: 'previous',
-                emoji: {
-                    id: '1061272577332498442',
-                },
-                style: ButtonStyle.Secondary,
-                disabled: page === 1,
-            }),
-            new ButtonBuilder({
-                custom_id: 'count',
-                label: `${page}/${totalData}`,
-                style: ButtonStyle.Secondary,
-                disabled: true,
-            }),
-            new ButtonBuilder({
-                custom_id: 'next',
-                emoji: {
-                    id: '1061272499670745229',
-                },
-                style: ButtonStyle.Secondary,
-                disabled: totalData === page,
-            }),
-            new ButtonBuilder({
-                custom_id: 'last',
-                emoji: {
-                    id: '1070037622820458617',
-                },
-                style: ButtonStyle.Secondary,
-                disabled: page === totalData,
-            }),
-        ],
-    });
 }

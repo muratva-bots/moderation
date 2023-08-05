@@ -90,9 +90,19 @@ const Command: Moderation.ICommand = {
                 ],
             });
         } else {
+            const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+                components: [
+                    new ButtonBuilder({
+                        custom_id: 'timefinished',
+                        disabled: true,
+                        emoji: { name: '⏱️' },
+                        style: ButtonStyle.Danger,
+                    }),
+                ],
+            });
             question.edit({
                 embeds: [embed.setDescription('İşlem süresi dolduğu için işlem kapatıldı.')],
-                components: [],
+                components: [timeFinished],
             });
         }
     },

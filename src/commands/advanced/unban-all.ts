@@ -134,9 +134,19 @@ async function removeApproval(message: Message, content: string, embed: EmbedBui
         return question;
     }
 
+    const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+        components: [
+            new ButtonBuilder({
+                custom_id: 'timefinished',
+                disabled: true,
+                emoji: { name: '⏱️' },
+                style: ButtonStyle.Danger,
+            }),
+        ],
+    });
     question.edit({
         embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
-        components: [],
+        components: [timeFinished],
     });
     return null;
 }

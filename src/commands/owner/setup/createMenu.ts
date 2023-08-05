@@ -37,7 +37,7 @@ async function createMenu(
 
     const rows: ActionRowBuilder<StringSelectMenuBuilder>[] = [];
 
-    const optionsChunkArray = chunkArray(settingOptions, 25);
+    const optionsChunkArray = client.utils.chunkArray(settingOptions, 25);
     for (let i = 0; optionsChunkArray.length > i; i++) {
         const options = optionsChunkArray[i];
         rows.push(
@@ -117,31 +117,20 @@ async function createMenu(
 
     collector.on('end', (_, reason) => {
         if (reason === 'time') {
-            const row = new ActionRowBuilder<ButtonBuilder>({
+            const timeFinished = new ActionRowBuilder<ButtonBuilder>({
                 components: [
                     new ButtonBuilder({
-                        custom_id: 'button-end',
-                        label: 'Mesajın Geçerlilik Süresi Doldu.',
+                        custom_id: 'timefinished',
+                        disabled: true,
                         emoji: { name: '⏱️' },
                         style: ButtonStyle.Danger,
-                        disabled: true,
                     }),
                 ],
             });
 
-            question.edit({ components: [row] });
+            question.edit({ components: [timeFinished] });
         }
     });
 }
 
 export default createMenu;
-
-function chunkArray(arr: any[], chunkSize: number) {
-    const chunks = [];
-    while (arr.length) {
-        const chunk = arr.slice(0, chunkSize);
-        chunks.push(chunk);
-        arr = arr.slice(chunkSize);
-    }
-    return chunks;
-}

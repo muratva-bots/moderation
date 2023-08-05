@@ -7,7 +7,7 @@ const Command: Moderation.ICommand = {
     description: 'Reklam yapan kullanıcının cezasını kaldırırsınız.',
     examples: ['unads @kullanıcı', 'unads 123456789123456789'],
     chatUsable: true,
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers),
+    checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers),
     execute: async ({ client, message, args, guildData }) => {
         if (!message.guild.roles.cache.has(guildData.adsRole)) return message.channel.send('Cezalı rolü ayarlanmamış.');
 
@@ -50,7 +50,7 @@ const Command: Moderation.ICommand = {
                     user: member.id,
                     type: PenalFlags.Ads,
                 },
-                { $set: { activity: false, remover: message.author.id } },
+                { $set: { activity: false, remover: message.author.id, removeTime: Date.now(), removeReason: reason } },
             );
             client.utils.setRoles(member, penals[0].roles);
         }

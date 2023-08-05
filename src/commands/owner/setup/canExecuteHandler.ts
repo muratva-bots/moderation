@@ -56,7 +56,7 @@ export async function canExecuteHandler(
 
         if (i.isButton() && i.customId === 'add') {
             const components: ActionRowBuilder<StringSelectMenuBuilder>[] = [];
-            const splitedCommands = chunkArray(
+            const splitedCommands = client.utils.chunkArray(
                 client.commands
                     .filter((c) => !c.isDisabled)
                     .map((c) => ({ name: c.usages[0], description: c.description })),
@@ -168,10 +168,4 @@ function createList(canExecutes: ICanExecute[]) {
             }),
         ],
     });
-}
-
-function chunkArray(array: any[], chunkSize: number) {
-    const chunkedArray = [];
-    for (let i = 0; i < array.length; i += chunkSize) chunkedArray.push(array.slice(i, i + chunkSize));
-    return chunkedArray;
 }

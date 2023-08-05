@@ -17,7 +17,9 @@ const Command: Moderation.ICommand = {
     usages: ['sesli'],
     description: 'Sunucunun ses aktifliği detaylarını gösterir.',
     examples: ['sesli'],
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.ViewAuditLog),
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.ViewAuditLog) ||
+        (guildData.botCommandAuth && guildData.botCommandAuth.some(r => message.member.roles.cache.has(r))),
     execute: async ({ client, message, guildData }) => {
         const embed = new EmbedBuilder({
             color: client.utils.getRandomColor(),
@@ -196,19 +198,18 @@ const Command: Moderation.ICommand = {
 
         collector.on('end', (_, reason) => {
             if (reason === 'time') {
-                const row = new ActionRowBuilder<ButtonBuilder>({
+                const timeFinished = new ActionRowBuilder<ButtonBuilder>({
                     components: [
                         new ButtonBuilder({
-                            custom_id: 'button-end',
-                            label: 'Mesajın Geçerlilik Süresi Doldu.',
+                            custom_id: 'timefinished',
+                            disabled: true,
                             emoji: { name: '⏱️' },
                             style: ButtonStyle.Danger,
-                            disabled: true,
                         }),
                     ],
                 });
 
-                question.edit({ components: [row] });
+                question.edit({ components: [timeFinished] });
             }
         });
     },

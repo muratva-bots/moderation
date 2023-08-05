@@ -4,8 +4,9 @@ const Command: Moderation.ICommand = {
     usages: ['kes', 'voicekick', 'voice-kick', 'at', 'bağlantıkes'],
     description: 'Sesli kanalda olan kullanıcıyı sesten atarsınız.',
     examples: ['kes @kullanıcı', 'kes 123456789123456789'],
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.ViewAuditLog),
-    execute: async ({ client, message, args, guildData }) => {
+    checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.ViewAuditLog) ||
+        (guildData.moveAuth && guildData.moveAuth.some(r => message.member.roles.cache.has(r))), 
+        execute: async ({ client, message, args, guildData }) => {
         const embed = new EmbedBuilder({
             color: client.utils.getRandomColor(),
             author: {

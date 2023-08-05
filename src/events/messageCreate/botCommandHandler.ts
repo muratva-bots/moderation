@@ -3,8 +3,7 @@ import { Message, PermissionFlagsBits, Team } from 'discord.js';
 import { ModerationClass } from '@/models';
 import { Client } from '@/structures';
 
-function botCommandHandler(client: Client, message: Message, guildData: ModerationClass) {
-    const prefix = client.config.PREFIX.find((prefix) => message.content.startsWith(prefix));
+function botCommandHandler(client: Client, message: Message, guildData: ModerationClass, prefix: string) {
     if (message.author.bot || !message.guild || !prefix) return;
 
     const [commandName, ...args] = message.content.slice(prefix.length).trim().split(' ');
@@ -17,9 +16,6 @@ function botCommandHandler(client: Client, message: Message, guildData: Moderati
             : client.application.owner.id;
     if (
         !command ||
-        (guildData.blockedCommands &&
-            ownerID !== message.author.id &&
-            guildData.blockedCommands.includes(command.usages[0])) ||
         (guildData.chatChannel &&
             guildData.chatChannel === message.channelId &&
             !command.chatUsable &&
@@ -36,6 +32,7 @@ function botCommandHandler(client: Client, message: Message, guildData: Moderati
 
     let canExecute = false;
     if (
+        message.member.permissions.has(PermissionFlagsBits.Administrator) ||
         !command.checkPermission ||
         (command.checkPermission && command.checkPermission({ client, message, guildData }))
     )
@@ -56,7 +53,7 @@ function botCommandHandler(client: Client, message: Message, guildData: Moderati
     ) {
         const limit = client.utils.checkLimit(message.author.id, 1000, 3, 1000 * 20);
         if (limit.hasLimit) {
-            client.utils.sendTimedMessage(message, `bokunu çıkardın knk ${limit.time} bekle.`);
+            client.utils.sendTimedMessage(message, `Çok hızlı komut kullanıyorsun ${limit.time} bekle.`);
             return;
         }
     }

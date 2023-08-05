@@ -126,6 +126,7 @@ export async function limitHandler(
                             [`moderation.${option.value}LimitTime`]: guildData[`${option.value}LimitTime`],
                         },
                     },
+                    { upsert: true }
                 );
 
                 modalCollector.reply({
@@ -152,11 +153,12 @@ export async function limitHandler(
             await GuildModel.updateOne(
                 { id: message.guildId },
                 {
-                    $set: {
-                        [`moderation.${option.value}LimitCount`]: undefined,
-                        [`moderation.${option.value}LimitTime`]: undefined,
+                    $unset: {
+                        [`moderation.${option.value}LimitCount`]: 1,
+                        [`moderation.${option.value}LimitTime`]: 1,
                     },
                 },
+                { upsert: true }
             );
 
             i.reply({
@@ -176,19 +178,18 @@ export async function limitHandler(
 
     collector.on('end', (_, reason) => {
         if (reason === 'time') {
-            const row = new ActionRowBuilder<ButtonBuilder>({
+            const timeFinished = new ActionRowBuilder<ButtonBuilder>({
                 components: [
                     new ButtonBuilder({
-                        custom_id: 'button-end',
-                        label: 'Mesajın Geçerlilik Süresi Doldu.',
+                        custom_id: 'timefinished',
+                        disabled: true,
                         emoji: { name: '⏱️' },
                         style: ButtonStyle.Danger,
-                        disabled: true,
                     }),
                 ],
             });
 
-            question.edit({ components: [row] });
+            question.edit({ components: [timeFinished] });
         }
     });
 }

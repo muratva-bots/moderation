@@ -8,7 +8,9 @@ const Command: Moderation.ICommand = {
     description: 'Belirttiğiniz kullanıcının banını açılmaz olarak işaretlersiniz.',
     examples: ['yargı @kullanıcı', 'yargı 123456789123456789'],
     chatUsable: true,
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers),
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.ModerateMembers) || 
+        (guildData.ownerRoles && guildData.ownerRoles.some(r => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
         const reference = message.reference ? (await message.fetchReference()).author : undefined;
         const user = (await client.utils.getUser(args[0])) || reference;
@@ -30,6 +32,8 @@ const Command: Moderation.ICommand = {
 
         const reason = args.slice(reference ? 0 : 1).join(' ') || 'Sebep belirtilmemiş';
         message.guild.members.ban(user.id, { reason: `${message.author.username} - ${reason}` });
+
+        await PenalModel.updateMany({ user: user.id, guild: message.guild.id }, { $set: { activity: false } });
 
         const newID = (await PenalModel.countDocuments({ guild: message.guildId })) + 1;
         await PenalModel.create({

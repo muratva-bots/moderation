@@ -7,13 +7,17 @@ import {
     EmbedBuilder,
     inlineCode,
     PermissionFlagsBits,
+    ButtonBuilder,
+    ButtonStyle
 } from 'discord.js';
 
 const Command: Moderation.ICommand = {
     usages: ['toplutaşı', 'alltransport', 'toplu-taşı', 'all-transport', 'ttaşı', 'ttasi'],
     description: 'Bulunduğunuz ses kanalındaki tüm üyeleri başka bir ses kanalına taşımanızı sağlar.',
     examples: ['toplutaşı <kanal seçin>'],
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.MoveMembers),
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.MoveMembers) ||
+        (guildData.moveAuth && guildData.moveAuth.some(r => message.member.roles.cache.has(r))),
     execute: async ({ client, message }) => {
         if (!message.member.voice.channelId) {
             client.utils.sendTimedMessage(message, 'Bir ses kanalına katılıp kullanman lazım!');
@@ -72,9 +76,19 @@ const Command: Moderation.ICommand = {
                 components: [],
             });
         } else {
+            const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+                components: [
+                    new ButtonBuilder({
+                        custom_id: 'timefinished',
+                        disabled: true,
+                        emoji: { name: '⏱️' },
+                        style: ButtonStyle.Danger,
+                    }),
+                ],
+            });
             question.edit({
                 embeds: [embed.setDescription('İşlem süresi dolduğu için işlem kapatıldı.')],
-                components: [],
+                components: [timeFinished],
             });
         }
     },

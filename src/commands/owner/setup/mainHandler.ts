@@ -111,24 +111,23 @@ async function mainHandler(client: Client, message: Message, guildData: Moderati
         if (value === 'register') createMenu(client, message, message.author.id, question, 'register', guildData);
         if (value === 'penal') createMenu(client, message, message.author.id, question, 'penal', guildData);
         if (value === 'special-command') specialCommandHandler(message.author.id, client, message, question, guildData);
-        if (value === 'can-execute') canExecuteHandler(client, message, guildData, question); // blockedCommands
+        if (value === 'can-execute') canExecuteHandler(client, message, guildData, question);
     });
 
     collector.on('end', (_, reason) => {
         if (reason === 'time') {
-            const row = new ActionRowBuilder<ButtonBuilder>({
+            const timeFinished = new ActionRowBuilder<ButtonBuilder>({
                 components: [
                     new ButtonBuilder({
-                        custom_id: 'button-end',
-                        label: 'Mesajın Geçerlilik Süresi Doldu.',
+                        custom_id: 'timefinished',
+                        disabled: true,
                         emoji: { name: '⏱️' },
                         style: ButtonStyle.Danger,
-                        disabled: true,
                     }),
                 ],
             });
 
-            question.edit({ components: [row] });
+            question.edit({ components: [timeFinished] });
         }
     });
 }

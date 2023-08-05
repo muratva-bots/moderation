@@ -4,8 +4,10 @@ const Command: Moderation.ICommand = {
     usages: ['info', 'say'],
     description: 'Sunucunun anlık verisini gösterir.',
     examples: ['say'],
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.ViewAuditLog),
-    execute: async ({ client, message, guildData }) => {
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.ViewAuditLog) ||
+        (guildData.botCommandAuth && guildData.botCommandAuth.some(r => message.member.roles.cache.has(r))),
+            execute: async ({ client, message, guildData }) => {
         const minStaffRole = await message.guild.roles.cache.get(guildData.minStaffRole);
         if (!minStaffRole) {
             client.utils.sendTimedMessage(message, 'En alt yetkili rolü ayarlanmamış.');

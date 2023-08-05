@@ -10,7 +10,9 @@ import {
     inlineCode,
     Interaction,
     StringSelectMenuBuilder,
+    PermissionFlagsBits,
     userMention,
+    APIEmbedField,
 } from 'discord.js';
 import { PENAL_TITLES } from '@/assets';
 
@@ -18,6 +20,9 @@ const Command: Moderation.ICommand = {
     usages: ['penals', 'cezalar', 'sicil'],
     description: 'Kullanıcının cezalarını gösterir.',
     examples: ['sicil @kullanıcı', 'sicil 123456789123456789'],
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
+        (guildData.botCommandAuth && guildData.botCommandAuth.some(r => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
         const user =
             (await client.utils.getUser(args[0])) ||
@@ -61,10 +66,10 @@ const Command: Moderation.ICommand = {
             color: client.utils.getRandomColor(),
         });
 
-        let components: ActionRowBuilder<any>[] = [row];
+        let components: ActionRowBuilder<StringSelectMenuBuilder | ButtonBuilder>[] = [row];
         const totalData = Math.ceil(penals.length / 25);
         let page = 1;
-        if (penals.length > 25) components.push(paginationButtons(page, totalData));
+        if (penals.length > 25) components.push(client.utils.paginationButtons(page, totalData));
 
         const question = await message.channel.send({
             embeds: [
@@ -129,45 +134,62 @@ const Command: Moderation.ICommand = {
                 const penal = penals.find((p) => p.id === i.values[0]);
                 const image = client.utils.getImage(penal.reason);
 
+                let type = PENAL_TITLES[penal.type];
+                if (!type) {
+                    const specialCommand = guildData.specialCommands.find(
+                        (s) => s.punishType === penal.type && s.type === SpecialCommandFlags.Punishment,
+                    );
+                    if (specialCommand) type = specialCommand.punishName;
+                }
+
+                const fields: APIEmbedField[] = [];
+                fields.push({
+                    name: `Ceza Detayı (${type})`,
+                    value: [
+                        `${inlineCode('>')} Üye Bilgisi: ${userMention(penal.user)} (${inlineCode(penal.user)})`,
+                        `${inlineCode('>')} Yetkili Bilgisi: ${userMention(penal.admin)} (${inlineCode(penal.admin)})`,
+                        `${inlineCode('>')} Ceza Tarihi: ${time(Math.floor(penal.start.valueOf() / 1000), 'D')}`,
+                        `${inlineCode('>')} Ceza Süresi: ${
+                            penal.finish ? client.utils.numberToString(penal.finish - penal.start) : 'Süresiz.'
+                        }`,
+                        `${inlineCode('>')} Ceza Durumu: ${inlineCode(penal.activity ? 'Aktif ✔' : 'Aktif Değil ❌')}`,
+                    ].join('\n'),
+                    inline: false,
+                });
+
+                if (penal.remover && penal.removeTime) {
+                    fields.push({
+                        name: 'Ceza Kaldırılma Detayı',
+                        value: [
+                            `${inlineCode('>')} Kaldıran Yetkili: (${userMention(penal.remover)} ${inlineCode(
+                                penal.remover,
+                            )})`,
+                            `${inlineCode('>')} Kaldırma Tarihi: ${time(
+                                Math.floor(penal.removeTime.valueOf() / 1000),
+                                'D',
+                            )}`,
+                            `${inlineCode('>')} Kaldırılma Sebebi: ${inlineCode(
+                                penal.removeReason || 'Sebep belirtilmemiş.',
+                            )}`,
+                        ].join('\n'),
+                        inline: false,
+                    });
+                }
+
+                const replacedReason = penal.reason.replace(client.utils.reasonImage, '');
+                if (replacedReason.length) {
+                    fields.push({
+                        name: 'Ceza Sebebi',
+                        value: inlineCode(replacedReason),
+                        inline: false,
+                    });
+                }
+
                 i.reply({
                     embeds: [
                         embed
-                            .setFields([])
-                            .setDescription(
-                                [
-                                    `${inlineCode('>')} ${bold('Cezalandırılan Yetkili:')} ${userMention(
-                                        penal.admin,
-                                    )} (${inlineCode(penal.admin)})`,
-                                    `${inlineCode('>')} ${bold('Cezalandırılan Üye:')} ${userMention(
-                                        penal.user,
-                                    )} (${inlineCode(penal.user)})`,
-                                    `${inlineCode('>')} ${bold('Ceza Türü:')} ${PENAL_TITLES[penal.type]}`,
-                                    `${inlineCode('>')} ${bold('Ceza Sebebi:')} ${
-                                        penal.type === PenalFlags.Ads ? 'Görüntü aşağıdadır.' : penal.reason
-                                    }`,
-                                    `${inlineCode('>')} ${bold('Ceza Atılma Tarihi:')} ${time(
-                                        Math.floor(penal.start.valueOf() / 1000),
-                                        'D',
-                                    )}`,
-                                    penal.finish
-                                        ? `${inlineCode('>')} ${bold('Ceza Bitiş Tarihi:')} ${time(
-                                              Math.floor(penal.finish.valueOf() / 1000),
-                                              'D',
-                                          )}`
-                                        : '',
-                                    penal.remover
-                                        ? `${inlineCode('>')} **Cezayı Kaldıran Yetkili:** ${userMention(
-                                              penal.remover,
-                                          )} ${inlineCode(penal.remover)}`
-                                        : '',
-                                    penal.removeTime
-                                        ? `${inlineCode('>')} **Cezayı Kaldırma Tarihi:** $ ${time(
-                                              Math.floor(penal.removeTime.valueOf() / 1000),
-                                              'D',
-                                          )}`
-                                        : '',
-                                ].join('\n'),
-                            )
+                            .setFields(fields)
+                            .setDescription(null)
                             .setImage(image ? image : undefined),
                     ],
                     ephemeral: true,
@@ -209,7 +231,7 @@ const Command: Moderation.ICommand = {
                                 }),
                             ],
                         }),
-                        paginationButtons(page, totalData),
+                        client.utils.paginationButtons(page, totalData),
                     ],
                 });
             }
@@ -217,67 +239,21 @@ const Command: Moderation.ICommand = {
 
         collector.on('end', (_, reason) => {
             if (reason === 'time') {
-                const row = new ActionRowBuilder<ButtonBuilder>({
+                const timeFinished = new ActionRowBuilder<ButtonBuilder>({
                     components: [
                         new ButtonBuilder({
-                            custom_id: 'button-end',
-                            label: 'Mesajın Geçerlilik Süresi Doldu.',
+                            custom_id: 'timefinished',
+                            disabled: true,
                             emoji: { name: '⏱️' },
                             style: ButtonStyle.Danger,
-                            disabled: true,
                         }),
                     ],
                 });
 
-                question.edit({ components: [row] });
+                question.edit({ components: [timeFinished] });
             }
         });
     },
 };
 
 export default Command;
-
-function paginationButtons(page: number, totalData: number) {
-    return new ActionRowBuilder<ButtonBuilder>({
-        components: [
-            new ButtonBuilder({
-                custom_id: 'first',
-                emoji: {
-                    id: '1070037431690211359',
-                },
-                style: ButtonStyle.Secondary,
-                disabled: page === 1,
-            }),
-            new ButtonBuilder({
-                custom_id: 'previous',
-                emoji: {
-                    id: '1061272577332498442',
-                },
-                style: ButtonStyle.Secondary,
-                disabled: page === 1,
-            }),
-            new ButtonBuilder({
-                custom_id: 'count',
-                label: `${page}/${totalData}`,
-                style: ButtonStyle.Secondary,
-                disabled: true,
-            }),
-            new ButtonBuilder({
-                custom_id: 'next',
-                emoji: {
-                    id: '1061272499670745229',
-                },
-                style: ButtonStyle.Secondary,
-                disabled: totalData === page,
-            }),
-            new ButtonBuilder({
-                custom_id: 'last',
-                emoji: {
-                    id: '1070037622820458617',
-                },
-                style: ButtonStyle.Secondary,
-                disabled: page === totalData,
-            }),
-        ],
-    });
-}

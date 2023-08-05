@@ -30,7 +30,7 @@ async function unpunish(client: Client, message: Message, command: ISpecialComma
             user: member.id,
             type: command.punishType,
         },
-        { $set: { activity: false, remover: message.author.id } },
+        { $set: { activity: false, remover: message.author.id, removeTime: Date.now(), removeReason: reason } },
     );
     member.roles.remove(command.punishRole);
 
@@ -38,7 +38,7 @@ async function unpunish(client: Client, message: Message, command: ISpecialComma
         embeds: [
             new EmbedBuilder({
                 color: client.utils.getRandomColor(),
-                description: `${member} kullanıcısının başarıyla cezası kaldırıldı.`,
+                description: `${member} kullanıcısının başarıyla ${command.punishName.toLowerCase()} cezası kaldırıldı.`,
             }),
         ],
     });

@@ -15,6 +15,8 @@ import {
     bold,
     inlineCode,
     time,
+    ButtonBuilder,
+    ButtonStyle
 } from 'discord.js';
 import { ISpecialCommand, PenalModel } from '@/models';
 import { Client } from '@/structures';
@@ -44,7 +46,7 @@ async function punish(client: Client, message: Message, command: ISpecialCommand
     if (limit.hasLimit) {
         client.utils.sendTimedMessage(
             message,
-            `Atabileceğiniz maksimum susturma limitine ulaştınız. Komutu tekrar kullanabilmek için ${limit.time}.`,
+            `Atabileceğiniz maksimum ${command.punishName} limitine ulaştınız. Komutu tekrar kullanabilmek için ${limit.time}.`,
         );
         return;
     }
@@ -103,6 +105,17 @@ async function punish(client: Client, message: Message, command: ISpecialCommand
         ],
     });
 
+    const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+        components: [
+            new ButtonBuilder({
+                custom_id: 'timefinished',
+                disabled: true,
+                emoji: { name: '⏱️' },
+                style: ButtonStyle.Danger,
+            }),
+        ],
+    });
+
     const embed = new EmbedBuilder({
         color: client.utils.getRandomColor(),
         author: {
@@ -123,8 +136,6 @@ async function punish(client: Client, message: Message, command: ISpecialCommand
     });
 
     if (collected) {
-        collected.deferUpdate();
-
         if (collected.values[0] === 'other') {
             const rowOne = new ActionRowBuilder<TextInputBuilder>({
                 components: [
@@ -182,12 +193,16 @@ async function punish(client: Client, message: Message, command: ISpecialCommand
 
                 punishUser(client, message, user, member, command, timing, reason, question);
             } else {
+               
                 question.edit({
                     embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
+                    components: [timeFinished]
                 });
             }
             return;
         }
+
+        collected.deferUpdate();
 
         const reason = command.quickReasons.find((r) => r.value === collected.values[0]);
         if (reason.needType === NeedFlags.Image) {
@@ -211,6 +226,7 @@ async function punish(client: Client, message: Message, command: ISpecialCommand
             } else {
                 question.edit({
                     embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
+                    components: [timeFinished]
                 });
             }
             return;
@@ -249,6 +265,7 @@ async function punish(client: Client, message: Message, command: ISpecialCommand
             } else {
                 question.edit({
                     embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
+                    components: [timeFinished]
                 });
             }
             return;
@@ -258,6 +275,7 @@ async function punish(client: Client, message: Message, command: ISpecialCommand
     } else {
         question.edit({
             embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
+            components: [timeFinished]
         });
     }
 }
@@ -303,6 +321,7 @@ export async function punishUser(
     }
 
     const query = {
+        content: "",
         embeds: [
             new EmbedBuilder({
                 color: client.utils.getRandomColor(),

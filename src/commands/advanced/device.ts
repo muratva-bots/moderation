@@ -10,8 +10,10 @@ const Command: Moderation.ICommand = {
     usages: ['cihaz', 'device'],
     description: 'Belirtilen kullanıcının cihaz bilgilerini görüntülersiniz.',
     examples: ['cihaz @kullanıcı', 'cihaz 123456789123456789'],
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.ViewAuditLog),
-    execute: async ({ client, message, args }) => {
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.ViewAuditLog) ||
+        (guildData.botCommandAuth && guildData.botCommandAuth.some(r => message.member.roles.cache.has(r))),
+            execute: async ({ client, message, args }) => {
         const embed = new EmbedBuilder({
             color: client.utils.getRandomColor(),
             author: {

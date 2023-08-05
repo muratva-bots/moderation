@@ -4,7 +4,9 @@ const Command: Moderation.ICommand = {
     usages: ['roldenetim', 'rol-denetim'],
     description: 'Belirttiğiniz rolün üye bilgilerini gösterir.',
     examples: ['roldenetim @rol'],
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.ManageRoles),
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.ManageChannels) ||
+        (guildData.ownerRoles && guildData.ownerRoles.some(r => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args }) => {
         const role = message.mentions.roles.first() || message.guild.roles.cache.get(args[0]);
         if (!role || role.id === message.guild?.id) {

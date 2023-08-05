@@ -7,7 +7,8 @@ const Command: Moderation.ICommand = {
     usages: ['kayıtsız', 'kayitsiz', 'unreg', 'unregister', 'unregistered'],
     description: 'Belirttiğiniz kullanıcıyı kayıtsıza atarsınız.',
     examples: ['kayıtsız @kullanıcı', 'kayıtsız 123456789123456789'],
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.ManageRoles),
+    checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
+        (guildData.registerAuth && guildData.registerAuth.some(r => message.member.roles.cache.has(r))), 
     execute: async ({ client, message, args, guildData }) => {
         if (
             !guildData.unregisterRoles ||
@@ -21,7 +22,9 @@ const Command: Moderation.ICommand = {
         const limit = client.utils.checkLimit(
             message.author.id,
             LimitFlags.Unregistered,
-            guildData.unregisteredLimitTime || DEFAULTS.unregistered.limit.count,
+            guildData.unregisteredLimitCount
+                ? Number(guildData.unregisteredLimitCount)
+                : DEFAULTS.unregistered.limit.count,
             guildData.unregisteredLimitCount || DEFAULTS.unregistered.limit.time,
         );
         if (limit.hasLimit) {

@@ -1,5 +1,5 @@
-import { AttachmentBuilder, EmbedBuilder, bold } from 'discord.js';
 import { createCanvas, loadImage } from 'canvas';
+import { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ComponentType, bold } from 'discord.js';
 
 const Command: Moderation.ICommand = {
     usages: ['ship'],
@@ -12,6 +12,18 @@ const Command: Moderation.ICommand = {
             client.utils.sendTimedMessage(message, 'Botlarla olan ilişkini ölçemezsin!');
             return;
         }
+
+       const row = new ActionRowBuilder<ButtonBuilder>({
+            components: [
+                new ButtonBuilder({
+                    custom_id: 'accepted',
+                    label: "Çay iç",
+                    emoji: { name: '🍵' },
+                    style: ButtonStyle.Danger,
+                }),
+            ],
+        });
+
 
         if (!mention) {
             if (
@@ -44,7 +56,7 @@ const Command: Moderation.ICommand = {
         const context = canvas.getContext('2d');
 
         const heart = await loadImage(
-            'https://cdn.discordapp.com/attachments/927571230134009856/975157787002826762/zadekalp.png',
+            'https://cdn.discordapp.com/attachments/1131694447210545222/1137029346985529544/pngaaa.com-3645785.png',
         );
         const broken = await loadImage(
             'https://cdn.discordapp.com/attachments/927571230134009856/975157787678093342/zadekirikkalp.png',
@@ -61,43 +73,47 @@ const Command: Moderation.ICommand = {
         const lovePercentage = Math.floor(Math.random() * 100);
 
         context.drawImage(background, 0, 0, canvas.width, canvas.height);
-        context.drawImage(messageMember, 55, 25, 200, 200);
-        context.drawImage(mentionMember, 445, 25, 200, 200);
+        context.drawImage(messageMember, 100, 25, 200, 200);
+        context.drawImage(mentionMember, 400, 25, 200, 200);
 
-        let shipMessage;
         if (lovePercentage > 75 && lovePercentage < 100) {
             context.drawImage(heart, 275, 60, 150, 150);
-            shipMessage = `Çok iyi oldunuz sanki 😍❤️ (${bold(`%${lovePercentage}`)})`;
         }
         if (lovePercentage > 55 && lovePercentage < 75) {
             context.drawImage(think, 275, 60, 150, 150);
-            shipMessage = `Olabilir.. 🤔🥰 (${bold(`%${lovePercentage}`)})`;
         }
         if (lovePercentage > 0 && lovePercentage < 55) {
+            row.components[0].setDisabled(true)
             context.drawImage(broken, 275, 60, 150, 150);
-            shipMessage = `Nextle 🤮 (${bold(`%${lovePercentage}`)})`;
         }
 
         const attachment = new AttachmentBuilder(canvas.toBuffer(), {
             name: 'ship.png',
         });
 
-        const embed = new EmbedBuilder({
-            color: client.utils.getRandomColor(),
-            author: {
-                name: message.author.username,
-                iconURL: message.author.displayAvatarURL({ forceStatic: true }),
-            },
-            description: `${message.author}, ${mention} seni ne kadar seviyor?\n${shipMessage}`,
-            image: {
-                url: 'attachment://ship.png',
-            },
+        const question = await message.reply({
+            content: `[ ${bold(`• ${mention.displayName}`)} & ${bold(`• ${message.author.displayName}`)} ]\n Ne kadar uyumlusun? ${bold(`%${lovePercentage} Uyumlu`)}`,
+            files: [attachment],
+            components: [row]
         });
 
-        message.reply({
-            embeds: [embed],
-            files: [attachment],
+         const filter = (i: ButtonInteraction) => i.isButton() && i.user.id === message.author.id || i.user.id === mention.id;
+         const collected = await question.awaitMessageComponent({
+            filter,
+            time: 1000 * 60 * 5,
+            componentType: ComponentType.Button,
         });
+
+        if(collected) {
+            row.components[0].setDisabled(true)
+            question.edit({ components: [row] })
+            collected.reply({ content: `${collected.user.id == message.author.id ? `${bold(mention.user.username)} selam! ${bold(message.author.username)}` : `${bold(message.author.username)} selam! ${bold(mention.user.username)}`} seninle çay içmek istiyor, bu fırsatı kaçırma derim.`, })
+
+        } else {
+            row.components[0].setDisabled(true)
+            question.edit({ components: [row] })
+        }
+
     },
 };
 

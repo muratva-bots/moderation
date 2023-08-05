@@ -9,7 +9,7 @@ async function complimentHandler(client: Client, message: Message, guildData: Mo
     if (
         message.author.bot ||
         !message.guildId ||
-        client.config.PREFIX.some((prefix) => message.content.startsWith(prefix)) ||
+        client.config.PREFIXES.some((prefix) => message.content.startsWith(prefix)) ||
         message.content.length < 5 ||
         guildData.compliment ||
         guildData.chatChannel !== message.channelId

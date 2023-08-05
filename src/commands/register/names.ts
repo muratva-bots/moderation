@@ -17,7 +17,8 @@ const Command: Moderation.ICommand = {
     usages: ['isimler'],
     description: 'Belirtilen kullanıcının geçmiş isimlerini görüntülersiniz.',
     examples: ['isimler @kullanıcı', 'isimler 123456789123456789'],
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers),
+    checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
+        (guildData.registerAuth && guildData.registerAuth.some(r => message.member.roles.cache.has(r))), 
     execute: async ({ client, message, args, guildData }) => {
         const user =
             (await client.utils.getMember(message.guild, args[0])) ||
@@ -59,7 +60,7 @@ const Command: Moderation.ICommand = {
 
         const question = await message.channel.send({
             embeds: [embed],
-            components: document.voiceLogs.length > 10 ? [paginationButtons(page, totalData)] : [],
+            components: document.voiceLogs.length > 10 ? [client.utils.paginationButtons(page, totalData)] : [],
         });
 
         if (10 >= document.voiceLogs.length) return;
@@ -98,73 +99,27 @@ const Command: Moderation.ICommand = {
                             .join('\n'),
                     ),
                 ],
-                components: [paginationButtons(page, totalData)],
+                components: [client.utils.paginationButtons(page, totalData)],
             });
         });
 
         collector.on('end', (_, reason) => {
             if (reason === 'time') {
-                const row = new ActionRowBuilder<ButtonBuilder>({
+                const timeFinished = new ActionRowBuilder<ButtonBuilder>({
                     components: [
                         new ButtonBuilder({
-                            custom_id: 'button-end',
-                            label: 'Mesajın Geçerlilik Süresi Doldu.',
+                            custom_id: 'timefinished',
+                            disabled: true,
                             emoji: { name: '⏱️' },
                             style: ButtonStyle.Danger,
-                            disabled: true,
                         }),
                     ],
                 });
 
-                question.edit({ components: [row] });
+                question.edit({ components: [timeFinished] });
             }
         });
     },
 };
 
 export default Command;
-
-function paginationButtons(page: number, totalData: number) {
-    return new ActionRowBuilder<ButtonBuilder>({
-        components: [
-            new ButtonBuilder({
-                custom_id: 'first',
-                emoji: {
-                    id: '1070037431690211359',
-                },
-                style: ButtonStyle.Secondary,
-                disabled: page === 1,
-            }),
-            new ButtonBuilder({
-                custom_id: 'previous',
-                emoji: {
-                    id: '1061272577332498442',
-                },
-                style: ButtonStyle.Secondary,
-                disabled: page === 1,
-            }),
-            new ButtonBuilder({
-                custom_id: 'count',
-                label: `${page}/${totalData}`,
-                style: ButtonStyle.Secondary,
-                disabled: true,
-            }),
-            new ButtonBuilder({
-                custom_id: 'next',
-                emoji: {
-                    id: '1061272499670745229',
-                },
-                style: ButtonStyle.Secondary,
-                disabled: totalData === page,
-            }),
-            new ButtonBuilder({
-                custom_id: 'last',
-                emoji: {
-                    id: '1070037622820458617',
-                },
-                style: ButtonStyle.Secondary,
-                disabled: page === totalData,
-            }),
-        ],
-    });
-}

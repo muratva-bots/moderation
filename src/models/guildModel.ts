@@ -95,7 +95,6 @@ export class ModerationClass {
     specialCommands: ISpecialCommand[];
     compliment: boolean;
     chatChannel: string;
-    blockedCommands: string[];
     canExecutes: ICanExecute[];
     manRoles: string[];
     womanRoles: string[];
@@ -124,6 +123,13 @@ export class ModerationClass {
     solvingLog: string;
     monthlyRoles: IMonthlyRole[];
     monthlyRolesSystem: boolean;
+    banAuth: string[]
+    jailAuth: string[]
+    voiceMuteAuth: string[]
+    chatMuteAuth: string[]
+    registerAuth: string[]
+    botCommandAuth: string[]
+
 }
 
 @modelOptions({ options: { customName: 'Guilds', allowMixed: 0 } })

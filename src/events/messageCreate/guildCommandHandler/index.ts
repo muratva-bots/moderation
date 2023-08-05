@@ -7,12 +7,12 @@ import roleHandler from './roleHandler';
 import punishmentHandler from './punishmentHandler';
 import { teamHandler } from './team';
 
-async function guildCommandHandler(client: Client, message: Message, guildData: ModerationClass) {
+async function guildCommandHandler(client: Client, message: Message, guildData: ModerationClass, prefix: string) {
     if (!message.content || !message.guild || message.author.bot) return;
 
-    const [commandName, ...args] = message.content.slice(client.config.PREFIX.length).trim().split(' ');
+    const [commandName, ...args] = message.content.slice(prefix.length).trim().split(' ');
     const command = (guildData.specialCommands || []).find((command) =>
-        command.usages.includes(commandName?.toLowerCase()),
+        command.usages.map((u) => u.toLowerCase().trim()).includes(commandName?.toLowerCase()),
     );
     if (!command) return;
 
@@ -21,7 +21,7 @@ async function guildCommandHandler(client: Client, message: Message, guildData: 
 
     const limit = client.utils.checkLimit(message.author.id, 1000, 3, 1000 * 20);
     if (limit.hasLimit) {
-        client.utils.sendTimedMessage(message, `bokunu çıkardın knk ${limit.time} bekle.`);
+        client.utils.sendTimedMessage(message, `Çok hızlı komut kullanıyorsun ${limit.time} bekle.`);
         return;
     }
 

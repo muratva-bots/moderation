@@ -6,7 +6,9 @@ const Command: Moderation.ICommand = {
     usages: ['ban-info', 'baninfo', 'banbilgi', 'bilgiban', 'infoban', 'info-ban', 'ban-bilgi', 'bilgi-ban'],
     description: 'Sunucuda yasaklanan bir kullanıcının yasağını kaldırmadan bilgisini gösterir.',
     examples: ['ban-info 123456789123456789'],
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.ViewAuditLog),
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.ViewAuditLog) ||
+        (guildData.banAuth && guildData.banAuth.some(r => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args }) => {
         const user =
             (await client.utils.getUser(args[0])) ||
@@ -20,7 +22,7 @@ const Command: Moderation.ICommand = {
             staff: '',
             reason: '',
         };
-        const ban = await message.guild.bans.fetch({ user: user.id });
+        const ban = message.guild.bans.cache.get(user.id);
         if (!ban) {
             const penal = await PenalModel.findOne({ user: user.id, type: PenalFlags.Ban });
             if (!penal) {

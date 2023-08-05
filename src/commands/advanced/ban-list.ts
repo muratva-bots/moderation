@@ -4,7 +4,9 @@ const Command: Moderation.ICommand = {
     usages: ['ban-list', 'banlist', 'banliste', 'ban-liste'],
     description: 'Sunucudan yasaklanmış kişilerin tam listesini görürsünüz.',
     examples: ['banlist'],
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.BanMembers),
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.BanMembers) ||
+        (guildData.banAuth && guildData.banAuth.some(r => message.member.roles.cache.has(r))),
     execute: async ({ client, message }) => {
         const bans = await message.guild.bans.fetch();
 
@@ -15,7 +17,7 @@ const Command: Moderation.ICommand = {
         message.channel.send({
             content: [
                 codeBlock(
-                    `Sunucumuzda toplam ${bans.size} yasaklı kullanıcı bulunmakta. Kişilerin ban nedenlerini öğrenmek icin ${client.config.PREFIX[0]}banbilgi <id> komutunu kullanabilirsin.`,
+                    `Sunucumuzda toplam ${bans.size} yasaklı kullanıcı bulunmakta. Kişilerin ban nedenlerini öğrenmek icin ${client.config.PREFIXES[0]}banbilgi <id> komutunu kullanabilirsin.`,
                 ),
                 firstContent,
             ].join('\n'),

@@ -15,20 +15,25 @@ import {
     TextInputBuilder,
     TextInputStyle,
     userMention,
+    PermissionFlagsBits
 } from 'discord.js';
 import { PENAL_TITLES } from '@/assets';
 import { SpecialCommandFlags } from '@/enums';
+import { Client } from '@/structures';
 
 const ActivePenals: Moderation.ICommand = {
-    usages: ['aktif', 'aktifcezalar', 'mb', 'cb', 'db'],
+    usages: ['aktifceza', 'aktifcezalar', 'mb', 'cb', 'db'],
     description: 'Kullanıcının aktif ceza(ları) varsa görüntülersiniz.',
     examples: ['aktif @kullanıcı', 'aktif 123456789123456789'],
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
+        (guildData.botCommandAuth && guildData.botCommandAuth.some(r => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
         const user = args[0]
             ? await client.utils.getUser(args[0])
             : message.reference
-            ? (await message.fetchReference()).author
-            : message.author;
+                ? (await message.fetchReference()).author
+                : message.author;
         if (!user || user.bot) {
             client.utils.sendTimedMessage(message, 'Geçerli bir kullanıcı belirt!');
             return;
@@ -45,42 +50,33 @@ const ActivePenals: Moderation.ICommand = {
         }
 
         const firstPenal = activePenals[0];
-
-        let firstType = PENAL_TITLES[firstPenal.type];
-        if (!firstType) {
-            const specialCommand = guildData.specialCommands.find(
-                (s) => s.punishType === firstPenal.type && s.type === SpecialCommandFlags.Punishment,
-            );
-            if (specialCommand) firstType = specialCommand.punishName;
-        }
-
-        const embed = new EmbedBuilder({
-            color: client.utils.getRandomColor(),
-            title: firstType,
-            description: [
-                `${inlineCode('>')} ${bold('Cezalandırılan Yetkili:')} ${userMention(firstPenal.admin)} (${inlineCode(
-                    firstPenal.admin,
-                )})`,
-                `${inlineCode('>')} ${bold('Ceza Sebebi:')} ${firstPenal.reason}`,
-                `${inlineCode('>')} ${bold('Ceza Süresi:')} ${numberToString(firstPenal.finish - firstPenal.start)}`,
-                `${inlineCode('>')} ${bold('Ceza Kalan Süre:')} ${numberToString(firstPenal.finish - Date.now())}`,
-            ].join('\n'),
-        });
+        const embed = new EmbedBuilder({ color: client.utils.getRandomColor() });
 
         const question = await message.channel.send({
-            embeds: [embed],
-            components: createComponents(message, guildData, firstPenal, activePenals.length, 0),
+            embeds: [createContent(client, firstPenal, embed, guildData)],
+            components: createComponents(client, message, guildData, firstPenal, activePenals.length, 1),
         });
 
-        let page = 0;
+        let page = 1;
         const filter = (i) => i.user.id === message.author.id;
         const collector = await question.createMessageComponentCollector({
             filter,
-            time: 1000 * 60 * 2,
+            time: 1000 * 60 * 5,
         });
+               const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+                    components: [
+                        new ButtonBuilder({
+                            custom_id: 'timefinished',
+                            label: 'Mesajın Geçerlilik Süresi Doldu.',
+                            emoji: { name: '⏱️' },
+                            style: ButtonStyle.Danger,
+                            disabled: true,
+                        }),
+                    ],
+                });
 
         collector.on('collect', async (i: ButtonInteraction) => {
-            const penal = activePenals[page];
+            const penal = activePenals[page - 1];
 
             if (i.customId.startsWith('remove-note')) {
                 const row = new ActionRowBuilder<StringSelectMenuBuilder>({
@@ -139,9 +135,10 @@ const ActivePenals: Moderation.ICommand = {
                         components: [],
                     });
                 } else {
+
                     question.edit({
                         embeds: [embed.setDescription('İşlem süresi dolduğu için işlem kapatıldı.')],
-                        components: [],
+                        components: [timeFinished],
                     });
                 }
                 return;
@@ -223,51 +220,20 @@ const ActivePenals: Moderation.ICommand = {
             }
 
             i.deferUpdate();
-            if (i.customId === 'first') page = 0;
-            if (i.customId === 'last') page = activePenals.length - 1;
+            if (i.customId === 'first') page = 1;
+            if (i.customId === 'last') page = activePenals.length;
             if (i.customId === 'next') page++;
             if (i.customId === 'back') page--;
 
-            let type = PENAL_TITLES[penal.type];
-            if (!type) {
-                const specialCommand = guildData.specialCommands.find(
-                    (s) => s.punishType === penal.type && s.type === SpecialCommandFlags.Punishment,
-                );
-                if (specialCommand) type = specialCommand.punishName;
-            }
-
-            embed.setTitle(type);
-            embed.setDescription(
-                [
-                    `${inlineCode('>')} ${bold('Cezalandırılan Yetkili:')} ${userMention(penal.admin)} (${inlineCode(
-                        penal.admin,
-                    )})`,
-                    `${inlineCode('>')} ${bold('Ceza Sebebi:')} ${penal.reason}`,
-                    `${inlineCode('>')} ${bold('Ceza Süresi:')} ${numberToString(penal.finish - penal.start)}`,
-                    `${inlineCode('>')} ${bold('Ceza Kalan Süre:')} ${numberToString(penal.finish - Date.now())}`,
-                ].join('\n'),
-            );
             question.edit({
-                embeds: [embed],
-                components: createComponents(message, guildData, penal, activePenals.length, page),
+                embeds: [createContent(client, penal, embed, guildData)],
+                components: createComponents(client, message, guildData, penal, activePenals.length, page),
             });
         });
 
         collector.on('end', (_, reason) => {
             if (reason === 'time') {
-                const row = new ActionRowBuilder<ButtonBuilder>({
-                    components: [
-                        new ButtonBuilder({
-                            custom_id: 'button-end',
-                            label: 'Mesajın Geçerlilik Süresi Doldu.',
-                            emoji: { name: '⏱️' },
-                            style: ButtonStyle.Danger,
-                            disabled: true,
-                        }),
-                    ],
-                });
-
-                question.edit({ components: [row] });
+                question.edit({ components: [timeFinished] });
             }
         });
     },
@@ -275,7 +241,39 @@ const ActivePenals: Moderation.ICommand = {
 
 export default ActivePenals;
 
+function createContent(client: Client, penal: PenalClass, embed: EmbedBuilder, guildData: ModerationClass) {
+    let type = PENAL_TITLES[penal.type];
+    if (!type) {
+        const specialCommand = guildData.specialCommands.find(
+            (s) => s.punishType === penal.type && s.type === SpecialCommandFlags.Punishment,
+        );
+        if (specialCommand) type = specialCommand.punishName;
+    }
+
+    const image = client.utils.getImage(penal.reason);
+    const replacedReason = penal.reason.replace(client.utils.reasonImage, '');
+    embed
+        .setImage(image ? image : undefined)
+        .setTitle(type)
+        .setDescription(
+            [
+                `${inlineCode('>')} ${bold('Cezalandırılan Yetkili:')} ${userMention(penal.admin)} (${inlineCode(
+                    penal.admin,
+                )})`,
+                `${inlineCode('>')} ${bold('Ceza Sebebi:')} ${replacedReason || "Sebep belirtilmemiş."}`,
+                `${inlineCode('>')} ${bold('Ceza Süresi:')} ${penal.finish ? client.utils.numberToString(
+                    penal.finish - penal.start,
+                ) : "Süresiz."}`,
+                penal.finish ? `${inlineCode('>')} ${bold('Ceza Kalan Süre:')} ${client.utils.numberToString(
+                    penal.finish - Date.now(),
+                )}` : undefined,
+            ].filter(Boolean).join('\n'),
+        );
+    return embed;
+}
+
 function createComponents(
+    client: Client,
     message: Message,
     guildData: ModerationClass,
     penal: PenalClass,
@@ -292,7 +290,7 @@ function createComponents(
                         customId: `add-note-${penal.id}`,
                         label: 'Rapor Ekle',
                         emoji: {
-                            id: '1134147890185515058',
+                            id: "1137495869495722054"
                         },
                         style: ButtonStyle.Secondary,
                     }),
@@ -300,7 +298,7 @@ function createComponents(
                         customId: `remove-note-${penal.id}`,
                         label: 'Rapor Kaldır',
                         emoji: {
-                            id: '1134147892978917477',
+                            id: "1137495873182498816"
                         },
                         style: ButtonStyle.Secondary,
                     }),
@@ -309,7 +307,7 @@ function createComponents(
                         label: `${penal.notes.length === 1 ? 'Rapora' : 'Raporlara'} Bak`,
                         disabled: !(penal.notes && penal.notes.length),
                         emoji: {
-                            id: '1134147894836998275',
+                            id: "1137495100335861810"
                         },
                         style: ButtonStyle.Secondary,
                     }),
@@ -318,60 +316,7 @@ function createComponents(
         );
     }
 
-    if (penalsSize > 1) {
-        components.push(
-            new ActionRowBuilder<ButtonBuilder>({
-                components: [
-                    new ButtonBuilder({
-                        customId: 'first',
-                        emoji: {
-                            id: '1061272577332498442',
-                        },
-                        disabled: currentPage === 0,
-                        style: ButtonStyle.Secondary,
-                    }),
-                    new ButtonBuilder({
-                        customId: 'back',
-                        emoji: {
-                            id: '1061272577332498442',
-                        },
-                        disabled: currentPage === 0,
-                        style: ButtonStyle.Secondary,
-                    }),
-                    new ButtonBuilder({
-                        customId: 'next',
-                        emoji: {
-                            id: '1061272499670745229',
-                        },
-                        disabled: currentPage === penalsSize - 1,
-                        style: ButtonStyle.Secondary,
-                    }),
-                    new ButtonBuilder({
-                        customId: 'last',
-                        emoji: {
-                            id: '1061272577332498442',
-                        },
-                        disabled: currentPage === penalsSize - 1,
-                        style: ButtonStyle.Secondary,
-                    }),
-                ],
-            }),
-        );
-    }
+    if (penalsSize > 1) components.push(client.utils.paginationButtons(currentPage, penalsSize))
 
     return components;
-}
-
-function numberToString(seconds: number) {
-    seconds = seconds / 1000;
-    var d = Math.floor(seconds / (3600 * 24));
-    var h = Math.floor((seconds % (3600 * 24)) / 3600);
-    var m = Math.floor((seconds % 3600) / 60);
-    var s = Math.floor(seconds % 60);
-
-    var dDisplay = d > 0 ? d + ' gün ' : '';
-    var hDisplay = h > 0 ? h + ' saat ' : '';
-    var mDisplay = d === 0 && m > 0 ? m + ' dakika ' : '';
-    var sDisplay = h === 0 && s > 0 ? s + ' saniye' : '';
-    return dDisplay + hDisplay + mDisplay + sDisplay;
 }

@@ -4,8 +4,10 @@ const Command: Moderation.ICommand = {
     usages: ['meeting', 'toplantı'],
     description: 'Toplantı başlatmanıza yarar.',
     examples: ['meeting'],
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.Administrator),
-    execute: ({ client, message, guildData }) => {
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.Administrator) ||
+        (guildData.ownerRoles && guildData.ownerRoles.some(r => message.member.roles.cache.has(r))),
+            execute: ({ client, message, guildData }) => {
         if (!message.guild.roles.cache.has(guildData.meetingRole)) {
             client.utils.sendTimedMessage(message, 'Rol ayarlanmamış');
             return;

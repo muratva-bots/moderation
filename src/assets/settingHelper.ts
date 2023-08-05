@@ -211,6 +211,13 @@ export const SETTINGS = {
     ],
     register: [
         {
+            name: 'Register Yetkilisi',
+            value: 'registerAuth',
+            description: 'Kayıt yetkilisini ayarlarsınız.',
+            type: 'role',
+            isMultiple: true
+        },
+        {
             name: 'İsim Yaş',
             value: 'changeName',
             description: 'Kayıt edilince kullanıcının isminin değiştirilmesi.',
@@ -299,6 +306,41 @@ export const SETTINGS = {
         },
     ],
     penal: [
+        {
+            name: 'Jail Yetkilisi',
+            value: 'jailAuth',
+            description: 'Jail yetkilisini ayarlarsınız.',
+            type: 'role',
+            isMultiple: true,
+        },
+        {
+            name: 'Ban Yetkilisi',
+            value: 'banAuth',
+            description: 'Ban yetkilisini ayarlarsınız.',
+            type: 'role',
+            isMultiple: true,
+        },
+        {
+            name: 'Voice Mute Yetkilisi',
+            value: 'voiceMuteAuth',
+            description: 'Voice mute yetkilisini ayarlarsınız.',
+            type: 'role',
+            isMultiple: true,
+        },
+        {
+            name: 'Chat Mute Yetkilisi',
+            value: 'chatMuteAuth',
+            description: 'Chat mute yetkilisini ayarlarsınız.',
+            type: 'role',
+            isMultiple: true,
+        },
+        {
+            name: 'Bot Komut Yetkilisi',
+            value: 'botCommandAuth',
+            description: 'Bot komut yetkilisini ayarlarsınız.',
+            type: 'role',
+            isMultiple: true,
+        },
         {
             name: 'Reklamcı Rolü',
             value: 'adsRole',

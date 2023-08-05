@@ -2,8 +2,8 @@ import { Message, time, EmbedBuilder, bold, APIEmbedField, userMention } from 'd
 
 import { Client } from '@/structures';
 
-function afkHandler(client: Client, message: Message) {
-    if (message.content?.toLowerCase().startsWith(`${client.config.PREFIX}afk`) || message.author.bot) return;
+function afkHandler(client: Client, message: Message, prefix: string) {
+    if (message.content?.toLowerCase().startsWith(`${prefix}afk`) || message.author.bot) return;
 
     const embed = new EmbedBuilder({
         color: client.utils.getRandomColor(),

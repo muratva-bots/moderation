@@ -4,7 +4,9 @@ const Command: Moderation.ICommand = {
     usages: ['rolbilgi', 'rol-bilgi', 'roleinfo', 'role-info', 'rolinfo'],
     description: 'Belirtilen rolün detaylarını gösterir.',
     examples: ['rolbilgi @rol', 'rolbilgi 123456789123456789'],
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.ManageRoles),
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.ManageRoles) ||
+        (guildData.ownerRoles && guildData.ownerRoles.some(r => message.member.roles.cache.has(r))),
     execute: ({ client, message, args }) => {
         const role = message.mentions.roles.first() || message.guild.roles.cache.get(args[0]);
         if (!role || role.id === message.guild.id) {

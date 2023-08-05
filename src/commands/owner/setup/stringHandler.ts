@@ -115,7 +115,7 @@ export async function stringHandler(
 
             await GuildModel.updateOne(
                 { id: message.guildId },
-                { $set: { [`moderation.${option.value}`]: undefined } },
+                { $unset: { [`moderation.${option.value}`]: 1 } },
             );
 
             i.reply({
@@ -131,19 +131,18 @@ export async function stringHandler(
 
     collector.on('end', (_, reason) => {
         if (reason === 'time') {
-            const row = new ActionRowBuilder<ButtonBuilder>({
+            const timeFinished = new ActionRowBuilder<ButtonBuilder>({
                 components: [
                     new ButtonBuilder({
-                        custom_id: 'button-end',
-                        label: 'Mesajın Geçerlilik Süresi Doldu.',
+                        custom_id: 'timefinished',
+                        disabled: true,
                         emoji: { name: '⏱️' },
                         style: ButtonStyle.Danger,
-                        disabled: true,
                     }),
                 ],
             });
 
-            question.edit({ components: [row] });
+            question.edit({ components: [timeFinished] });
         }
     });
 }

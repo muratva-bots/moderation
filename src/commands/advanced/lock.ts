@@ -19,8 +19,10 @@ const Command: Moderation.ICommand = {
     usages: ['lock', 'kilit', 'kanal'],
     description: 'Belirttiğiniz kanalın mesaj gönderme iznini açar/kapatırsınız.',
     examples: ['kilit <kilit menü panelinden işleminizi seçin.>'],
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.ManageChannels),
-    execute: async ({ client, message, guildData }) => {
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.ManageChannels) ||
+        (guildData.ownerRoles && guildData.ownerRoles.some(r => message.member.roles.cache.has(r))),
+        execute: async ({ client, message, guildData }) => {
         const rowOne = new ActionRowBuilder<ChannelSelectMenuBuilder>({
             components: [
                 new ChannelSelectMenuBuilder({
@@ -145,9 +147,19 @@ const Command: Moderation.ICommand = {
                 return;
             }
         } else {
+            const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+                components: [
+                    new ButtonBuilder({
+                        custom_id: 'timefinished',
+                        disabled: true,
+                        emoji: { name: '⏱️' },
+                        style: ButtonStyle.Danger,
+                    }),
+                ],
+            });
             question.edit({
                 embeds: [embed.setDescription('İşlem süresi dolduğu için işlem kapatıldı.')],
-                components: [],
+                components: [timeFinished],
             });
         }
     },

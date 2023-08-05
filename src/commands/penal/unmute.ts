@@ -92,7 +92,14 @@ const Command: Moderation.ICommand = {
                     member.roles.remove(guildData.chatMuteRole);
                     await PenalModel.updateMany(
                         { user: member.id, activity: true, guild: message.guildId, type: PenalFlags.ChatMute },
-                        { $set: { activity: false, remover: message.author.id } },
+                        {
+                            $set: {
+                                activity: false,
+                                remover: message.author.id,
+                                removeTime: Date.now(),
+                                removeReason: reason,
+                            },
+                        },
                     );
                 } else {
                     text = 'ses susturması';
@@ -105,7 +112,14 @@ const Command: Moderation.ICommand = {
 
                     await PenalModel.updateMany(
                         { user: member.id, activity: true, guild: message.guildId, type: PenalFlags.VoiceMute },
-                        { $set: { activity: false, remover: message.author.id } },
+                        {
+                            $set: {
+                                activity: false,
+                                remover: message.author.id,
+                                removeTime: Date.now(),
+                                removeReason: reason,
+                            },
+                        },
                     );
                 }
 
@@ -136,9 +150,17 @@ const Command: Moderation.ICommand = {
             {
                 user: member.id,
                 guild: message.guildId,
+                activity: true,
                 $or: [{ type: PenalFlags.VoiceMute }, { type: PenalFlags.ChatMute }],
             },
-            { $set: { activity: false, remover: message.author.id } },
+            {
+                $set: {
+                    activity: false,
+                    remover: message.author.id,
+                    removeTime: Date.now(),
+                    removeReason: reason,
+                },
+            },
         );
 
         message.channel.send({

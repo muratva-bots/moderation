@@ -44,6 +44,9 @@ export class PenalClass {
     @prop({ type: () => Number, default: undefined })
     public removeTime?: number;
 
+    @prop({ type: () => String, default: undefined })
+    public removeReason?: string;
+
     @prop({ type: () => [Object], default: [] })
     public notes: INote[];
 

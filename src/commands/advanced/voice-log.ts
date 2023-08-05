@@ -25,8 +25,10 @@ const Command: Moderation.ICommand = {
     usages: ['voicelog', 'voice-log', 'rmlog', 'roomlog', 'kanallog', 'kanal-log', 'room-log'],
     description: 'Belirttiğiniz üyenin bulunduğu tüm kanalları görüntülersiniz.',
     examples: ['voicelog @kullanıcı', 'voicelog 123456789123456789'],
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.ViewAuditLog),
-    execute: async ({ client, message, args }) => {
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.ViewAuditLog) ||
+        (guildData.botCommandAuth && guildData.botCommandAuth.some(r => message.member.roles.cache.has(r))),
+        execute: async ({ client, message, args }) => {
         const user =
             (await client.utils.getUser(args[0])) ||
             (message.reference ? (await message.fetchReference()).author : undefined);
@@ -81,7 +83,7 @@ const Command: Moderation.ICommand = {
 
         const question = await message.channel.send({
             embeds: [embed],
-            components: document.voiceLogs.length > 5 ? [paginationButtons(page, totalData)] : [],
+            components: document.voiceLogs.length > 5 ? [client.utils.paginationButtons(page, totalData)] : [],
         });
 
         if (5 >= document.voiceLogs.length) return;
@@ -134,73 +136,27 @@ const Command: Moderation.ICommand = {
                             .join('\n'),
                     ),
                 ],
-                components: [paginationButtons(page, totalData)],
+                components: [client.utils.paginationButtons(page, totalData)],
             });
         });
 
         collector.on('end', (_, reason) => {
             if (reason === 'time') {
-                const row = new ActionRowBuilder<ButtonBuilder>({
+                const timeFinished = new ActionRowBuilder<ButtonBuilder>({
                     components: [
                         new ButtonBuilder({
-                            custom_id: 'button-end',
-                            label: 'Mesajın Geçerlilik Süresi Doldu.',
+                            custom_id: 'timefinished',
+                            disabled: true,
                             emoji: { name: '⏱️' },
                             style: ButtonStyle.Danger,
-                            disabled: true,
                         }),
                     ],
                 });
 
-                question.edit({ components: [row] });
+                question.edit({ components: [timeFinished] });
             }
         });
     },
 };
 
 export default Command;
-
-function paginationButtons(page: number, totalData: number) {
-    return new ActionRowBuilder<ButtonBuilder>({
-        components: [
-            new ButtonBuilder({
-                custom_id: 'first',
-                emoji: {
-                    id: '1070037431690211359',
-                },
-                style: ButtonStyle.Secondary,
-                disabled: page === 1,
-            }),
-            new ButtonBuilder({
-                custom_id: 'previous',
-                emoji: {
-                    id: '1061272577332498442',
-                },
-                style: ButtonStyle.Secondary,
-                disabled: page === 1,
-            }),
-            new ButtonBuilder({
-                custom_id: 'count',
-                label: `${page}/${totalData}`,
-                style: ButtonStyle.Secondary,
-                disabled: true,
-            }),
-            new ButtonBuilder({
-                custom_id: 'next',
-                emoji: {
-                    id: '1061272499670745229',
-                },
-                style: ButtonStyle.Secondary,
-                disabled: totalData === page,
-            }),
-            new ButtonBuilder({
-                custom_id: 'last',
-                emoji: {
-                    id: '1070037622820458617',
-                },
-                style: ButtonStyle.Secondary,
-                disabled: page === totalData,
-            }),
-        ],
-    });
-}

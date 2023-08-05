@@ -135,6 +135,16 @@ const Command: Moderation.ICommand = {
                     });
                 }
             } else {
+                const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+                    components: [
+                        new ButtonBuilder({
+                            custom_id: 'timefinished',
+                            disabled: true,
+                            emoji: { name: '⏱️' },
+                            style: ButtonStyle.Danger,
+                        }),
+                    ],
+                });
                 question.edit({
                     content: ``,
                     embeds: [
@@ -142,7 +152,7 @@ const Command: Moderation.ICommand = {
                             `${member} adlı kullanıcı ${message.author} adlı kullanıcının isteğine cevap vermediği için işlem iptal edildi.`,
                         ),
                     ],
-                    components: [],
+                    components: [timeFinished],
                 });
                 waitings.delete(message.author.id);
             }

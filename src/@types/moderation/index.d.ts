@@ -36,6 +36,7 @@ declare global {
             chatUsable?: boolean;
             examples: string[];
             isDisabled?: boolean;
+            category?: string;
             checkPermission?: ({ client, message }: ICheckPermission) => boolean;
             execute: (commandArgs: CommandArgs) => Promise<unknown> | unknown;
         }

@@ -1,19 +1,24 @@
 import { PenalFlags } from '@/enums';
 import { PenalModel } from '@/models';
 import { bold, EmbedBuilder, inlineCode, PermissionFlagsBits, TextChannel } from 'discord.js';
-import banHandler from './banHandler';
-import underworldHandler from './underworldHandler';
 
 const Command: Moderation.ICommand = {
     usages: ['unban', 'ununderworld'],
     description: 'Yasaklı kullanıcının banını kaldırırsın.',
     examples: ['unban 123456789123456789'],
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.BanMembers),
+    checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.BanMembers) ||
+        (guildData.banAuth && guildData.banAuth.some(r => message.member.roles.cache.has(r))), 
     execute: async ({ client, message, args, guildData }) => {
         const reference = message.reference ? (await message.fetchReference()).author : undefined;
         const user = (await client.utils.getUser(args[0])) || reference;
         if (!user) {
             client.utils.sendTimedMessage(message, 'Geçerli bir kullanıcı velirt!');
+            return;
+        }
+
+        const reason = args.slice(reference ? 0 : 1).join(' ');
+        if (!reason.length) {
+            client.utils.sendTimedMessage(message, 'Geçerli bir sebep belirt.');
             return;
         }
 
@@ -30,18 +35,35 @@ const Command: Moderation.ICommand = {
                 user: user.id,
                 type: PenalFlags.Ban,
             },
-            { activity: false, remover: message.author.id },
+            { $set: { activity: false, remover: message.author.id, removeTime: Date.now(), removeReason: reason } },
         );
 
         const member = await client.utils.getMember(message.guild, user.id);
         const underworldRole = message.guild.roles.cache.get(guildData.underworldRole);
-        if (underworldRole && member) underworldHandler(client, message, member, underworldRole, guildData, penals);
-        else if (!underworldRole) banHandler(client, message, user, penals);
-
-        const reason = args.slice(reference ? 0 : 1).join(' ');
-        if (!reason.length) {
-            client.utils.sendTimedMessage(message, 'Geçerli bir sebep belirt.');
-            return;
+        if (underworldRole && member) {
+            if (!member.roles.cache.has(underworldRole.id)) {
+                client.utils.sendTimedMessage(message, 'Kullanıcının cezası yok.');
+                return;
+            }
+        
+            if (
+                !guildData.unregisterRoles ||
+                !guildData.unregisterRoles.length ||
+                !guildData.unregisterRoles.some((r) => message.guild.roles.cache.has(r))
+            )
+                return message.channel.send('Kayıtsız rolü/rolleri ayarlanmamış.');
+        
+            if (penals.length) client.utils.setRoles(member, penals[0].roles);
+            else client.utils.setRoles(member, guildData.unregisterRoles);
+        } else if (!underworldRole) {
+            if (!penals.length) {
+                const ban = message.guild.bans.cache.get(user.id);
+                if (!ban) {
+                    client.utils.sendTimedMessage(message, 'Kullanıcının yasaklaması yok.');
+                    return;
+                }
+            }
+            message.guild.members.unban(user.id);
         }
 
         const embed = new EmbedBuilder({

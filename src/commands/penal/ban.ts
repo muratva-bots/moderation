@@ -20,6 +20,8 @@ import {
     bold,
     inlineCode,
     time,
+    ButtonBuilder,
+    ButtonStyle
 } from 'discord.js';
 import ms from 'ms';
 
@@ -28,8 +30,10 @@ const Command: Moderation.ICommand = {
     description: 'Belirttiğiniz üyeyi banlarsınız.',
     examples: ['ban @kullanıcı', 'ban 123456789123456789'],
     chatUsable: true,
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers),
-    execute: async ({ client, message, args, guildData }) => {
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.BanMembers) ||
+        (guildData.banAuth && guildData.banAuth.some(r => message.member.roles.cache.has(r))),
+            execute: async ({ client, message, args, guildData }) => {
         const user =
             (await client.utils.getUser(args[0])) ||
             (message.reference ? (await message.fetchReference()).author : undefined);
@@ -41,7 +45,7 @@ const Command: Moderation.ICommand = {
         const limit = client.utils.checkLimit(
             message.author.id,
             LimitFlags.Ban,
-            guildData.underworldLimitTime || DEFAULTS.underworld.limit.count,
+            guildData.underworldLimitTime ? Number(guildData.underworldLimitTime) : DEFAULTS.underworld.limit.count,
             guildData.underworldLimitCount || DEFAULTS.underworld.limit.time,
         );
         if (limit.hasLimit) {
@@ -61,7 +65,7 @@ const Command: Moderation.ICommand = {
                     return;
                 }
             } else {
-                const ban = await message.guild.bans.fetch(user.id);
+                const ban = message.guild.bans.cache.get(user.id);
                 if (ban) {
                     client.utils.sendTimedMessage(message, 'Belirttiğin kişi zaten cezalı?');
                     return;
@@ -101,6 +105,18 @@ const Command: Moderation.ICommand = {
                 }),
             ],
         });
+
+               const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+                    components: [
+                        new ButtonBuilder({
+                            custom_id: 'timefinished',
+                            label: 'Mesajın Geçerlilik Süresi Doldu.',
+                            emoji: { name: '⏱️' },
+                            style: ButtonStyle.Danger,
+                            disabled: true,
+                        }),
+                    ],
+                });
 
         const embed = new EmbedBuilder({
             color: client.utils.getRandomColor(),
@@ -179,8 +195,9 @@ const Command: Moderation.ICommand = {
 
                     banUser(client, message, user, member, guildData, timing, reason, false, question);
                 } else {
+                 
                     question.edit({
-                        embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
+                        embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')], components: [timeFinished]
                     });
                 }
                 return;
@@ -219,8 +236,9 @@ const Command: Moderation.ICommand = {
                         attachment,
                     );
                 } else {
+                    
                     question.edit({
-                        embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
+                        embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')], components: [timeFinished]
                     });
                 }
                 return;
@@ -258,8 +276,10 @@ const Command: Moderation.ICommand = {
                         question,
                     );
                 } else {
+                
                     question.edit({
                         embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
+                        components: [timeFinished]
                     });
                 }
                 return;
@@ -268,7 +288,7 @@ const Command: Moderation.ICommand = {
             banUser(client, message, user, member, guildData, reason.time, reason.name, false, question);
         } else {
             question.edit({
-                embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
+                embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')], components: [timeFinished]
             });
         }
     },
@@ -296,6 +316,8 @@ export async function banUser(
         client.utils.setRoles(member, guildData.underworldRole);
     } else if (!guildData.underworldRole)
         message.guild.members.ban(user.id, { reason: `${message.author.username}: ${reason}` });
+
+    await PenalModel.updateMany({ user: user.id, guild: message.guild.id }, { $set: { activity: false } });
 
     const now = Date.now();
     const newID = (await PenalModel.countDocuments({ guild: message.guildId })) + 1;

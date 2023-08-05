@@ -51,7 +51,7 @@ const Command: Moderation.ICommand = {
                     user: member.id,
                     type: PenalFlags.Quarantine,
                 },
-                { $set: { activity: false, remover: message.author.id } },
+                { $set: { activity: false, remover: message.author.id, removeTime: Date.now(), removeReason: reason } },
             );
             client.utils.setRoles(member, penals[0].roles);
         }

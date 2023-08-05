@@ -7,7 +7,9 @@ const Command: Moderation.ICommand = {
     description: 'Banını kaldıralamaz olarak işaretlediğiniz kullanıcının işaretini kaldırırsınız.',
     examples: ['yargıkaldır 123456789123456789'],
     chatUsable: true,
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers),
+    checkPermission: ({ message, guildData }) => 
+        message.member.permissions.has(PermissionFlagsBits.ModerateMembers) || 
+        (guildData.ownerRoles && guildData.ownerRoles.some(r => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args }) => {
         const reference = message.reference ? (await message.fetchReference()).author : undefined;
         const user = (await client.utils.getMember(message.guild, args[0])) || reference;
@@ -23,7 +25,7 @@ const Command: Moderation.ICommand = {
                 user: user.id,
                 type: PenalFlags.ForceBan,
             },
-            { $set: { activity: false, remover: message.author.id } },
+            { $set: { activity: false, remover: message.author.id, removeTime: Date.now() } },
         );
 
         message.channel.send({

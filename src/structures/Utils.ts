@@ -3,6 +3,9 @@ import { resolve } from 'path';
 
 import { Client } from '@/structures';
 import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
     Collection,
     EmbedBuilder,
     Guild,
@@ -22,7 +25,7 @@ import { EMOJIS } from '@/assets';
 export class Utils {
     private client: Client;
     public limits: Collection<string, Moderation.ILimit>;
-    private reasonImage: RegExp =
+    public reasonImage: RegExp =
         /((?:https?:\/\/)[a-z0-9]+(?:[-.][a-z0-9]+)*\.[a-z]{2,5}(?::[0-9]{1,5})?(?:\/[^ \n<>]*)\.(?:png|apng|jpg|gif))/g;
     private logReasons = {
         0: '{user} adlı kullanıcı {admin} tarafından sunucudan yasaklandı.',
@@ -36,6 +39,52 @@ export class Utils {
     constructor(client: Client) {
         this.client = client;
         this.limits = new Collection<string, Moderation.ILimit>();
+    }
+
+
+    paginationButtons(page: number, totalData: number) {
+        return new ActionRowBuilder<ButtonBuilder>({
+            components: [
+                new ButtonBuilder({
+                    custom_id: 'first',
+                    emoji: {
+                        id: '1070037431690211359',
+                    },
+                    style: ButtonStyle.Secondary,
+                    disabled: page === 1,
+                }),
+                new ButtonBuilder({
+                    custom_id: 'previous',
+                    emoji: {
+                        id: '1061272577332498442',
+                    },
+                    style: ButtonStyle.Secondary,
+                    disabled: page === 1,
+                }),
+                new ButtonBuilder({
+                    custom_id: 'count',
+                    label: `${page}/${totalData}`,
+                    style: ButtonStyle.Secondary,
+                    disabled: true,
+                }),
+                new ButtonBuilder({
+                    custom_id: 'next',
+                    emoji: {
+                        id: '1061272499670745229',
+                    },
+                    style: ButtonStyle.Secondary,
+                    disabled: totalData === page,
+                }),
+                new ButtonBuilder({
+                    custom_id: 'last',
+                    emoji: {
+                        id: '1070037622820458617',
+                    },
+                    style: ButtonStyle.Secondary,
+                    disabled: page === totalData,
+                }),
+            ],
+        });
     }
 
     getEmoji(name: string) {
@@ -124,7 +173,7 @@ export class Utils {
                                   inline: false,
                               }
                             : undefined,
-                        attachment
+                        penal.reason
                             ? {
                                   name: 'Ceza Sebebi',
                                   value: codeBlock('ansi', `[2;31m${penal.reason}`),
@@ -214,6 +263,20 @@ export class Utils {
         return { hasLimit: false };
     }
 
+    numberToString(seconds: number) {
+        seconds = seconds / 1000;
+        var d = Math.floor(seconds / (3600 * 24));
+        var h = Math.floor((seconds % (3600 * 24)) / 3600);
+        var m = Math.floor((seconds % 3600) / 60);
+        var s = Math.floor(seconds % 60);
+    
+        var dDisplay = d > 0 ? d + ' gün ' : '';
+        var hDisplay = h > 0 ? h + ' saat ' : '';
+        var mDisplay = d === 0 && m > 0 ? m + ' dakika ' : '';
+        var sDisplay = h === 0 && s > 0 ? s + ' saniye' : '';
+        return dDisplay + hDisplay + mDisplay + sDisplay;
+    }
+
     sendTimedMessage(message: Message, content: string, time = 1000 * 5) {
         message
             .reply({ content })
@@ -244,6 +307,12 @@ export class Utils {
         return Math.floor(Math.random() * (0xffffff + 1));
     }
 
+    chunkArray(array: any[], chunkSize: number) {
+        const chunkedArray = [];
+        for (let i = 0; i < array.length; i += chunkSize) chunkedArray.push(array.slice(i, i + chunkSize));
+        return chunkedArray;
+    }
+
     async loadCommands() {
         const categories = readdirSync(resolve(__dirname, '..', 'commands'));
         categories.forEach((category) => {
@@ -253,7 +322,7 @@ export class Utils {
                 delete require.cache[commandFile];
 
                 const command = commandFile.default as Moderation.ICommand;
-                this.client.commands.set(command.usages[0], command);
+                this.client.commands.set(command.usages[0], { ...command, category });
             });
         });
     }
