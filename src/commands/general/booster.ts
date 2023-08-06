@@ -58,6 +58,12 @@ const Command: Moderation.ICommand = {
         message.member.setNickname(newName);
 
         message.reply(`ismin "${bold(newName)}" olarak değiştirildi.`);
+
+        await UserModel.updateOne(
+            { id: message.author.id, guild: message.guildId },
+            { $push: { names: { admin: message.author.id, type: 'İsim Değiştirme (Booster)', time: Date.now(), name } } },
+            { upsert: true },
+        );
     },
 };
 
