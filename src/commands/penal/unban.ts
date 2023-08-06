@@ -1,5 +1,5 @@
 import { PenalFlags } from '@/enums';
-import { PenalModel } from '@/models';
+import { PenalModel, UserModel } from '@/models';
 import { bold, EmbedBuilder, inlineCode, PermissionFlagsBits, TextChannel } from 'discord.js';
 
 const Command: Moderation.ICommand = {
@@ -7,7 +7,7 @@ const Command: Moderation.ICommand = {
     description: 'Yasaklı kullanıcının banını kaldırırsın.',
     examples: ['unban 123456789123456789'],
     checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.BanMembers) ||
-        (guildData.banAuth && guildData.banAuth.some(r => message.member.roles.cache.has(r))), 
+        (guildData.banAuth && guildData.banAuth.some(r => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
         const reference = message.reference ? (await message.fetchReference()).author : undefined;
         const user = (await client.utils.getUser(args[0])) || reference;
@@ -22,12 +22,7 @@ const Command: Moderation.ICommand = {
             return;
         }
 
-        const penals = await PenalModel.find({
-            guild: message.guildId,
-            activity: true,
-            user: user.id,
-            type: PenalFlags.Ban,
-        });
+        const document = await UserModel.findOne({ guild: message.guildId, id: user.id }).select("lastRoles");
         await PenalModel.updateMany(
             {
                 guild: message.guildId,
@@ -45,23 +40,21 @@ const Command: Moderation.ICommand = {
                 client.utils.sendTimedMessage(message, 'Kullanıcının cezası yok.');
                 return;
             }
-        
+
             if (
                 !guildData.unregisterRoles ||
                 !guildData.unregisterRoles.length ||
                 !guildData.unregisterRoles.some((r) => message.guild.roles.cache.has(r))
             )
                 return message.channel.send('Kayıtsız rolü/rolleri ayarlanmamış.');
-        
-            if (penals.length) client.utils.setRoles(member, penals[0].roles);
+
+            if (document && document.lastRoles.length) client.utils.setRoles(member, document.lastRoles);
             else client.utils.setRoles(member, guildData.unregisterRoles);
         } else if (!underworldRole) {
-            if (!penals.length) {
-                const ban = message.guild.bans.cache.get(user.id);
-                if (!ban) {
-                    client.utils.sendTimedMessage(message, 'Kullanıcının yasaklaması yok.');
-                    return;
-                }
+            const ban = message.guild.bans.cache.get(user.id);
+            if (!ban) {
+                client.utils.sendTimedMessage(message, 'Kullanıcının yasaklaması yok.');
+                return;
             }
             message.guild.members.unban(user.id);
         }

@@ -1,6 +1,6 @@
 import { DEFAULTS } from '@/assets';
 import { PenalFlags } from '@/enums';
-import { PenalModel } from '@/models';
+import { PenalModel, UserModel } from '@/models';
 import { EmbedBuilder, PermissionFlagsBits } from 'discord.js';
 
 const Command: Moderation.ICommand = {
@@ -34,6 +34,17 @@ const Command: Moderation.ICommand = {
         message.guild.members.ban(user.id, { reason: `${message.author.username} - ${reason}` });
 
         await PenalModel.updateMany({ user: user.id, guild: message.guild.id }, { $set: { activity: false } });
+
+        const roles = member
+            ? member.roles.cache.filter((r) => !r.managed && r.id !== message.guildId).map((r) => r.id)
+            : [];
+        if (roles.length) {
+            await UserModel.updateOne(
+                { id: user.id, guild: message.guildId },
+                { $set: { lastRoles: roles } },
+                { upsert: true }
+            );
+        }
 
         const newID = (await PenalModel.countDocuments({ guild: message.guildId })) + 1;
         await PenalModel.create({

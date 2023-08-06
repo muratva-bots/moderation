@@ -59,6 +59,9 @@ export class UserClass {
 
     @prop({ type: () => Object, default: {} })
     public registers!: IRegister;
+
+    @prop({ type: () => [String], default: [] })
+    public lastRoles: string[];
 }
 
 export const UserModel = getModelForClass(UserClass);

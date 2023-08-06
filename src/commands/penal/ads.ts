@@ -1,5 +1,5 @@
 import { PenalFlags } from '@/enums';
-import { PenalModel } from '@/models';
+import { PenalModel, UserModel } from '@/models';
 import {
     EmbedBuilder,
     inlineCode,
@@ -66,6 +66,14 @@ const Command: Moderation.ICommand = {
                 client.utils.setRoles(member, adsRole.id);
             }
 
+            if (roles.length) {
+                await UserModel.updateOne(
+                    { id: user.id, guild: message.guildId },
+                    { $set: { lastRoles: roles } },
+                    { upsert: true }
+                );
+            }
+
             const now = Date.now();
             const newID = (await PenalModel.countDocuments({ guild: message.guildId })) + 1;
             const penal = await PenalModel.create({
@@ -76,7 +84,6 @@ const Command: Moderation.ICommand = {
                 type: PenalFlags.Ads,
                 reason: attachment,
                 start: now,
-                roles: roles,
             });
 
             message.channel.send({

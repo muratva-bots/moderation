@@ -50,9 +50,6 @@ export class PenalClass {
     @prop({ type: () => [Object], default: [] })
     public notes: INote[];
 
-    @prop({ type: () => [String], default: true })
-    public roles?: string[];
-
     @prop({ type: () => Boolean, default: true })
     public visible?: boolean;
 }

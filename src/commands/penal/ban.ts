@@ -1,6 +1,6 @@
 import { DEFAULTS } from '@/assets';
 import { LimitFlags, NeedFlags, PenalFlags } from '@/enums';
-import { ModerationClass, PenalModel } from '@/models';
+import { ModerationClass, PenalModel, UserModel } from '@/models';
 import { Client } from '@/structures';
 import {
     APISelectMenuOption,
@@ -319,6 +319,14 @@ export async function banUser(
 
     await PenalModel.updateMany({ user: user.id, guild: message.guild.id }, { $set: { activity: false } });
 
+    if (roles.length) {
+        await UserModel.updateOne(
+            { id: user.id, guild: message.guildId },
+            { $set: { lastRoles: roles } },
+            { upsert: true }
+        );
+    }
+
     const now = Date.now();
     const newID = (await PenalModel.countDocuments({ guild: message.guildId })) + 1;
     const penal = await PenalModel.create({
@@ -330,7 +338,6 @@ export async function banUser(
         reason: reason,
         finish: now + timing,
         start: now,
-        roles,
     });
 
     await client.utils.sendLog({

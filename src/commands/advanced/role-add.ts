@@ -1,4 +1,4 @@
-import { RoleLogFlags } from '@/enums';
+import { RoleLogFlags, SpecialCommandFlags } from '@/enums';
 import { UserModel } from '@/models';
 import {
     ActionRowBuilder,
@@ -86,13 +86,22 @@ const Command: Moderation.ICommand = {
 
         if (collected) {
             const roles = collected.values.map((roleId) => message.guild.roles.cache.get(roleId));
+            const specialCommands = (guildData.specialCommands || []).filter(c => c.type === SpecialCommandFlags.Punishment);
             const added: string[] = [];
             const removed: string[] = [];
             const now = Date.now();
             for (const role of roles) {
                 if (
                     !(guildData.ownerRoles || []).some((r) => message.member.roles.cache.has(r)) &&
-                    role.position > minStaffRole.position
+                    role.position > minStaffRole.position &&
+                    [
+                        guildData.adsRole,
+                        guildData.chatMuteRole,
+                        guildData.voiceMuteRole,
+                        guildData.quarantineRole,
+                        guildData.underworldRole,
+                        ...specialCommands.map(c => c.punishRole)
+                    ].includes(role.id)
                 )
                     return;
 

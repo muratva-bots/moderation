@@ -1,6 +1,6 @@
 import { DEFAULTS } from '@/assets';
 import { LimitFlags, NeedFlags, PenalFlags } from '@/enums';
-import { ModerationClass, PenalModel } from '@/models';
+import { ModerationClass, PenalModel, UserModel } from '@/models';
 import { Client } from '@/structures';
 import {
     EmbedBuilder,
@@ -103,17 +103,17 @@ const Command: Moderation.ICommand = {
             ],
         });
 
-               const timeFinished = new ActionRowBuilder<ButtonBuilder>({
-                    components: [
-                        new ButtonBuilder({
-                            custom_id: 'timefinished',
-                            label: 'Mesajın Geçerlilik Süresi Doldu.',
-                            emoji: { name: '⏱️' },
-                            style: ButtonStyle.Danger,
-                            disabled: true,
-                        }),
-                    ],
-                });
+        const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+            components: [
+                new ButtonBuilder({
+                    custom_id: 'timefinished',
+                    label: 'Mesajın Geçerlilik Süresi Doldu.',
+                    emoji: { name: '⏱️' },
+                    style: ButtonStyle.Danger,
+                    disabled: true,
+                }),
+            ],
+        });
 
         const embed = new EmbedBuilder({
             color: client.utils.getRandomColor(),
@@ -192,7 +192,7 @@ const Command: Moderation.ICommand = {
 
                     quarantineUser(client, message, user, member, guildData, timing, reason, false, question);
                 } else {
-                  
+
                     question.edit({
                         embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
                         components: [timeFinished]
@@ -234,7 +234,7 @@ const Command: Moderation.ICommand = {
                         attachment,
                     );
                 } else {
-                   
+
                     question.edit({
                         embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')], components: [timeFinished]
                     });
@@ -274,7 +274,7 @@ const Command: Moderation.ICommand = {
                         question,
                     );
                 } else {
-                    
+
                     question.edit({
                         embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')], components: [timeFinished]
                     });
@@ -284,7 +284,7 @@ const Command: Moderation.ICommand = {
 
             quarantineUser(client, message, user, member, guildData, reason.time, reason.name, false, question);
         } else {
-           
+
             question.edit({
                 embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')], components: [timeFinished]
             });
@@ -314,6 +314,14 @@ export async function quarantineUser(
     const roles = member
         ? member.roles.cache.filter((r) => !r.managed && r.id !== message.guildId).map((r) => r.id)
         : [];
+    if (roles.length) {
+        await UserModel.updateOne(
+            { id: user.id, guild: message.guildId },
+            { $set: { lastRoles: roles } },
+            { upsert: true }
+        );
+    }
+
     const now = Date.now();
     const newID = (await PenalModel.countDocuments({ guild: message.guildId })) + 1;
     const penal = await PenalModel.create({
@@ -325,7 +333,6 @@ export async function quarantineUser(
         reason: reason,
         finish: now + timing,
         start: now,
-        roles,
     });
 
     await client.utils.sendLog({
@@ -342,11 +349,10 @@ export async function quarantineUser(
         embeds: [
             new EmbedBuilder({
                 color: client.utils.getRandomColor(),
-                description: `${user} (${inlineCode(user.id)}) adlı ${
-                    system ? reason : `kullanıcı "${bold(reason)}" sebebiyle`
-                } ${time(Math.floor(penal.finish / 1000), 'R')} karantina cezası aldı. (Ceza Numarası: ${inlineCode(
-                    `#${newID}`,
-                )})`,
+                description: `${user} (${inlineCode(user.id)}) adlı ${system ? reason : `kullanıcı "${bold(reason)}" sebebiyle`
+                    } ${time(Math.floor(penal.finish / 1000), 'R')} karantina cezası aldı. (Ceza Numarası: ${inlineCode(
+                        `#${newID}`,
+                    )})`,
             }),
         ],
         components: [],

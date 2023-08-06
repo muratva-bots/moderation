@@ -1,5 +1,5 @@
 import { PenalFlags } from '@/enums';
-import { PenalModel } from '@/models';
+import { PenalModel, UserModel } from '@/models';
 import { bold, EmbedBuilder, inlineCode, PermissionFlagsBits, TextChannel } from 'discord.js';
 
 const Command: Moderation.ICommand = {
@@ -29,13 +29,8 @@ const Command: Moderation.ICommand = {
             return;
         }
 
-        const penals = await PenalModel.find({
-            guild: message.guildId,
-            activity: true,
-            user: member.id,
-            type: PenalFlags.Ads,
-        });
-        if (!penals.length) {
+        const document = await UserModel.findOne({ guild: message.guildId, id: member.id }).select("lastRoles");
+        if (!document || !document.lastRoles.length) {
             if (!(guildData.unregisterRoles || []).some((r) => message.guild.roles.cache.has(r))) {
                 client.utils.sendTimedMessage(message, 'Kayıtsız rolleri ayarlanmamış.');
                 return;
@@ -52,7 +47,7 @@ const Command: Moderation.ICommand = {
                 },
                 { $set: { activity: false, remover: message.author.id, removeTime: Date.now(), removeReason: reason } },
             );
-            client.utils.setRoles(member, penals[0].roles);
+            client.utils.setRoles(member, document.lastRoles);
         }
 
         message.channel.send({
