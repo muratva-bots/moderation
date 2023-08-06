@@ -32,7 +32,14 @@ function botCommandHandler(client: Client, message: Message, guildData: Moderati
 
     let canExecute = false;
     if (
-        message.member.permissions.has(PermissionFlagsBits.Administrator) ||
+        (
+            ![
+                "emojiscreate", "invasion", "logscreate", "ayarlar", 
+                "suspectcontrol", "fastlogin", "kullanıcı-panel", "monthlyrole", 
+                "roleselect",  "solvingauthcall", "eval", "setup"
+            ].includes(command.usages[0]) && 
+            message.member.permissions.has(PermissionFlagsBits.Administrator)
+        ) ||
         !command.checkPermission ||
         (command.checkPermission && command.checkPermission({ client, message, guildData }))
     )
