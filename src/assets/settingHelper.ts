@@ -57,6 +57,13 @@ export const SETTINGS = {
             isMultiple: false,
         },
         {
+            name: 'Yasaklı Tag Rolü',
+            value: 'bannedTagRole',
+            description: 'Yasaklı tag rolünü ayarlarsınız.',
+            type: 'role',
+            isMultiple: false,
+        },
+        {
             name: 'Vip Rolü',
             value: 'vipRole',
             description: 'Vip rolünü ayarlarsınız.',
