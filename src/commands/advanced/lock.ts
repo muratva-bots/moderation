@@ -108,7 +108,7 @@ const Command: Moderation.ICommand = {
             if (collected.isButton()) {
                 collected.deferUpdate();
 
-                if (!(guildData.guildOwner || []).some((r) => message.member.roles.cache.has(r))) {
+                if (!(guildData.ownerRoles || []).some((r) => message.member.roles.cache.has(r))) {
                     collected.reply({
                         content: 'Bu işlemi gerçekleştirmek için yeterli yetkin yok.',
                     });

@@ -90,7 +90,6 @@ export class ModerationClass {
     meetingRole: string;
     underworldLimitCount: number;
     underworldLimitTime: number;
-    banImage: string;
     afkRoom: string;
     specialCommands: ISpecialCommand[];
     compliment: boolean;
@@ -108,7 +107,6 @@ export class ModerationClass {
     needName: boolean;
     menuRegister: boolean;
     registerSystem: boolean;
-    guildOwner: string[];
     registerChannel: string;
     invasionProtection: boolean;
     loveRoles: string[];

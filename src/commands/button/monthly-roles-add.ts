@@ -45,7 +45,7 @@ const Command: Moderation.ICommand = {
                     `${guildData.monthlyRoles
                         .map(
                             (r, i) =>
-                                `${i === guildData.monthlyRoles.length - 1 ? ' ve' : ''}${ms(r.time)}${
+                                `${i === guildData.monthlyRoles.length - 1 ? 've ' : ''}${ms(r.time)}${
                                     i === guildData.monthlyRoles.length - 1 ? '' : ', '
                                 }`,
                         )

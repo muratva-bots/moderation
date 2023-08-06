@@ -6,7 +6,7 @@ const logChannelNames = [
     'chat-mute-log',
     'quarantine-log',
     'ban-log',
-    'meeting-log', // katılmadı rolü dağıtcı
+    'meeting-log',
     'unregistered-log',
     'register-log',
     'ads-log',
