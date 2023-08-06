@@ -1,6 +1,7 @@
 import { bold } from 'discord.js';
 import { DEFAULTS } from '@/assets';
 import { LimitFlags } from '@/enums';
+import { UserModel } from '@/models';
 
 const inviteRegex =
     /\b(?:https?:\/\/)?(?:www\.)?(?:discord\.(?:gg|io|me|li)|discordapp\.com\/invite)\/([a-zA-Z0-9\-]{2,32})\b/;
