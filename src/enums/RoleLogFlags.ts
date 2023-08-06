@@ -5,5 +5,6 @@ export enum RoleLogFlags {
     RemoveAdmin,
     TagRemove,
     AnotherTagAdd,
+    BoostRemove,
     BannedTagAdd
 }
