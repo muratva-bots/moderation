@@ -38,7 +38,7 @@ const Command: Moderation.ICommand = {
             return;
         }
 
-        if (guildData.tags.length && guildData.secondTag) {
+        if (guildData.tags && guildData.tags.length && guildData.secondTag) {
             name = `${hasTag ? guildData.tags[0] : guildData.secondTag} ${name}`;
         }
 

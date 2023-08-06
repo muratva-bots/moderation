@@ -57,9 +57,6 @@ const Command: Moderation.ICommand = {
         const embed = new EmbedBuilder({
             color: client.utils.getRandomColor(),
             description: await createContent(client, message, userData, userRank, mappedDatas, page),
-            footer: {
-                text: `${page}/${totalData}`,
-            },
         });
 
         const question = await message.channel.send({
@@ -95,9 +92,6 @@ const Command: Moderation.ICommand = {
                                 page,
                             ),
                         )
-                        .setFooter({
-                            text: `${page}/${totalData}`,
-                        }),
                 ],
                 components: [client.utils.paginationButtons(page, totalData)],
             });

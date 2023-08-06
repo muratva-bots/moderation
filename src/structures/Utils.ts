@@ -41,7 +41,6 @@ export class Utils {
         this.limits = new Collection<string, Moderation.ILimit>();
     }
 
-
     paginationButtons(page: number, totalData: number) {
         return new ActionRowBuilder<ButtonBuilder>({
             components: [
