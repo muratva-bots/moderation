@@ -124,7 +124,7 @@ const Command: Moderation.ICommand = {
                                                 ? `Yetkili: ${user.username} (${user.id})`
                                                 : `Yetkili: ${d.admin}`
                                             : undefined,
-                                        `Tarih: ${new Date().toLocaleString('tr-TR', {
+                                        `Tarih: ${new Date(d.time).toLocaleString('tr-TR', {
                                             month: '2-digit',
                                             day: '2-digit',
                                             year: 'numeric',
