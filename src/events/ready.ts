@@ -4,7 +4,7 @@ import { Events } from 'discord.js';
 const Ready: Moderation.IEvent<Events.ClientReady> = {
     name: Events.ClientReady,
     execute: async (client) => {
-        const guild = client.guilds.cache.get('1130942265020383373');
+        const guild = client.guilds.cache.first();
         if (!guild) {
             console.log('Guild is undefined.');
             return;
