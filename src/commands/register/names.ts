@@ -11,6 +11,7 @@ import {
     ButtonStyle,
     ButtonInteraction,
     ComponentType,
+    codeBlock,
 } from 'discord.js';
 
 const Command: Moderation.ICommand = {
@@ -18,7 +19,7 @@ const Command: Moderation.ICommand = {
     description: 'Belirtilen kullanıcının geçmiş isimlerini görüntülersiniz.',
     examples: ['isimler @kullanıcı', 'isimler 123456789123456789'],
     checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
-        (guildData.registerAuth && guildData.registerAuth.some(r => message.member.roles.cache.has(r))), 
+        (guildData.registerAuth && guildData.registerAuth.some(r => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args }) => {
         const user =
             (await client.utils.getMember(message.guild, args[0])) ||
@@ -40,18 +41,33 @@ const Command: Moderation.ICommand = {
         const embed = new EmbedBuilder({
             color: client.utils.getRandomColor(),
             description: document.names
-                .slice(0, 10)
-                .map((n) =>
-                    [
-                        inlineCode(`•`),
-                        `${time(Math.floor(n.time / 1000), 'D')}:`,
-                        n.name ? n.name : undefined,
-                        n.role ? roleMention(n.role) : undefined,
-                        n.role ? bold(`(${n.type})`) : bold(n.type),
-                    ]
-                        .filter(Boolean)
-                        .join(' '),
-                )
+                .slice(0, 5)
+                .map((n) => {
+                    const user = client.users.cache.get(n.admin);
+                    return codeBlock(
+                        'fix',
+                        [
+                            n.role ? (message.guild.roles.cache.get(n.role)?.name || "@silinmiş") : undefined,
+                            `İşlem: ${n.type}`,
+                            `İsim: ${n.name}`,
+                            (n.admin || n.admin !== user.id)
+                                ? user
+                                    ? `Yetkili: ${user.username} (${user.id})`
+                                    : `Yetkili: ${n.admin}`
+                                : undefined,
+                            `Tarih: ${new Date(n.time).toLocaleString('tr-TR', {
+                                month: '2-digit',
+                                day: '2-digit',
+                                year: 'numeric',
+                                hour12: false,
+                                hour: '2-digit',
+                                minute: '2-digit',
+                            })}`,
+                        ]
+                            .filter(Boolean)
+                            .join('\n'),
+                    );
+                })
                 .join('\n'),
             footer: {
                 text: `${document.names.length} adet isim kayıdı bulunuyor.`,
@@ -60,10 +76,10 @@ const Command: Moderation.ICommand = {
 
         const question = await message.channel.send({
             embeds: [embed],
-            components: document.voiceLogs.length > 10 ? [client.utils.paginationButtons(page, totalData)] : [],
+            components: document.voiceLogs.length > 5 ? [client.utils.paginationButtons(page, totalData)] : [],
         });
 
-        if (10 >= document.voiceLogs.length) return;
+        if (5 > document.voiceLogs.length) return;
 
         const filter = (i: ButtonInteraction) => i.user.id === message.author.id && i.isButton();
         const collector = question.createMessageComponentCollector({
@@ -84,18 +100,33 @@ const Command: Moderation.ICommand = {
                 embeds: [
                     embed.setDescription(
                         document.names
-                            .slice(page === 1 ? 0 : page * 10 - 10, page * 10)
-                            .map((n) =>
-                                [
-                                    inlineCode(`•`),
-                                    `${time(Math.floor(n.time / 1000), 'D')}:`,
-                                    n.name ? n.name : undefined,
-                                    n.role ? roleMention(n.role) : undefined,
-                                    n.role ? bold(`(${n.type})`) : bold(n.type),
-                                ]
-                                    .filter(Boolean)
-                                    .join(' '),
-                            )
+                            .slice(page === 1 ? 0 : page * 5 - 5, page * 5)
+                            .map((n) => {
+                                const user = client.users.cache.get(n.admin);
+                                return codeBlock(
+                                    'fix',
+                                    [
+                                        n.role ? (message.guild.roles.cache.get(n.role)?.name || "@silinmiş") : undefined,
+                                        `İşlem: ${n.type}`,
+                                        `İsim: ${n.name}`,
+                                        (n.admin || n.admin !== user.id)
+                                            ? user
+                                                ? `Yetkili: ${user.username} (${user.id})`
+                                                : `Yetkili: ${n.admin}`
+                                            : undefined,
+                                        `Tarih: ${new Date(n.time).toLocaleString('tr-TR', {
+                                            month: '2-digit',
+                                            day: '2-digit',
+                                            year: 'numeric',
+                                            hour12: false,
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                        })}`,
+                                    ]
+                                        .filter(Boolean)
+                                        .join('\n'),
+                                );
+                            })
                             .join('\n'),
                     ),
                 ],
