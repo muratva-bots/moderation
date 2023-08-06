@@ -19,6 +19,7 @@ const types = {
     [RoleLogFlags.RemoveAdmin]: 'Çıkarma (Sağ Tık)',
     [RoleLogFlags.TagRemove]: 'Tagı Çıkardı',
     [RoleLogFlags.AnotherTagAdd]: 'Başka Sunucunun Tagını Aldı',
+    [RoleLogFlags.BoostRemove]: 'Boostu Bitti',
     [RoleLogFlags.BannedTagAdd]: 'Yasaklı Sunucu Tagı Aldı'
 };
 
