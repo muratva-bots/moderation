@@ -8,7 +8,6 @@ import {
     ComponentType,
     Interaction,
     MentionableSelectMenuBuilder,
-    MentionableSelectMenuInteraction,
     Message,
     ModalBuilder,
     RoleSelectMenuBuilder,

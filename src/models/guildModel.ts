@@ -127,7 +127,7 @@ export class ModerationClass {
     chatMuteAuth: string[]
     registerAuth: string[]
     botCommandAuth: string[]
-
+    bannedTags: string[];
 }
 
 @modelOptions({ options: { customName: 'Guilds', allowMixed: 0 } })

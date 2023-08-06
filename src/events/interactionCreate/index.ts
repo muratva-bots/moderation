@@ -29,7 +29,7 @@ const InteractionCreate: Moderation.IEvent<Events.InteractionCreate> = {
                 checkSuspect(client, interaction, guildData);
         }
         if (interaction.isButton() || interaction.isStringSelectMenu()) roleSelect(client, interaction, guildData);
-        if (interaction.isButton()) monthlyRolesAdd(client, interaction, guildData);
+        if (interaction.isButton()) monthlyRolesAdd(interaction);
         if (interaction.isButton()) memberPanel(client, interaction, guildData);
         if (interaction.isButton() && interaction.customId === 'solvingauth-call')
             solvingAuthCall(client, interaction, guildData);

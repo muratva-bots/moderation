@@ -58,8 +58,8 @@ export async function stringHandler(
                     new TextInputBuilder({
                         customId: 'value',
                         value: option.isMultiple
-                            ? ((guildData[option.value] || []) as string[]).join(', ') || undefined
-                            : guildData[option.value] || undefined,
+                            ? ((guildData[option.value] || []) as string[]).slice(0, 60).join(', ') || undefined
+                            : (guildData[option.value] || "").slice(0, 60) || undefined,
                         label: 'Yeni Ayar:',
                         max_length: 60,
                         required: true,

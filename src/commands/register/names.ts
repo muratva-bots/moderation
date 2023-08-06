@@ -19,7 +19,7 @@ const Command: Moderation.ICommand = {
     examples: ['isimler @kullanıcı', 'isimler 123456789123456789'],
     checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
         (guildData.registerAuth && guildData.registerAuth.some(r => message.member.roles.cache.has(r))), 
-    execute: async ({ client, message, args, guildData }) => {
+    execute: async ({ client, message, args }) => {
         const user =
             (await client.utils.getMember(message.guild, args[0])) ||
             (message.reference ? (await message.fetchReference()).member : undefined);
