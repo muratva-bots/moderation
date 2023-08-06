@@ -17,6 +17,8 @@ const types = {
     [RoleLogFlags.AddAdmin]: 'Ekleme (Sağ Tık)',
     [RoleLogFlags.Remove]: 'Çıkarma (Komut)',
     [RoleLogFlags.RemoveAdmin]: 'Çıkarma (Sağ Tık)',
+    [RoleLogFlags.TagRemove]: 'Tagı Çıkardı',
+    [RoleLogFlags.AnotherTagAdd]: 'Başka Sunucunun Tagını Aldı',
 };
 
 const Command: Moderation.ICommand = {
