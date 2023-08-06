@@ -3,31 +3,31 @@ import { LimitFlags, NeedFlags, PenalFlags } from '@/enums';
 import { ModerationClass, PenalModel } from '@/models';
 import { Client } from '@/structures';
 import {
-    EmbedBuilder,
-    PermissionFlagsBits,
-    bold,
-    inlineCode,
-    ActionRowBuilder,
-    StringSelectMenuBuilder,
-    StringSelectMenuInteraction,
-    ComponentType,
     APISelectMenuOption,
-    ModalSubmitInteraction,
-    TextInputBuilder,
-    TextInputStyle,
-    ModalBuilder,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ComponentType,
+    EmbedBuilder,
     GuildMember,
     Message,
+    ModalBuilder,
+    ModalSubmitInteraction,
+    PermissionFlagsBits,
+    StringSelectMenuBuilder,
+    StringSelectMenuInteraction,
+    TextInputBuilder,
+    TextInputStyle,
     User,
-    time,
-    ButtonBuilder,
-    ButtonStyle
+    bold,
+    inlineCode,
+    time
 } from 'discord.js';
 import ms from 'ms';
 import { quarantineUser } from './quarantine';
 
 const Command: Moderation.ICommand = {
-    usages: ['chatemute', 'chat-mute', 'mute', 'c-mute'],
+    usages: ['chatmute', 'chat-mute', 'mute', 'c-mute', 'cmute'],
     description: 'Sunucudaki metin kanallarında kurallara aykırı davranan kullanıcıları cezalandırmanızı sağlar.',
     chatUsable: true,
     examples: ['mute @kullanıcı <menüden sebep>', 'mute 123456789123456789 <menüden sebep>'],
@@ -356,7 +356,7 @@ async function muteUser(
         embeds: [
             new EmbedBuilder({
                 color: client.utils.getRandomColor(),
-                description: `${client.utils.getEmoji('voicemute')} ${user} (${inlineCode(
+                description: `📝 ${user} (${inlineCode(
                     user.id,
                 )}) adlı kullanıcı "${bold(reason)}" sebebiyle ${time(Math.floor(penal.finish / 1000), 'R')} ${
                     extra !== 0 ? `(${inlineCode(`+${ms(extra)}`)}) ` : ''

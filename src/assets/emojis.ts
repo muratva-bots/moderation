@@ -9,8 +9,13 @@ export const EMOJIS = [
         link: 'https://cdn.discordapp.com/attachments/595700117902852190/1133141571412439131/icons_unlock.png',
         default: '🔓',
     },
+      {
+        name: 'unmute',
+        link: 'https://cdn.discordapp.com/emojis/1136374717255798834.webp?size=96&quality=lossless',
+        default: '🔇',
+    },
     {
-        name: 'voice',
+        name: 'unvoice',
         link: 'https://cdn.discordapp.com/attachments/595700117902852190/1133141736521212065/voice.png',
         default: '🔊',
     },

@@ -84,7 +84,7 @@ const Command: Moderation.ICommand = {
                         `${message.member.voice.channel} adlı kanaldaki herkesin konuşması ${bold(
                             request
                                 ? `kapatıldı ${client.utils.getEmoji('voicemute')}`
-                                : `açıldı ${client.utils.getEmoji('voice')}`,
+                                : `açıldı ${client.utils.getEmoji('unvoice')}`,
                         )}.`,
                     ),
                 ],

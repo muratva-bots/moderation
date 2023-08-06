@@ -127,7 +127,7 @@ const Command: Moderation.ICommand = {
                     components: [],
                     embeds: [
                         embed.setDescription(
-                            `${client.utils.getEmoji('voice')} ${member} (${inlineCode(
+                            `${client.utils.getEmoji('unvoice')} ${member} (${inlineCode(
                                 member.id,
                             )}) adlı kullanıcının ${bold(text)} kaldırıldı.`,
                         ),
@@ -166,7 +166,7 @@ const Command: Moderation.ICommand = {
         message.channel.send({
             embeds: [
                 embed.setDescription(
-                    `${client.utils.getEmoji('voice')} ${member} kullanıcısının başarıyla cezası kaldırıldı.`,
+                    `${client.utils.getEmoji('unmute')} ${member} kullanıcısının başarıyla cezası kaldırıldı.`,
                 ),
             ],
         });
