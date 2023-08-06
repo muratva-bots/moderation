@@ -25,11 +25,18 @@ export const SETTINGS = {
             isVoice: false,
         },
         { name: 'İltifat', value: 'compliment', description: 'İltifat sistemini ayarlarsınız.', type: 'boolean' },
-
         {
             name: 'Tag/Taglar',
             value: 'tags',
             description: 'Sunucu tagını ayarlarsınız.',
+            type: 'string',
+            isMultiple: true,
+            isNumber: false,
+        },
+        {
+            name: 'Yasaklı Taglar',
+            value: 'bannedTags',
+            description: 'Sunucunun yasaklı taglarını ayarlarsınız.',
             type: 'string',
             isMultiple: true,
             isNumber: false,
