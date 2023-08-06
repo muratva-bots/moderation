@@ -2,6 +2,8 @@ import { ModerationClass } from '@/models';
 import { Client } from '@/structures';
 import { Collection, Attachment, ClientEvents, Message, User } from 'discord.js';
 
+export {};
+
 declare global {
     namespace Moderation {
         export type EventKeys = keyof ClientEvents;
