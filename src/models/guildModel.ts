@@ -128,6 +128,7 @@ export class ModerationClass {
     registerAuth: string[]
     botCommandAuth: string[]
     bannedTags: string[];
+    bannedTagRole: string;
 }
 
 @modelOptions({ options: { customName: 'Guilds', allowMixed: 0 } })
