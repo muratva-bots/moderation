@@ -19,6 +19,7 @@ const types = {
     [RoleLogFlags.RemoveAdmin]: 'Çıkarma (Sağ Tık)',
     [RoleLogFlags.TagRemove]: 'Tagı Çıkardı',
     [RoleLogFlags.AnotherTagAdd]: 'Başka Sunucunun Tagını Aldı',
+    [RoleLogFlags.BannedTagAdd]: 'Yasaklı Sunucu Tagı Aldı'
 };
 
 const Command: Moderation.ICommand = {
