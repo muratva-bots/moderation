@@ -14,11 +14,6 @@ export class Client extends Core {
         updated: new Collection<string, Moderation.ISnipe[]>(),
         deleted: new Collection<string, Moderation.ISnipe[]>(),
     };
-    guildSettings = {
-        name: '',
-        banner: '',
-        icon: '',
-    };
     utils = new Utils(this);
     config = config;
 
