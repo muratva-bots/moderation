@@ -4,3 +4,4 @@ export * from './SpecialCommandFlags';
 export * from './VoiceLogFlags';
 export * from './RoleLogFlags';
 export * from './NeedFlags';
+export * from './NameFlags';
