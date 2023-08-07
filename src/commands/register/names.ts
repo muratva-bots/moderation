@@ -1,4 +1,5 @@
 import { UserModel } from '@/models';
+import { NameFlags } from '@/enums';
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -9,6 +10,16 @@ import {
     PermissionFlagsBits,
     codeBlock
 } from 'discord.js';
+
+const titles = {
+    [NameFlags.Register]: "Kayıt Olma",
+    [NameFlags.ChangeGender]: "Yanlış Cinsiyet Kaydı",
+    [NameFlags.Unregister]: "Kayıtsıza Atılma",
+    [NameFlags.ChangeName]: "İsim Değiştirme (Yetkili)",
+    [NameFlags.BoosterChangeName]: "İsim Değiştirme (Boost)",
+    [NameFlags.BoostFinish]: "Boost Bitimi",
+    [NameFlags.AutoRegister]: "Oto Kayıt",
+};
 
 const Command: Moderation.ICommand = {
     usages: ['isimler'],
@@ -103,7 +114,7 @@ const Command: Moderation.ICommand = {
                                     'fix',
                                     [
                                         n.role ? (message.guild.roles.cache.get(n.role)?.name || "@silinmiş") : undefined,
-                                        `İşlem: ${n.type}`,
+                                        `İşlem: ${titles[n.type]}`,
                                         `İsim: ${n.name}`,
                                         (n.admin || n.admin !== user.id)
                                             ? user
