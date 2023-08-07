@@ -1,6 +1,7 @@
 import { EmbedBuilder, inlineCode, TextChannel, bold, PermissionFlagsBits } from 'discord.js';
 import { quarantineUser } from '../penal/quarantine';
 import { UserModel } from '@/models';
+import { NameFlags } from '@/enums';
 
 const Command: Moderation.ICommand = {
     usages: ['name', 'isim'],
@@ -76,7 +77,7 @@ const Command: Moderation.ICommand = {
         await member.setNickname(name);
         await UserModel.updateOne(
             { id: member.id, guild: message.guildId },
-            { $push: { names: { admin: message.author.id, type: 'İsim Değiştirme', time: Date.now(), name } } },
+            { $push: { names: { admin: message.author.id, type: NameFlags.ChangeName, time: Date.now(), name } } },
             { upsert: true },
         );
 
