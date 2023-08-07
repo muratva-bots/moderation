@@ -25,6 +25,7 @@ export const SETTINGS = {
             isVoice: false,
         },
         { name: 'İltifat', value: 'compliment', description: 'İltifat sistemini ayarlarsınız.', type: 'boolean' },
+        { name: 'Oto Kayıt', value: 'autoRegister', description: 'Önceden kayıtlıysa kayıt edilir.', type: 'boolean' },
         {
             name: 'Tag/Taglar',
             value: 'tags',
