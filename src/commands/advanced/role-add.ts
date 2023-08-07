@@ -93,15 +93,17 @@ const Command: Moderation.ICommand = {
             for (const role of roles) {
                 if (
                     !(guildData.ownerRoles || []).some((r) => message.member.roles.cache.has(r)) &&
-                    role.position > minStaffRole.position &&
-                    [
-                        guildData.adsRole,
-                        guildData.chatMuteRole,
-                        guildData.voiceMuteRole,
-                        guildData.quarantineRole,
-                        guildData.underworldRole,
-                        ...specialCommands.map(c => c.punishRole)
-                    ].includes(role.id)
+                    (
+                        role.position > minStaffRole.position ||
+                        [
+                            guildData.adsRole,
+                            guildData.chatMuteRole,
+                            guildData.voiceMuteRole,
+                            guildData.quarantineRole,
+                            guildData.underworldRole,
+                            ...specialCommands.map(c => c.punishRole)
+                        ].includes(role.id)
+                    )
                 )
                     return;
 
