@@ -2,7 +2,17 @@ import { ModerationClass, UserModel, PenalModel } from '@/models';
 import { Client } from '@/structures';
 import { ButtonInteraction, time, inlineCode, roleMention, bold, EmbedBuilder } from 'discord.js';
 import { PENAL_TITLES } from '@/assets';
-import { PenalFlags, SpecialCommandFlags } from '@/enums';
+import { PenalFlags, SpecialCommandFlags, NameFlags } from '@/enums';
+
+const titles = {
+    [NameFlags.Register]: "Kayıt Olma",
+    [NameFlags.ChangeGender]: "Yanlış Cinsiyet Kaydı",
+    [NameFlags.Unregister]: "Kayıtsıza Atılma",
+    [NameFlags.ChangeName]: "İsim Değiştirme (Yetkili)",
+    [NameFlags.BoosterChangeName]: "İsim Değiştirme (Boost)",
+    [NameFlags.BoostFinish]: "Boost Bitimi",
+    [NameFlags.AutoRegister]: "Oto Kayıt",
+};
 
 async function memberPanel(client: Client, interaction: ButtonInteraction, guildData: ModerationClass) {
     const interactionMember = interaction.guild.members.cache.get(interaction.user.id);
@@ -57,13 +67,13 @@ async function memberPanel(client: Client, interaction: ButtonInteraction, guild
                 embed.setDescription(
                     [
                         `Toplam da ${document.names.length} isim kayıtınız bulundu:`,
-                        `${document.names.map((n) =>
+                        `${document.names.slice(document.names.length > 10 ? documents.names - 10 : 0, documents.names.length > 10 ? document.names.length : 10).map((n) =>
                             [
                                 inlineCode(`•`),
                                 `${time(Math.floor(n.time / 1000), 'D')}:`,
                                 n.name ? n.name : undefined,
                                 n.role ? roleMention(n.role) : undefined,
-                                n.role ? bold(`(${n.type})`) : bold(n.type),
+                                n.role ? bold(`(${titles[n.type]})`) : bold(titles[n.type]),
                             ]
                                 .filter(Boolean)
                                 .join(' '),
