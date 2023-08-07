@@ -18,6 +18,16 @@ import {
 import { quarantineUser } from '../penal/quarantine';
 import { NameFlags } from '@/enums';
 
+const titles = {
+    [NameFlags.Register]: "Kayıt Olma",
+    [NameFlags.ChangeGender]: "Yanlış Cinsiyet Kaydı",
+    [NameFlags.Unregister]: "Kayıtsıza Atılma",
+    [NameFlags.ChangeName]: "İsim Değiştirme (Yetkili)",
+    [NameFlags.BoosterChangeName]: "İsim Değiştirme (Boost)",
+    [NameFlags.BoostFinish]: "Boost Bitimi",
+    [NameFlags.AutoRegister]: "Oto Kayıt",
+};
+
 const Command: Moderation.ICommand = {
     usages: ['register', 'woman', 'kız', 'kadın', 'bayan', 'k'],
     description: 'Belirttiğiniz üyeyi kadın olarak kayıt edersiniz.',
@@ -220,7 +230,7 @@ const Command: Moderation.ICommand = {
                                       `${time(Math.floor(n.time / 1000), 'D')}:`,
                                       n.name ? n.name : undefined,
                                       n.role ? roleMention(n.role) : undefined,
-                                      n.role ? bold(`(${n.type})`) : bold(n.type),
+                                      n.role ? bold(`(${titles[n.type]})`) : bold(titles[n.type]),
                                   ]
                                       .filter(Boolean)
                                       .join(' '),
