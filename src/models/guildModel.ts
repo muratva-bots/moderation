@@ -129,6 +129,7 @@ export class ModerationClass {
     botCommandAuth: string[]
     bannedTags: string[];
     bannedTagRole: string;
+    autoRegister: boolean;
 }
 
 @modelOptions({ options: { customName: 'Guilds', allowMixed: 0 } })
