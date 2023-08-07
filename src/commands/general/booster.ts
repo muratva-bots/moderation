@@ -1,5 +1,5 @@
 import { DEFAULTS } from '@/assets';
-import { LimitFlags } from '@/enums';
+import { LimitFlags, NameFlags } from '@/enums';
 import { UserModel } from '@/models';
 import { bold } from 'discord.js';
 
@@ -62,7 +62,7 @@ const Command: Moderation.ICommand = {
 
         await UserModel.updateOne(
             { id: message.author.id, guild: message.guildId },
-            { $push: { names: { admin: message.author.id, type: 'İsim Değiştirme (Booster)', time: Date.now(), name } } },
+            { $push: { names: { admin: message.author.id, type: NameFlags.Booster, time: Date.now(), name } } },
             { upsert: true },
         );
     },
