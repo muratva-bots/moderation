@@ -1,5 +1,5 @@
-import { UserModel } from '@/models';
 import { NameFlags } from '@/enums';
+import { UserModel } from '@/models';
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -59,7 +59,7 @@ const Command: Moderation.ICommand = {
                         [
                             n.role ? (message.guild.roles.cache.get(n.role)?.name || "@silinmiş") : undefined,
                             `İşlem: ${n.type}`,
-                            `İsim: ${n.type == "Kayıtsıza Atılma" ? "İsim | Yaş" : n.name }`,
+                            `İsim: ${n.name || "Bulunamadı"}`,
                             (n.admin || n.admin !== user.id)
                                 ? user
                                     ? `Yetkili: ${user.username} (${user.id})`

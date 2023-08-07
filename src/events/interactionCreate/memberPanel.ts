@@ -1,8 +1,8 @@
-import { ModerationClass, UserModel, PenalModel } from '@/models';
-import { Client } from '@/structures';
-import { ButtonInteraction, time, inlineCode, roleMention, bold, EmbedBuilder } from 'discord.js';
 import { PENAL_TITLES } from '@/assets';
-import { PenalFlags, SpecialCommandFlags, NameFlags } from '@/enums';
+import { NameFlags, PenalFlags, SpecialCommandFlags } from '@/enums';
+import { ModerationClass, PenalModel, UserModel } from '@/models';
+import { Client } from '@/structures';
+import { ButtonInteraction, EmbedBuilder, bold, inlineCode, roleMention, time } from 'discord.js';
 
 const titles = {
     [NameFlags.Register]: "Kayıt Olma",
@@ -70,7 +70,7 @@ async function memberPanel(client: Client, interaction: ButtonInteraction, guild
                 embed.setDescription(
                     [
                         `Toplam da ${document.names.length} isim kayıtınız bulundu:`,
-                        `${document.names.slice(document.names.length > 10 ? documents.names.length - 10 : 0, documents.names.length > 10 ? document.names.length : 10).map((n) =>
+                        `${document.names.slice(document.names.length > 10 ? document.names.length - 10 : 0, document.names.length > 10 ? document.names.length : 10).map((n) =>
                             [
                                 inlineCode(`•`),
                                 `${time(Math.floor(n.time / 1000), 'D')}:`,
