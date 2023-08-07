@@ -67,7 +67,7 @@ async function memberPanel(client: Client, interaction: ButtonInteraction, guild
                 embed.setDescription(
                     [
                         `Toplam da ${document.names.length} isim kayıtınız bulundu:`,
-                        `${document.names.slice(document.names.length > 10 ? documents.names - 10 : 0, documents.names.length > 10 ? document.names.length : 10).map((n) =>
+                        `${document.names.slice(document.names.length > 10 ? documents.names.length - 10 : 0, documents.names.length > 10 ? document.names.length : 10).map((n) =>
                             [
                                 inlineCode(`•`),
                                 `${time(Math.floor(n.time / 1000), 'D')}:`,
