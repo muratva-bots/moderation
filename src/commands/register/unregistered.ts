@@ -1,6 +1,6 @@
 import { UserModel } from '@/models';
 import { DEFAULTS } from '@/assets';
-import { LimitFlags } from '@/enums';
+import { LimitFlags, NameFlags } from '@/enums';
 import { EmbedBuilder, PermissionFlagsBits, TextChannel, inlineCode, roleMention } from 'discord.js';
 
 const Command: Moderation.ICommand = {
@@ -55,7 +55,7 @@ const Command: Moderation.ICommand = {
 
         const document = await UserModel.findOne({ id: member.id, guild: message.guildId });
         if (document && document.names.length) {
-            document.names = [{ admin: message.author.id, type: 'Kayıtsıza Atılma', time: Date.now() }];
+            document.names = [{ admin: message.author.id, type: NameFlags.Unregister, time: Date.now() }];
             document.save();
         }
 
