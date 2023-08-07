@@ -10,8 +10,11 @@ const titles = {
     [NameFlags.Unregister]: "Kayıtsıza Atılma",
     [NameFlags.ChangeName]: "İsim Değiştirme (Yetkili)",
     [NameFlags.BoosterChangeName]: "İsim Değiştirme (Boost)",
-    [NameFlags.BoostFinish]: "Boost Bitimi",
+    [NameFlags.BoostFinish]: "Nitrosu Bitti",
+    [NameFlags.ManuelBoostFinish]: "Boostu Çekti",
     [NameFlags.AutoRegister]: "Oto Kayıt",
+    [NameFlags.Kick]: "Sunucudan Atıldı",
+    [NameFlags.Leave]: "Sunucudan Çıktı"
 };
 
 async function memberPanel(client: Client, interaction: ButtonInteraction, guildData: ModerationClass) {
