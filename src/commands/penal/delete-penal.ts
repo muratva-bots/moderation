@@ -34,6 +34,7 @@ const Command: Moderation.ICommand = {
         const penals = await PenalModel.find({
             user: user.id,
             guild: message.guildId,
+            activity: false,
             visible: true,
         });
         if (!penals.length) {

@@ -24,7 +24,7 @@ const Command: Moderation.ICommand = {
         };
         const ban = message.guild.bans.cache.get(user.id);
         if (!ban) {
-            const penal = await PenalModel.findOne({ user: user.id, type: PenalFlags.Ban });
+            const penal = await PenalModel.findOne({ user: user.id, type: PenalFlags.Ban, visible: true });
             if (!penal) {
                 client.utils.sendTimedMessage(message, 'Kullanıcı yasaklı değil.');
                 return;

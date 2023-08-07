@@ -39,7 +39,8 @@ const ActivePenals: Moderation.ICommand = {
         const activePenals = await PenalModel.find({
             guild: message.guildId,
             user: user.id,
-            activity: true
+            activity: true,
+            visible: true
         });
         if (!activePenals.length) {
             client.utils.sendTimedMessage(message, 'Kullanıcının verisi bulunmuyor.');

@@ -106,6 +106,7 @@ async function memberPanel(client: Client, interaction: ButtonInteraction, guild
             guild: interaction.guildId,
             user: interactionMember.id,
             activity: true,
+            visible: true
         });
         if (!activePenals.length) {
             interaction.reply({ content: 'Hiç ceza veriniz bulunmuyor', ephemeral: true });
