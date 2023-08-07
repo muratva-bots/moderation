@@ -2,8 +2,12 @@ export enum NameFlags {
     Register,
     ChangeGender,
     Unregister,
+    UnregisterBoost,
     ChangeName,
     BoosterChangeName,
     BoostFinish,
-    AutoRegister
+    ManuelBoostFinish,
+    AutoRegister,
+    Kick,
+    Leave
 }
