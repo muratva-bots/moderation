@@ -17,6 +17,7 @@ const types = {
     [VoiceLogFlags.Join]: 'Kanala Giriş Yapma',
     [VoiceLogFlags.Leave]: 'Kanaldan Çıkış Yapma',
     [VoiceLogFlags.Transport]: 'Sağ Tık Taşıma',
+    [VoiceLogFlags.Kick]: 'Sesten Atılma'
 };
 
 const Command: Moderation.ICommand = {
