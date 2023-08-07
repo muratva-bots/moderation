@@ -41,6 +41,7 @@ const Command: Moderation.ICommand = {
         const hasPenal = await PenalModel.exists({
             user: member.id,
             guild: member.guild.id,
+            activity: true,
             $or: [{ type: PenalFlags.Ads }, { type: PenalFlags.Ban }, { type: PenalFlags.ForceBan }, { type: PenalFlags.Quarantine }]
         });
         if (hasPenal) {
