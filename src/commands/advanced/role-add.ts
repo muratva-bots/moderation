@@ -2,17 +2,17 @@ import { RoleLogFlags, SpecialCommandFlags } from '@/enums';
 import { UserModel } from '@/models';
 import {
     ActionRowBuilder,
-    bold,
-    EmbedBuilder,
+    ButtonBuilder,
+    ButtonStyle,
     ComponentType,
+    EmbedBuilder,
+    PermissionFlagsBits,
     RoleSelectMenuBuilder,
     RoleSelectMenuInteraction,
-    inlineCode,
-    time,
-    PermissionFlagsBits,
     TextChannel,
-    ButtonBuilder,
-    ButtonStyle
+    bold,
+    inlineCode,
+    time
 } from 'discord.js';
 
 const Command: Moderation.ICommand = {
@@ -70,7 +70,7 @@ const Command: Moderation.ICommand = {
                         )}) adlı kullanıcıya yapacağınız işlemi seçin.`,
                         `${bold(
                             'NOT:',
-                        )} Eğer belirttiğiniz rol kullanıcıda varsa rolüçeker. ${minStaffRole} rolünün altındaki rolleri verebilirsiniz veya alabilirsiniz.`,
+                        )} Eğer belirttiğiniz rol kullanıcıda varsa rolü çeker. ${minStaffRole} rolünün altındaki rolleri verebilirsiniz veya alabilirsiniz.`,
                     ].join('\n'),
                 }),
             ],
@@ -194,10 +194,6 @@ const Command: Moderation.ICommand = {
                         ],
                     });
                 }
-
-                channel.send({
-                    embeds: embeds,
-                });
             }
 
             let content = `${member} adlı `;

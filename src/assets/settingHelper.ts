@@ -344,13 +344,6 @@ export const SETTINGS = {
             isMultiple: true,
         },
         {
-            name: 'Bot Komut Yetkilisi',
-            value: 'botCommandAuth',
-            description: 'Bot komut yetkilisini ayarlarsınız.',
-            type: 'role',
-            isMultiple: true,
-        },
-        {
             name: 'Reklamcı Rolü',
             value: 'adsRole',
             description: 'Reklamcı rolünü ayarlarsınız.',

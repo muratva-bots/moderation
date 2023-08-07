@@ -126,7 +126,6 @@ export class ModerationClass {
     voiceMuteAuth: string[]
     chatMuteAuth: string[]
     registerAuth: string[]
-    botCommandAuth: string[]
     bannedTags: string[];
     bannedTagRole: string;
     autoRegister: boolean;

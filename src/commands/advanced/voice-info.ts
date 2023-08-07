@@ -8,9 +8,7 @@ import {
     EmbedBuilder,
     PermissionFlagsBits,
     VoiceBasedChannel,
-    bold,
-    codeBlock,
-    inlineCode,
+    codeBlock
 } from 'discord.js';
 
 const Command: Moderation.ICommand = {
@@ -19,7 +17,7 @@ const Command: Moderation.ICommand = {
     examples: ['sesli'],
     checkPermission: ({ message, guildData }) =>
         message.member.permissions.has(PermissionFlagsBits.ViewAuditLog) ||
-        (guildData.botCommandAuth && guildData.botCommandAuth.some(r => message.member.roles.cache.has(r))),
+        (guildData.minStaffRole && message.member.roles.cache.has(guildData.minStaffRole)),
     execute: async ({ client, message, guildData }) => {
         const embed = new EmbedBuilder({
             color: client.utils.getRandomColor(),

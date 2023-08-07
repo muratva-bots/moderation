@@ -23,11 +23,11 @@ const Command: Moderation.ICommand = {
         if (member) {
             if (client.utils.checkUser(message, member)) return;
 
-            const ban = await message.guild.bans.fetch({ user: user.id });
-            if (ban) {
-                client.utils.sendTimedMessage(message, 'Belirttiğin kişi zaten cezalı?');
-                return;
-            }
+             const ban = message.guild.bans.cache.get(user.id);
+                if (ban) {
+                    client.utils.sendTimedMessage(message, 'Belirttiğin kişi zaten cezalı?');
+                    return;
+                }
         }
 
         const reason = args.slice(reference ? 0 : 1).join(' ') || 'Sebep belirtilmemiş';

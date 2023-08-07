@@ -1,7 +1,7 @@
-import { bold } from 'discord.js';
 import { DEFAULTS } from '@/assets';
 import { LimitFlags } from '@/enums';
 import { UserModel } from '@/models';
+import { bold } from 'discord.js';
 
 const inviteRegex =
     /\b(?:https?:\/\/)?(?:www\.)?(?:discord\.(?:gg|io|me|li)|discordapp\.com\/invite)\/([a-zA-Z0-9\-]{2,32})\b/;
@@ -12,7 +12,7 @@ const Command: Moderation.ICommand = {
     description: 'Boost basan üyeler nicklerini değiştirir.',
     examples: ['booster <yeni nick>'],
     checkPermission: ({ message }) => !!message.member.premiumSinceTimestamp,
-    execute: ({ client, message, args, guildData }) => {
+    execute: async ({ client, message, args, guildData }) => {
         const name = args.join(' ');
         if (!name.length) return client.utils.sendTimedMessage(message, 'Geçerli bir isim belirt!');
 

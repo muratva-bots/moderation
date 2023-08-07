@@ -8,8 +8,7 @@ import {
     ComponentType,
     EmbedBuilder,
     PermissionFlagsBits,
-    VoiceChannel,
-    codeBlock,
+    codeBlock
 } from 'discord.js';
 
 const types = {
@@ -29,7 +28,7 @@ const Command: Moderation.ICommand = {
     examples: ['rollog @kullanıcı', 'rollog 123456789123456789'],
     checkPermission: ({ message, guildData }) =>
         message.member.permissions.has(PermissionFlagsBits.ViewAuditLog) ||
-        (guildData.botCommandAuth && guildData.botCommandAuth.some(r => message.member.roles.cache.has(r))),
+        (guildData.minStaffRole && message.member.roles.cache.has(guildData.minStaffRole)),
         execute: async ({ client, message, args }) => {
         const user =
             (await client.utils.getUser(args[0])) ||

@@ -1,25 +1,25 @@
+import { PENAL_TITLES } from '@/assets';
+import { SpecialCommandFlags } from '@/enums';
 import { ModerationClass, PenalClass, PenalModel } from '@/models';
+import { Client } from '@/structures';
 import {
     ActionRowBuilder,
-    bold,
     ButtonBuilder,
     ButtonInteraction,
     ButtonStyle,
-    codeBlock,
     ComponentType,
     EmbedBuilder,
-    inlineCode,
     Message,
     ModalBuilder,
+    PermissionFlagsBits,
     StringSelectMenuBuilder,
     TextInputBuilder,
     TextInputStyle,
-    userMention,
-    PermissionFlagsBits
+    bold,
+    codeBlock,
+    inlineCode,
+    userMention
 } from 'discord.js';
-import { PENAL_TITLES } from '@/assets';
-import { SpecialCommandFlags } from '@/enums';
-import { Client } from '@/structures';
 
 const ActivePenals: Moderation.ICommand = {
     usages: ['aktifceza', 'aktifcezalar', 'mb', 'cb', 'db'],
@@ -27,7 +27,7 @@ const ActivePenals: Moderation.ICommand = {
     examples: ['aktif @kullanıcı', 'aktif 123456789123456789'],
     checkPermission: ({ message, guildData }) =>
         message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
-        (guildData.botCommandAuth && guildData.botCommandAuth.some(r => message.member.roles.cache.has(r))),
+        (guildData.minStaffRole && message.member.roles.cache.has(guildData.minStaffRole)),
     execute: async ({ client, message, args, guildData }) => {
         const user = args[0]
             ? await client.utils.getUser(args[0])

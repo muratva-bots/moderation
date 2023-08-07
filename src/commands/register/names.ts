@@ -1,17 +1,13 @@
 import { UserModel } from '@/models';
 import {
-    EmbedBuilder,
-    inlineCode,
-    bold,
-    PermissionFlagsBits,
-    roleMention,
-    time,
     ActionRowBuilder,
     ButtonBuilder,
-    ButtonStyle,
     ButtonInteraction,
+    ButtonStyle,
     ComponentType,
-    codeBlock,
+    EmbedBuilder,
+    PermissionFlagsBits,
+    codeBlock
 } from 'discord.js';
 
 const Command: Moderation.ICommand = {
@@ -49,7 +45,7 @@ const Command: Moderation.ICommand = {
                         [
                             n.role ? (message.guild.roles.cache.get(n.role)?.name || "@silinmiş") : undefined,
                             `İşlem: ${n.type}`,
-                            `İsim: ${n.name}`,
+                            `İsim: ${n.type == "Kayıtsıza Atılma" ? "İsim | Yaş" : n.name }`,
                             (n.admin || n.admin !== user.id)
                                 ? user
                                     ? `Yetkili: ${user.username} (${user.id})`

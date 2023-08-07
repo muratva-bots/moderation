@@ -1,20 +1,19 @@
+import { PENAL_TITLES } from '@/assets';
 import { PenalFlags, SpecialCommandFlags } from '@/enums';
 import { PenalModel } from '@/models';
 import {
+    APIEmbedField,
     ActionRowBuilder,
-    time,
-    bold,
     ButtonBuilder,
     ButtonStyle,
     EmbedBuilder,
-    inlineCode,
     Interaction,
-    StringSelectMenuBuilder,
     PermissionFlagsBits,
-    userMention,
-    APIEmbedField,
+    StringSelectMenuBuilder,
+    inlineCode,
+    time,
+    userMention
 } from 'discord.js';
-import { PENAL_TITLES } from '@/assets';
 
 const Command: Moderation.ICommand = {
     usages: ['penals', 'cezalar', 'sicil'],
@@ -22,7 +21,7 @@ const Command: Moderation.ICommand = {
     examples: ['sicil @kullanıcı', 'sicil 123456789123456789'],
     checkPermission: ({ message, guildData }) =>
         message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
-        (guildData.botCommandAuth && guildData.botCommandAuth.some(r => message.member.roles.cache.has(r))),
+        (guildData.minStaffRole && message.member.roles.cache.has(guildData.minStaffRole)),
     execute: async ({ client, message, args, guildData }) => {
         const user =
             (await client.utils.getUser(args[0])) ||

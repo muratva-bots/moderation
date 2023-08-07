@@ -1,4 +1,4 @@
-import { codeBlock } from "discord.js";
+import { codeBlock, Team } from "discord.js";
 
 const Command: Moderation.ICommand = {
 	usages: ["eval", "sıla"],
