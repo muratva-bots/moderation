@@ -1,5 +1,5 @@
-import { RoleLogFlags, SpecialCommandFlags } from '@/enums';
-import { UserModel } from '@/models';
+import { PenalFlags, RoleLogFlags, SpecialCommandFlags } from '@/enums';
+import { PenalModel, UserModel } from '@/models';
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -34,6 +34,19 @@ const Command: Moderation.ICommand = {
             client.utils.sendTimedMessage(
                 message,
                 `Belirttiğin üyenin ${inlineCode('ROL_YÖNET')} izni olduğu için ona işlem yapamazsın.`,
+            );
+            return;
+        }
+
+        const hasPenal = await PenalModel.exists({
+            user: member.id,
+            guild: member.guild.id,
+            $or: [{ type: PenalFlags.Ads }, { type: PenalFlags.Ban }, { type: PenalFlags.ForceBan }, { type: PenalFlags.Quarantine }]
+        });
+        if (hasPenal) {
+            client.utils.sendTimedMessage(
+                message,
+                "Kullanıcının cezası bulunuyor işlem yapamazsın."
             );
             return;
         }
@@ -90,20 +103,24 @@ const Command: Moderation.ICommand = {
             const added: string[] = [];
             const removed: string[] = [];
             const now = Date.now();
+            let hasPenalRole = false;
+
             for (const role of roles) {
+                if ([
+                    guildData.adsRole,
+                    guildData.chatMuteRole,
+                    guildData.voiceMuteRole,
+                    guildData.quarantineRole,
+                    guildData.underworldRole,
+                    ...specialCommands.map(c => c.punishRole)
+                ].includes(role.id)) {
+                    hasPenalRole = true;
+                    return;
+                }
+
                 if (
                     !(guildData.ownerRoles || []).some((r) => message.member.roles.cache.has(r)) &&
-                    (
-                        role.position > minStaffRole.position ||
-                        [
-                            guildData.adsRole,
-                            guildData.chatMuteRole,
-                            guildData.voiceMuteRole,
-                            guildData.quarantineRole,
-                            guildData.underworldRole,
-                            ...specialCommands.map(c => c.punishRole)
-                        ].includes(role.id)
-                    )
+                    role.position > minStaffRole.position
                 )
                     return;
 
@@ -149,7 +166,6 @@ const Command: Moderation.ICommand = {
                 (c) => c.isTextBased() && c.name === 'role-log',
             )) as TextChannel;
             if (channel) {
-                const embeds = [];
                 if (added.length) {
                     channel.send({
                         embeds: [
@@ -201,27 +217,23 @@ const Command: Moderation.ICommand = {
             let content = `${member} adlı `;
             if (added.length && removed.length) {
                 content += [
-                    `kullanıcıya ${added.map((r) => bold(r)).join(', ')} ${
-                        added.length > 1 ? 'rolleri' : 'rolü'
+                    `kullanıcıya ${added.map((r) => bold(r)).join(', ')} ${added.length > 1 ? 'rolleri' : 'rolü'
                     } eklendi`,
-                    `ve ${removed.map((r) => bold(r)).join(', ')} ${
-                        removed.length > 1 ? 'rolleri' : 'rolü'
+                    `ve ${removed.map((r) => bold(r)).join(', ')} ${removed.length > 1 ? 'rolleri' : 'rolü'
                     } çıkarıldı.`,
                 ].join(' ');
             } else if (added.length) {
-                content += `kullanıcıya ${added.map((r) => bold(r)).join(', ')} ${
-                    added.length > 1 ? 'rolleri' : 'rolü'
-                } eklendi.`;
+                content += `kullanıcıya ${added.map((r) => bold(r)).join(', ')} ${added.length > 1 ? 'rolleri' : 'rolü'
+                    } eklendi.`;
             } else if (removed.length) {
-                content += `kullanıcıdan ${removed.map((r) => bold(r)).join(', ')} ${
-                    removed.length > 1 ? 'adlı roller' : 'rolü'
-                } çıkarıldı.`;
+                content += `kullanıcıdan ${removed.map((r) => bold(r)).join(', ')} ${removed.length > 1 ? 'adlı roller' : 'rolü'
+                    } çıkarıldı.`;
             } else if (!added.length && !removed.length) {
                 content = 'Geçersiz rol girmişsin.';
             }
 
             question.edit({
-                embeds: [embed.setColor('Random').setDescription(content).setFields([]).setTitle(null)],
+                embeds: [embed.setColor('Random').setDescription(`${content}${hasPenal ? `\n${bold("NOT:")} Ceza rollerini vermek için ceza komutlarını kullanabilirsin.` : ""}`).setFields([]).setTitle(null)],
                 components: [],
             });
         } else {
