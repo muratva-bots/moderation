@@ -16,6 +16,7 @@ import {
     ComponentType,
 } from 'discord.js';
 import { quarantineUser } from '../penal/quarantine';
+import { NameFlags } from '@/enums';
 
 const Command: Moderation.ICommand = {
     usages: ['register', 'woman', 'kız', 'kadın', 'bayan', 'k'],
@@ -65,7 +66,7 @@ const Command: Moderation.ICommand = {
                 document.names.push({
                     admin: message.author.id,
                     time: Date.now(),
-                    type: 'Yanlış Cinsiyet Kaydı',
+                    type: NameFlags.ChangeGender,
                     name: lastName ? lastName.name : member.displayName,
                     role: guildData.womanRoles[0],
                 });
@@ -312,7 +313,7 @@ async function register(member: GuildMember, message: Message, guildData: Modera
             $push: {
                 names: {
                     admin: message.author.id,
-                    type: 'Kayıt Olma',
+                    type: NameFlags.Register,
                     time: Date.now(),
                     role:
                         guildData.womanRoles && guildData.womanRoles.length
