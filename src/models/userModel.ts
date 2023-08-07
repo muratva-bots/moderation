@@ -1,4 +1,4 @@
-import { RoleLogFlags, VoiceLogFlags } from '@/enums';
+import { RoleLogFlags, VoiceLogFlags, NameFlags } from '@/enums';
 import { prop, getModelForClass, modelOptions } from '@typegoose/typegoose';
 
 export interface IWarn {
@@ -8,7 +8,7 @@ export interface IWarn {
 
 export interface IName {
     admin: string;
-    type: string;
+    type: NameFlags;
     time: number;
     role?: string;
     name?: string;
