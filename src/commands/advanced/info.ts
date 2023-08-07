@@ -7,7 +7,7 @@ const Command: Moderation.ICommand = {
     checkPermission: ({ message, guildData }) =>
         message.member.permissions.has(PermissionFlagsBits.ViewAuditLog) ||
         (guildData.minStaffRole && message.member.roles.cache.has(guildData.minStaffRole)),
-            execute: async ({ client, message, guildData }) => {
+    execute: async ({ client, message, guildData }) => {
         const minStaffRole = await message.guild.roles.cache.get(guildData.minStaffRole);
         if (!minStaffRole) {
             client.utils.sendTimedMessage(message, 'En alt yetkili rolü ayarlanmamış.');

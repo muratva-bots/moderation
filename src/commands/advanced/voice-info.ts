@@ -8,7 +8,7 @@ import {
     EmbedBuilder,
     PermissionFlagsBits,
     VoiceBasedChannel,
-    codeBlock
+    codeBlock,
 } from 'discord.js';
 
 const Command: Moderation.ICommand = {

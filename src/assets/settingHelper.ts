@@ -224,7 +224,7 @@ export const SETTINGS = {
             value: 'registerAuth',
             description: 'Kayıt yetkilisini ayarlarsınız.',
             type: 'role',
-            isMultiple: true
+            isMultiple: true,
         },
         {
             name: 'Erkek Rolleri',
@@ -450,6 +450,5 @@ export const SETTINGS = {
             description: 'Sesli susturma menüsü için özel sebepler ayarlarsınız.',
             type: 'reason',
         },
-
     ],
 };

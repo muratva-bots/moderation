@@ -158,16 +158,19 @@ function generateSettingsDescription(
             .map((s) => {
                 if (s.type === 'string' && !s.isMultiple)
                     return `→ ${s.name}: ${guildData[s.value] || 'Ayarlanmamış!'}`;
-                if ((s.type === 'string' && s.isMultiple))
+                if (s.type === 'string' && s.isMultiple)
                     return `→ ${s.name}: ${
                         guildData[s.value] && guildData[s.value].length
                             ? guildData[s.value].join(', ')
                             : 'Ayarlanmamış!'
                     }`;
-                if (s.type === "warn-roles" || s.type === "monthly-roles")
+                if (s.type === 'warn-roles' || s.type === 'monthly-roles')
                     return `→ ${s.name}: ${
                         guildData[s.value] && guildData[s.value].length
-                            ? guildData[s.value].filter(d => message.guild.roles.cache.has(d.role)).map(d => message.guild.roles.cache.get(d.role).name).join(', ')
+                            ? guildData[s.value]
+                                  .filter((d) => message.guild.roles.cache.has(d.role))
+                                  .map((d) => message.guild.roles.cache.get(d.role).name)
+                                  .join(', ')
                             : 'Ayarlanmamış!'
                     }`;
                 if (s.type === 'boolean') return `→ ${s.name}: ${guildData[s.value] ? 'Açık!' : 'Kapalı!'}`;

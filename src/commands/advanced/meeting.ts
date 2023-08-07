@@ -6,8 +6,8 @@ const Command: Moderation.ICommand = {
     examples: ['meeting'],
     checkPermission: ({ message, guildData }) =>
         message.member.permissions.has(PermissionFlagsBits.Administrator) ||
-        (guildData.ownerRoles && guildData.ownerRoles.some(r => message.member.roles.cache.has(r))),
-            execute: ({ client, message, guildData }) => {
+        (guildData.ownerRoles && guildData.ownerRoles.some((r) => message.member.roles.cache.has(r))),
+    execute: ({ client, message, guildData }) => {
         if (!message.guild.roles.cache.has(guildData.meetingRole)) {
             client.utils.sendTimedMessage(message, 'Rol ayarlanmamış');
             return;

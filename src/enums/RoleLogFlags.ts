@@ -6,5 +6,5 @@ export enum RoleLogFlags {
     TagRemove,
     AnotherTagAdd,
     BoostRemove,
-    BannedTagAdd
+    BannedTagAdd,
 }

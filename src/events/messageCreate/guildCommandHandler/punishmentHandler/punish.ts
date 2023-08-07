@@ -16,7 +16,7 @@ import {
     inlineCode,
     time,
     ButtonBuilder,
-    ButtonStyle
+    ButtonStyle,
 } from 'discord.js';
 import { ISpecialCommand, PenalModel } from '@/models';
 import { Client } from '@/structures';
@@ -193,10 +193,9 @@ async function punish(client: Client, message: Message, command: ISpecialCommand
 
                 punishUser(client, message, user, member, command, timing, reason, question);
             } else {
-               
                 question.edit({
                     embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
-                    components: [timeFinished]
+                    components: [timeFinished],
                 });
             }
             return;
@@ -226,7 +225,7 @@ async function punish(client: Client, message: Message, command: ISpecialCommand
             } else {
                 question.edit({
                     embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
-                    components: [timeFinished]
+                    components: [timeFinished],
                 });
             }
             return;
@@ -265,7 +264,7 @@ async function punish(client: Client, message: Message, command: ISpecialCommand
             } else {
                 question.edit({
                     embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
-                    components: [timeFinished]
+                    components: [timeFinished],
                 });
             }
             return;
@@ -275,7 +274,7 @@ async function punish(client: Client, message: Message, command: ISpecialCommand
     } else {
         question.edit({
             embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
-            components: [timeFinished]
+            components: [timeFinished],
         });
     }
 }
@@ -321,7 +320,7 @@ export async function punishUser(
     }
 
     const query = {
-        content: "",
+        content: '',
         embeds: [
             new EmbedBuilder({
                 color: client.utils.getRandomColor(),

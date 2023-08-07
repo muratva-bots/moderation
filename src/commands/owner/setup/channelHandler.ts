@@ -41,8 +41,8 @@ export async function channelHandler(
                 channel_types: option.isVoice
                     ? [ChannelType.GuildVoice]
                     : option.isParent
-                        ? [ChannelType.GuildCategory]
-                        : [ChannelType.GuildText],
+                    ? [ChannelType.GuildCategory]
+                    : [ChannelType.GuildText],
             }),
         ],
     });
@@ -82,7 +82,7 @@ export async function channelHandler(
             await GuildModel.updateOne(
                 { id: message.guildId },
                 { $set: { [`moderation.${option.value}`]: guildData[option.value] } },
-                { upsert: true }
+                { upsert: true },
             );
 
             i.reply({
@@ -103,7 +103,7 @@ export async function channelHandler(
             await GuildModel.updateOne(
                 { id: message.guildId },
                 { $unset: { [`moderation.${option.value}`]: 1 } },
-                { upsert: true }
+                { upsert: true },
             );
 
             i.reply({
@@ -148,17 +148,17 @@ function createComponent(message: Message, option: IChannelOption, guildData: Mo
                 options: [
                     hasChannel
                         ? {
-                            label: message.guild.channels.cache.get(guildData[option.value]).name,
-                            value: guildData[option.value],
-                            description: 'Kaldırmak için tıkla!',
-                            emoji: {
-                                id: option.isVoice ? '1135211149885976686' : '1135211232597651516',
-                            },
-                        }
+                              label: message.guild.channels.cache.get(guildData[option.value]).name,
+                              value: guildData[option.value],
+                              description: 'Kaldırmak için tıkla!',
+                              emoji: {
+                                  id: option.isVoice ? '1135211149885976686' : '1135211232597651516',
+                              },
+                          }
                         : {
-                            label: 'no setting',
-                            value: 'no-setting',
-                        },
+                              label: 'no setting',
+                              value: 'no-setting',
+                          },
                 ],
             }),
         ],

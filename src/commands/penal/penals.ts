@@ -12,7 +12,7 @@ import {
     StringSelectMenuBuilder,
     inlineCode,
     time,
-    userMention
+    userMention,
 } from 'discord.js';
 
 const Command: Moderation.ICommand = {

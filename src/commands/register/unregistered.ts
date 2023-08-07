@@ -7,8 +7,9 @@ const Command: Moderation.ICommand = {
     usages: ['kayıtsız', 'kayitsiz', 'unreg', 'unregister', 'unregistered'],
     description: 'Belirttiğiniz kullanıcıyı kayıtsıza atarsınız.',
     examples: ['kayıtsız @kullanıcı', 'kayıtsız 123456789123456789'],
-    checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
-        (guildData.registerAuth && guildData.registerAuth.some(r => message.member.roles.cache.has(r))), 
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
+        (guildData.registerAuth && guildData.registerAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
         if (
             !guildData.unregisterRoles ||

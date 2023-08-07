@@ -32,14 +32,21 @@ function botCommandHandler(client: Client, message: Message, guildData: Moderati
 
     let canExecute = false;
     if (
-        (
-            ![
-                "emojiscreate", "invasion", "logscreate", "ayarlar", 
-                "suspectcontrol", "fastlogin", "kullanıcı-panel", "monthlyrole", 
-                "roleselect",  "solvingauthcall", "eval", "setup"
-            ].includes(command.usages[0]) && 
-            message.member.permissions.has(PermissionFlagsBits.Administrator)
-        ) ||
+        (![
+            'emojiscreate',
+            'invasion',
+            'logscreate',
+            'ayarlar',
+            'suspectcontrol',
+            'fastlogin',
+            'kullanıcı-panel',
+            'monthlyrole',
+            'roleselect',
+            'solvingauthcall',
+            'eval',
+            'setup',
+        ].includes(command.usages[0]) &&
+            message.member.permissions.has(PermissionFlagsBits.Administrator)) ||
         !command.checkPermission ||
         (command.checkPermission && command.checkPermission({ client, message, guildData }))
     )
@@ -60,7 +67,12 @@ function botCommandHandler(client: Client, message: Message, guildData: Moderati
     ) {
         const limit = client.utils.checkLimit(message.author.id, 1000, 3, 1000 * 20);
         if (limit.hasLimit) {
-            client.utils.sendTimedMessage(message, `Çok hızlı komut kullanıyorsun ${limit.time} bekle.`);
+            const needTime = Number(limit.time.match(/\d+/)[0]);
+            client.utils.sendTimedMessage(
+                message, 
+                `Çok hızlı komut kullanıyorsun ${limit.time} bekle.`,
+                Date.now()- needTime
+            );
             return;
         }
     }

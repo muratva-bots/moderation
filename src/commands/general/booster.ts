@@ -62,7 +62,11 @@ const Command: Moderation.ICommand = {
 
         await UserModel.updateOne(
             { id: message.author.id, guild: message.guildId },
-            { $push: { names: { admin: message.author.id, type: NameFlags.BoosterChangeName, time: Date.now(), name } } },
+            {
+                $push: {
+                    names: { admin: message.author.id, type: NameFlags.BoosterChangeName, time: Date.now(), name },
+                },
+            },
             { upsert: true },
         );
     },

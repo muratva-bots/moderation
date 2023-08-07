@@ -1,8 +1,16 @@
-import { Client } from "@/structures";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Interaction, Message, StringSelectMenuBuilder, codeBlock } from "discord.js";
-import mainHandler from "./mainHandler";
-import { ModerationClass } from "@/models";
-import { SpecialCommandFlags } from "@/enums";
+import { Client } from '@/structures';
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    Interaction,
+    Message,
+    StringSelectMenuBuilder,
+    codeBlock,
+} from 'discord.js';
+import mainHandler from './mainHandler';
+import { ModerationClass } from '@/models';
+import { SpecialCommandFlags } from '@/enums';
 
 const types = {
     [SpecialCommandFlags.Message]: 'Mesaj',
@@ -10,27 +18,31 @@ const types = {
     [SpecialCommandFlags.Role]: 'Rol',
 };
 
-async function categoryHandler(client: Client, message: Message, question: Message, type: string, guildData: ModerationClass) {
+async function categoryHandler(
+    client: Client,
+    message: Message,
+    question: Message,
+    type: string,
+    guildData: ModerationClass,
+) {
     const splitedCommands = client.utils.chunkArray(
-        type === "special-commands" ?
-            guildData.specialCommands.map(c => ({ name: c.usages[0], description: c.description })) :
-            client.commands
-                .filter((c) => !c.isDisabled && c.category === type)
-                .map((c) => ({ name: c.usages[0], description: c.description })),
+        type === 'special-commands'
+            ? guildData.specialCommands.map((c) => ({ name: c.usages[0], description: c.description }))
+            : client.commands
+                  .filter((c) => !c.isDisabled && c.category === type)
+                  .map((c) => ({ name: c.usages[0], description: c.description })),
         25,
     );
 
     const backButton = new ActionRowBuilder<ButtonBuilder>({
         components: [
             new ButtonBuilder({
-                custom_id: "back",
-                label: "Geri",
-                style: ButtonStyle.Danger
-            })
-        ]
+                custom_id: 'back',
+                label: 'Geri',
+                style: ButtonStyle.Danger,
+            }),
+        ],
     });
-
-    console.log(splitedCommands.length)
 
     const components: ActionRowBuilder<StringSelectMenuBuilder>[] = [];
     for (const commands of splitedCommands) {
@@ -52,7 +64,7 @@ async function categoryHandler(client: Client, message: Message, question: Messa
         );
     }
 
-    await question.edit({ content: "Bakacağınız komutu seçin.", components: [...components, backButton] });
+    await question.edit({ content: 'Bakacağınız komutu seçin.', components: [...components, backButton] });
 
     const filter = (i: Interaction) => i.user.id === message.author.id;
     const collector = await question.createMessageComponentCollector({
@@ -61,43 +73,51 @@ async function categoryHandler(client: Client, message: Message, question: Messa
     });
 
     collector.on('collect', async (i: Interaction) => {
-        if (i.isButton() && i.customId === "back") {
+        if (i.isButton() && i.customId === 'back') {
             i.deferUpdate();
-            collector.stop("FINISH");
+            collector.stop('FINISH');
             mainHandler(client, message, guildData, question);
             return;
         }
 
         if (i.isStringSelectMenu()) {
-            if (type === "special-commands") {
-                const command = guildData.specialCommands.find(c => c.usages.includes(i.values[0]));
+            if (type === 'special-commands') {
+                const command = guildData.specialCommands.find((c) => c.usages.includes(i.values[0]));
                 if (!command) {
                     i.reply({
-                        content: "Komut silinmiş.",
-                        ephemeral: true
+                        content: 'Komut silinmiş.',
+                        ephemeral: true,
                     });
                     return;
                 }
 
                 i.reply({
-                    content: codeBlock("fix", [
-                        `Komut Kullanımları: ${command.usages.map(u => u.trim()).join(", ")}`,
-                        `Komut Açıklaması: ${command.description}`,
-                        `Komut Türü: ${types[command.type]}`
-                    ].join("\n")),
-                    ephemeral: true
+                    content: codeBlock(
+                        'fix',
+                        [
+                            `Komut Kullanımları: ${command.usages.map((u) => u.trim()).join(', ')}`,
+                            `Komut Açıklaması: ${command.description}`,
+                            `Komut Türü: ${types[command.type]}`,
+                        ].join('\n'),
+                    ),
+                    ephemeral: true,
                 });
                 return;
-            } 
+            }
 
             const command = client.commands.get(i.values[0]);
             i.reply({
-                content: codeBlock("fix", [
-                    `Komut Kullanımları: ${command.usages.join(", ")}`,
-                    `Komut Açıklaması: ${command.description}`,
-                    `Komut Örnekleri:\n${command.examples.map((e) => `→ ${client.config.PREFIXES[0]}${e}`).join("\n")}`,
-                ].join("\n")),
-                ephemeral: true
+                content: codeBlock(
+                    'fix',
+                    [
+                        `Komut Kullanımları: ${command.usages.join(', ')}`,
+                        `Komut Açıklaması: ${command.description}`,
+                        `Komut Örnekleri:\n${command.examples
+                            .map((e) => `→ ${client.config.PREFIXES[0]}${e}`)
+                            .join('\n')}`,
+                    ].join('\n'),
+                ),
+                ephemeral: true,
             });
         }
     });

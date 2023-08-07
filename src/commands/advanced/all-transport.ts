@@ -8,7 +8,7 @@ import {
     inlineCode,
     PermissionFlagsBits,
     ButtonBuilder,
-    ButtonStyle
+    ButtonStyle,
 } from 'discord.js';
 
 const Command: Moderation.ICommand = {
@@ -17,7 +17,7 @@ const Command: Moderation.ICommand = {
     examples: ['toplutaşı <kanal seçin>'],
     checkPermission: ({ message, guildData }) =>
         message.member.permissions.has(PermissionFlagsBits.MoveMembers) ||
-        (guildData.moveAuth && guildData.moveAuth.some(r => message.member.roles.cache.has(r))),
+        (guildData.moveAuth && guildData.moveAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message }) => {
         if (!message.member.voice.channelId) {
             client.utils.sendTimedMessage(message, 'Bir ses kanalına katılıp kullanman lazım!');

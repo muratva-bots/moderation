@@ -97,9 +97,9 @@ export async function roleHandler(
                 guildData[option.value] = newData.filter((r) => !i.values.includes(r));
             } else guildData[option.value] = undefined;
 
-            const updateQuery = option.isMultiple ? 
-                { [`moderation.${option.value}`]: guildData[option.value] } : 
-                { $unset: { [`moderation.${option.value}`]: 1 } };
+            const updateQuery = option.isMultiple
+                ? { [`moderation.${option.value}`]: guildData[option.value] }
+                : { $unset: { [`moderation.${option.value}`]: 1 } };
             await GuildModel.updateOne({ id: message.guildId }, updateQuery);
 
             i.reply({
@@ -146,19 +146,19 @@ function createComponent(message: Message, option: IRoleOption, guildData: Moder
                 max_values: roles.length === 0 ? 1 : roles.length,
                 options: roles.length
                     ? roles.map((r) => ({
-                        label: message.guild.roles.cache.get(r).name,
-                        value: r,
-                        description: 'Kaldırmak için tıkla!',
-                        emoji: {
-                            id: '1135214115804172338',
-                        },
-                    }))
+                          label: message.guild.roles.cache.get(r).name,
+                          value: r,
+                          description: 'Kaldırmak için tıkla!',
+                          emoji: {
+                              id: '1135214115804172338',
+                          },
+                      }))
                     : [
-                        {
-                            label: 'no setting',
-                            value: 'no-setting',
-                        },
-                    ],
+                          {
+                              label: 'no setting',
+                              value: 'no-setting',
+                          },
+                      ],
             }),
         ],
     });

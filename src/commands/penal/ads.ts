@@ -16,7 +16,7 @@ const Command: Moderation.ICommand = {
     examples: ['ads @kullanıcı', 'ads 123456789123456789'],
     checkPermission: ({ message, guildData }) =>
         message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
-        (guildData.jailAuth && guildData.jailAuth.some(r => message.member.roles.cache.has(r))),
+        (guildData.jailAuth && guildData.jailAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
         const adsRole = message.guild.roles.cache.get(guildData.adsRole);
         if (!adsRole) return message.channel.send('Reklam rolü ayarlanmamış.');
@@ -70,7 +70,7 @@ const Command: Moderation.ICommand = {
                 await UserModel.updateOne(
                     { id: user.id, guild: message.guildId },
                     { $set: { lastRoles: roles } },
-                    { upsert: true }
+                    { upsert: true },
                 );
             }
 

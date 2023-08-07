@@ -6,7 +6,7 @@ const Command: Moderation.ICommand = {
     examples: ['banlist'],
     checkPermission: ({ message, guildData }) =>
         message.member.permissions.has(PermissionFlagsBits.BanMembers) ||
-        (guildData.banAuth && guildData.banAuth.some(r => message.member.roles.cache.has(r))),
+        (guildData.banAuth && guildData.banAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message }) => {
         const bans = await message.guild.bans.fetch();
 

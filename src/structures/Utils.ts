@@ -268,7 +268,7 @@ export class Utils {
         var h = Math.floor((seconds % (3600 * 24)) / 3600);
         var m = Math.floor((seconds % 3600) / 60);
         var s = Math.floor(seconds % 60);
-    
+
         var dDisplay = d > 0 ? d + ' gün ' : '';
         var hDisplay = h > 0 ? h + ' saat ' : '';
         var mDisplay = d === 0 && m > 0 ? m + ' dakika ' : '';

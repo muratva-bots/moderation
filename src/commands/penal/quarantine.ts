@@ -21,7 +21,7 @@ import {
     User,
     time,
     ButtonBuilder,
-    ButtonStyle
+    ButtonStyle,
 } from 'discord.js';
 import ms from 'ms';
 
@@ -32,7 +32,7 @@ const Command: Moderation.ICommand = {
     chatUsable: true,
     checkPermission: ({ message, guildData }) =>
         message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
-        (guildData.jailAuth && guildData.jailAuth.some(r => message.member.roles.cache.has(r))),
+        (guildData.jailAuth && guildData.jailAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
         if (!message.guild.roles.cache.has(guildData.quarantineRole)) {
             client.utils.sendTimedMessage(message, 'Rol ayarlanmamış.');
@@ -192,10 +192,9 @@ const Command: Moderation.ICommand = {
 
                     quarantineUser(client, message, user, member, guildData, timing, reason, false, question);
                 } else {
-
                     question.edit({
                         embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
-                        components: [timeFinished]
+                        components: [timeFinished],
                     });
                 }
                 return;
@@ -234,9 +233,9 @@ const Command: Moderation.ICommand = {
                         attachment,
                     );
                 } else {
-
                     question.edit({
-                        embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')], components: [timeFinished]
+                        embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
+                        components: [timeFinished],
                     });
                 }
                 return;
@@ -274,9 +273,9 @@ const Command: Moderation.ICommand = {
                         question,
                     );
                 } else {
-
                     question.edit({
-                        embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')], components: [timeFinished]
+                        embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
+                        components: [timeFinished],
                     });
                 }
                 return;
@@ -284,9 +283,9 @@ const Command: Moderation.ICommand = {
 
             quarantineUser(client, message, user, member, guildData, reason.time, reason.name, false, question);
         } else {
-
             question.edit({
-                embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')], components: [timeFinished]
+                embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
+                components: [timeFinished],
             });
         }
     },
@@ -318,7 +317,7 @@ export async function quarantineUser(
         await UserModel.updateOne(
             { id: user.id, guild: message.guildId },
             { $set: { lastRoles: roles } },
-            { upsert: true }
+            { upsert: true },
         );
     }
 
@@ -327,8 +326,8 @@ export async function quarantineUser(
     const penal = await PenalModel.create({
         id: newID,
         guild: message.guildId,
-        admin: message.author.id,
-        user: question ? message.author.id : client.user.id,
+        admin: question ? message.author.id : client.user.id,
+        user: user.id,
         type: PenalFlags.Quarantine,
         reason: reason,
         finish: now + timing,
@@ -349,10 +348,11 @@ export async function quarantineUser(
         embeds: [
             new EmbedBuilder({
                 color: client.utils.getRandomColor(),
-                description: `${user} (${inlineCode(user.id)}) adlı ${system ? reason : `kullanıcı "${bold(reason)}" sebebiyle`
-                    } ${time(Math.floor(penal.finish / 1000), 'R')} karantina cezası aldı. (Ceza Numarası: ${inlineCode(
-                        `#${newID}`,
-                    )})`,
+                description: `${user} (${inlineCode(user.id)}) adlı ${
+                    system ? reason : `kullanıcı "${bold(reason)}" sebebiyle`
+                } ${time(Math.floor(penal.finish / 1000), 'R')} karantina cezası aldı. (Ceza Numarası: ${inlineCode(
+                    `#${newID}`,
+                )})`,
             }),
         ],
         components: [],

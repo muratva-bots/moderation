@@ -59,7 +59,7 @@ export async function stringHandler(
                         customId: 'value',
                         value: option.isMultiple
                             ? ((guildData[option.value] || []) as string[]).slice(0, 60).join(', ') || undefined
-                            : (guildData[option.value] || "").slice(0, 60) || undefined,
+                            : (guildData[option.value] || '').slice(0, 60) || undefined,
                         label: 'Yeni Ayar:',
                         max_length: 60,
                         required: true,
@@ -113,10 +113,7 @@ export async function stringHandler(
         if (i.isButton() && i.customId === 'reset') {
             guildData[option.value] = undefined;
 
-            await GuildModel.updateOne(
-                { id: message.guildId },
-                { $unset: { [`moderation.${option.value}`]: 1 } },
-            );
+            await GuildModel.updateOne({ id: message.guildId }, { $unset: { [`moderation.${option.value}`]: 1 } });
 
             i.reply({
                 content: `Başarıyla ${bold(option.name)} adlı ayar sıfırlandı.`,

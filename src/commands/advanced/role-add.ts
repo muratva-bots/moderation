@@ -12,7 +12,7 @@ import {
     TextChannel,
     bold,
     inlineCode,
-    time
+    time,
 } from 'discord.js';
 
 const Command: Moderation.ICommand = {
@@ -21,7 +21,7 @@ const Command: Moderation.ICommand = {
     examples: ['re @kullanıcı <menüden rol seçiniz>', 're 123456789123456789 <menüden rol seçiniz>'],
     checkPermission: ({ message, guildData }) =>
         message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
-        (guildData.banAuth && guildData.banAuth.some(r => message.member.roles.cache.has(r))),
+        (guildData.banAuth && guildData.banAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
         const member =
             (await client.utils.getMember(message.guild, args[0])) ||
@@ -42,13 +42,15 @@ const Command: Moderation.ICommand = {
             user: member.id,
             guild: member.guild.id,
             activity: true,
-            $or: [{ type: PenalFlags.Ads }, { type: PenalFlags.Ban }, { type: PenalFlags.ForceBan }, { type: PenalFlags.Quarantine }]
+            $or: [
+                { type: PenalFlags.Ads },
+                { type: PenalFlags.Ban },
+                { type: PenalFlags.ForceBan },
+                { type: PenalFlags.Quarantine },
+            ],
         });
         if (hasPenal) {
-            client.utils.sendTimedMessage(
-                message,
-                "Kullanıcının cezası bulunuyor işlem yapamazsın."
-            );
+            client.utils.sendTimedMessage(message, 'Kullanıcının cezası bulunuyor işlem yapamazsın.');
             return;
         }
 
@@ -94,34 +96,42 @@ const Command: Moderation.ICommand = {
         const filter = (i: RoleSelectMenuInteraction) => i.user.id === message.author.id;
         const collected = await question.awaitMessageComponent({
             filter,
-            time: 1000 * 60,
+            time: 1000 * 60 * 2,
             componentType: ComponentType.RoleSelect,
         });
 
         if (collected) {
-            const roles = collected.values.map((roleId) => message.guild.roles.cache.get(roleId));
-            const specialCommands = (guildData.specialCommands || []).filter(c => c.type === SpecialCommandFlags.Punishment);
-            const added: string[] = [];
-            const removed: string[] = [];
-            const now = Date.now();
-            let hasPenalRole = false;
+            collected.deferUpdate();
 
-            for (const role of roles) {
-                if ([
+            const specialCommands = (guildData.specialCommands || []).filter(
+                (c) => c.type === SpecialCommandFlags.Punishment,
+            );
+            const roles = collected.values
+                .filter((roleId) => ![
                     guildData.adsRole,
                     guildData.chatMuteRole,
                     guildData.voiceMuteRole,
                     guildData.quarantineRole,
                     guildData.underworldRole,
-                    ...specialCommands.map(c => c.punishRole)
-                ].includes(role.id)) {
-                    hasPenalRole = true;
-                    return;
-                }
+                    ...specialCommands.map((c) => c.punishRole),
+                ].includes(roleId))
+                .map((roleId) => message.guild.roles.cache.get(roleId));
+            const added: string[] = [];
+            const removed: string[] = [];
+            const now = Date.now();
+            const hasPenalRole = collected.values.some((roleId) => [
+                guildData.adsRole,
+                guildData.chatMuteRole,
+                guildData.voiceMuteRole,
+                guildData.quarantineRole,
+                guildData.underworldRole,
+                ...specialCommands.map((c) => c.punishRole),
+            ].includes(roleId));
 
+            for (const role of roles) {
                 if (
                     !(guildData.ownerRoles || []).some((r) => message.member.roles.cache.has(r)) &&
-                    role.position > minStaffRole.position
+                    role.position >= minStaffRole.position
                 )
                     return;
 
@@ -162,7 +172,6 @@ const Command: Moderation.ICommand = {
                 }
             }
 
-            const embed = new EmbedBuilder();
             const channel = (await message.guild.channels.cache.find(
                 (c) => c.isTextBased() && c.name === 'role-log',
             )) as TextChannel;
@@ -234,7 +243,16 @@ const Command: Moderation.ICommand = {
             }
 
             question.edit({
-                embeds: [embed.setColor('Random').setDescription(`${content}${hasPenal ? `\n${bold("NOT:")} Ceza rollerini vermek için ceza komutlarını kullanabilirsin.` : ""}`).setFields([]).setTitle(null)],
+                embeds: [
+                    embed
+                        .setColor('Random')
+                        .setDescription([
+                            content,
+                            hasPenalRole ? `Ceza rollerini vermek için ceza komutlarını kullanabilirsin.` : undefined
+                        ].filter(Boolean).join(" "))
+                        .setFields([])
+                        .setTitle(null),
+                ],
                 components: [],
             });
         } else {

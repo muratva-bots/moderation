@@ -5,10 +5,11 @@ const Command: Moderation.ICommand = {
     usages: ['timeout'],
     description: 'Sunucuda kurallara uymayan bir kullanıcıyı 1 saatliğine uzaklaştırır.',
     examples: ['timeout @kullanıcı', 'timeout 123456789123456789'],
-    checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
-        (guildData.jailAuth && guildData.jailAuth.some(r => message.member.roles.cache.has(r))) ||
-        (guildData.registerAuth && guildData.registerAuth.some(r => message.member.roles.cache.has(r))) ||
-        (guildData.banAuth && guildData.banAuth.some(r => message.member.roles.cache.has(r))),
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
+        (guildData.jailAuth && guildData.jailAuth.some((r) => message.member.roles.cache.has(r))) ||
+        (guildData.registerAuth && guildData.registerAuth.some((r) => message.member.roles.cache.has(r))) ||
+        (guildData.banAuth && guildData.banAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
         const member =
             (await client.utils.getMember(message.guild, args[0])) ||

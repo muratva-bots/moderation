@@ -6,8 +6,9 @@ const Command: Moderation.ICommand = {
     usages: ['unban', 'ununderworld'],
     description: 'Yasaklı kullanıcının banını kaldırırsın.',
     examples: ['unban 123456789123456789'],
-    checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.BanMembers) ||
-        (guildData.banAuth && guildData.banAuth.some(r => message.member.roles.cache.has(r))),
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.BanMembers) ||
+        (guildData.banAuth && guildData.banAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
         const reference = message.reference ? (await message.fetchReference()).author : undefined;
         const user = (await client.utils.getUser(args[0])) || reference;
@@ -22,7 +23,7 @@ const Command: Moderation.ICommand = {
             return;
         }
 
-        const document = await UserModel.findOne({ guild: message.guildId, id: user.id }).select("lastRoles");
+        const document = await UserModel.findOne({ guild: message.guildId, id: user.id }).select('lastRoles');
         await PenalModel.updateMany(
             {
                 guild: message.guildId,

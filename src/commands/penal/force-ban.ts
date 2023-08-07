@@ -9,8 +9,8 @@ const Command: Moderation.ICommand = {
     examples: ['yargı @kullanıcı', 'yargı 123456789123456789'],
     chatUsable: true,
     checkPermission: ({ message, guildData }) =>
-        message.member.permissions.has(PermissionFlagsBits.ModerateMembers) || 
-        (guildData.ownerRoles && guildData.ownerRoles.some(r => message.member.roles.cache.has(r))),
+        message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
+        (guildData.ownerRoles && guildData.ownerRoles.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
         const reference = message.reference ? (await message.fetchReference()).author : undefined;
         const user = (await client.utils.getUser(args[0])) || reference;
@@ -23,11 +23,11 @@ const Command: Moderation.ICommand = {
         if (member) {
             if (client.utils.checkUser(message, member)) return;
 
-             const ban = message.guild.bans.cache.get(user.id);
-                if (ban) {
-                    client.utils.sendTimedMessage(message, 'Belirttiğin kişi zaten cezalı?');
-                    return;
-                }
+            const ban = message.guild.bans.cache.get(user.id);
+            if (ban) {
+                client.utils.sendTimedMessage(message, 'Belirttiğin kişi zaten cezalı?');
+                return;
+            }
         }
 
         const reason = args.slice(reference ? 0 : 1).join(' ') || 'Sebep belirtilmemiş';
@@ -42,7 +42,7 @@ const Command: Moderation.ICommand = {
             await UserModel.updateOne(
                 { id: user.id, guild: message.guildId },
                 { $set: { lastRoles: roles } },
-                { upsert: true }
+                { upsert: true },
             );
         }
 

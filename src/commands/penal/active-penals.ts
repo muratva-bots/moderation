@@ -18,22 +18,19 @@ import {
     bold,
     codeBlock,
     inlineCode,
-    userMention
+    userMention,
 } from 'discord.js';
 
 const ActivePenals: Moderation.ICommand = {
     usages: ['aktifceza', 'aktifcezalar', 'mb', 'cb', 'db'],
     description: 'Kullanıcının aktif ceza(ları) varsa görüntülersiniz.',
     examples: ['aktif @kullanıcı', 'aktif 123456789123456789'],
-    checkPermission: ({ message, guildData }) =>
-        message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
-        (guildData.minStaffRole && message.member.roles.cache.has(guildData.minStaffRole)),
     execute: async ({ client, message, args, guildData }) => {
         const user = args[0]
             ? await client.utils.getUser(args[0])
             : message.reference
-                ? (await message.fetchReference()).author
-                : message.author;
+            ? (await message.fetchReference()).author
+            : message.author;
         if (!user || user.bot) {
             client.utils.sendTimedMessage(message, 'Geçerli bir kullanıcı belirt!');
             return;
@@ -42,7 +39,7 @@ const ActivePenals: Moderation.ICommand = {
         const activePenals = await PenalModel.find({
             guild: message.guildId,
             user: user.id,
-            activity: true,
+            activity: true
         });
         if (!activePenals.length) {
             client.utils.sendTimedMessage(message, 'Kullanıcının verisi bulunmuyor.');
@@ -63,17 +60,17 @@ const ActivePenals: Moderation.ICommand = {
             filter,
             time: 1000 * 60 * 5,
         });
-               const timeFinished = new ActionRowBuilder<ButtonBuilder>({
-                    components: [
-                        new ButtonBuilder({
-                            custom_id: 'timefinished',
-                            label: 'Mesajın Geçerlilik Süresi Doldu.',
-                            emoji: { name: '⏱️' },
-                            style: ButtonStyle.Danger,
-                            disabled: true,
-                        }),
-                    ],
-                });
+        const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+            components: [
+                new ButtonBuilder({
+                    custom_id: 'timefinished',
+                    label: 'Mesajın Geçerlilik Süresi Doldu.',
+                    emoji: { name: '⏱️' },
+                    style: ButtonStyle.Danger,
+                    disabled: true,
+                }),
+            ],
+        });
 
         collector.on('collect', async (i: ButtonInteraction) => {
             const penal = activePenals[page - 1];
@@ -135,7 +132,6 @@ const ActivePenals: Moderation.ICommand = {
                         components: [],
                     });
                 } else {
-
                     question.edit({
                         embeds: [embed.setDescription('İşlem süresi dolduğu için işlem kapatıldı.')],
                         components: [timeFinished],
@@ -260,14 +256,18 @@ function createContent(client: Client, penal: PenalClass, embed: EmbedBuilder, g
                 `${inlineCode('>')} ${bold('Cezalandırılan Yetkili:')} ${userMention(penal.admin)} (${inlineCode(
                     penal.admin,
                 )})`,
-                `${inlineCode('>')} ${bold('Ceza Sebebi:')} ${replacedReason || "Sebep belirtilmemiş."}`,
-                `${inlineCode('>')} ${bold('Ceza Süresi:')} ${penal.finish ? client.utils.numberToString(
-                    penal.finish - penal.start,
-                ) : "Süresiz."}`,
-                penal.finish ? `${inlineCode('>')} ${bold('Ceza Kalan Süre:')} ${client.utils.numberToString(
-                    penal.finish - Date.now(),
-                )}` : undefined,
-            ].filter(Boolean).join('\n'),
+                `${inlineCode('>')} ${bold('Ceza Sebebi:')} ${replacedReason || 'Sebep belirtilmemiş.'}`,
+                `${inlineCode('>')} ${bold('Ceza Süresi:')} ${
+                    penal.finish ? client.utils.numberToString(penal.finish - penal.start) : 'Süresiz.'
+                }`,
+                penal.finish
+                    ? `${inlineCode('>')} ${bold('Ceza Kalan Süre:')} ${client.utils.numberToString(
+                          penal.finish - Date.now(),
+                      )}`
+                    : undefined,
+            ]
+                .filter(Boolean)
+                .join('\n'),
         );
     return embed;
 }
@@ -290,7 +290,7 @@ function createComponents(
                         customId: `add-note-${penal.id}`,
                         label: 'Rapor Ekle',
                         emoji: {
-                            id: "1137495869495722054"
+                            id: '1137495869495722054',
                         },
                         style: ButtonStyle.Secondary,
                     }),
@@ -298,7 +298,7 @@ function createComponents(
                         customId: `remove-note-${penal.id}`,
                         label: 'Rapor Kaldır',
                         emoji: {
-                            id: "1137495873182498816"
+                            id: '1137495873182498816',
                         },
                         style: ButtonStyle.Secondary,
                     }),
@@ -307,7 +307,7 @@ function createComponents(
                         label: `${penal.notes.length === 1 ? 'Rapora' : 'Raporlara'} Bak`,
                         disabled: !(penal.notes && penal.notes.length),
                         emoji: {
-                            id: "1137495100335861810"
+                            id: '1137495100335861810',
                         },
                         style: ButtonStyle.Secondary,
                     }),
@@ -316,7 +316,7 @@ function createComponents(
         );
     }
 
-    if (penalsSize > 1) components.push(client.utils.paginationButtons(currentPage, penalsSize))
+    if (penalsSize > 1) components.push(client.utils.paginationButtons(currentPage, penalsSize));
 
     return components;
 }

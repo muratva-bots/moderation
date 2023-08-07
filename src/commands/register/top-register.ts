@@ -26,8 +26,9 @@ const Command: Moderation.ICommand = {
     ],
     description: 'Sunucu kayıt top listesini görüntülersiniz.',
     examples: ['topteyit'],
-    checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
-        (guildData.registerAuth && guildData.registerAuth.some(r => message.member.roles.cache.has(r))), 
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
+        (guildData.registerAuth && guildData.registerAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message }) => {
         const datas = await UserModel.find({
             $or: [{ 'registers.man': { $gt: 0 } }, { 'registers.woman': { $gt: 0 } }],
@@ -81,17 +82,16 @@ const Command: Moderation.ICommand = {
 
             await question.edit({
                 embeds: [
-                    embed
-                        .setDescription(
-                            await createContent(
-                                client,
-                                message,
-                                userData,
-                                userRank,
-                                mappedDatas.slice(page === 1 ? 0 : page * 10 - 10, page * 10),
-                                page,
-                            ),
-                        )
+                    embed.setDescription(
+                        await createContent(
+                            client,
+                            message,
+                            userData,
+                            userRank,
+                            mappedDatas.slice(page === 1 ? 0 : page * 10 - 10, page * 10),
+                            page,
+                        ),
+                    ),
                 ],
                 components: [client.utils.paginationButtons(page, totalData)],
             });

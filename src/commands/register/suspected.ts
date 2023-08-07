@@ -4,8 +4,9 @@ const Command: Moderation.ICommand = {
     usages: ['süpheli', 'şüpheli', 'suphe', 'şüphe'],
     description: 'Belirttiğiniz kullanıcı şüpheli hesapsa şüpheli rolü verir.',
     examples: ['şüpheli @kullanıcı', 'şüpheli 123456789123456789'],
-    checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
-        (guildData.registerAuth && guildData.registerAuth.some(r => message.member.roles.cache.has(r))), 
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
+        (guildData.registerAuth && guildData.registerAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
         if (
             !guildData.unregisterRoles ||

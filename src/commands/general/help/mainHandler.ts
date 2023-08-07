@@ -1,33 +1,49 @@
-import { Client } from "@/structures";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, Message, StringSelectMenuBuilder, StringSelectMenuInteraction } from "discord.js";
-import categoryHandler from "./categoryHandler";
-import { ModerationClass } from "@/models";
+import { Client } from '@/structures';
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ComponentType,
+    Message,
+    StringSelectMenuBuilder,
+    StringSelectMenuInteraction,
+} from 'discord.js';
+import categoryHandler from './categoryHandler';
+import { ModerationClass } from '@/models';
 
 const titles = {
-    advanced: "Yetkili Komutları",
-    general: "Genel Komutlar",
-    penal: "Ceza Komutları",
-    register: "Kayıt Komutları"
+    advanced: 'Yetkili Komutları',
+    general: 'Genel Komutlar',
+    penal: 'Ceza Komutları',
+    register: 'Kayıt Komutları',
 };
 
 async function mainHandler(client: Client, message: Message, guildData: ModerationClass, botMessage?: Message) {
     const query = {
-        content: "Bakacağınız kategoriyi seçin.",
+        content: 'Bakacağınız kategoriyi seçin.',
         components: [
             new ActionRowBuilder<StringSelectMenuBuilder>({
                 components: [
                     new StringSelectMenuBuilder({
-                        custom_id: "category",
-                        placeholder: "Kategoriyi seç!",
+                        custom_id: 'category',
+                        placeholder: 'Kategoriyi seç!',
                         options: [
-                            ...Object.keys(titles).map(c => ({ label: titles[c], value: c, emoji: { id: "1134953137262841906" } })),
-                            guildData.specialCommands && guildData.specialCommands.length ? 
-                                ({ label: "Sunucuya Özel Komutlar", value: "special-commands", emoji: { id: "1134953137262841906" } }) : 
-                                undefined
-                        ].filter(Boolean)
-                    })
-                ]
-            })
+                            ...Object.keys(titles).map((c) => ({
+                                label: titles[c],
+                                value: c,
+                                emoji: { id: '1134953137262841906' },
+                            })),
+                            guildData.specialCommands && guildData.specialCommands.length
+                                ? {
+                                      label: 'Sunucuya Özel Komutlar',
+                                      value: 'special-commands',
+                                      emoji: { id: '1134953137262841906' },
+                                  }
+                                : undefined,
+                        ].filter(Boolean),
+                    }),
+                ],
+            }),
         ],
     };
     const question = botMessage ? await botMessage.edit(query) : await message.channel.send(query);

@@ -5,16 +5,16 @@ import { Client } from '@/structures';
 import { ButtonInteraction, EmbedBuilder, bold, inlineCode, roleMention, time } from 'discord.js';
 
 const titles = {
-    [NameFlags.Register]: "Kayıt Olma",
-    [NameFlags.ChangeGender]: "Yanlış Cinsiyet Kaydı",
-    [NameFlags.Unregister]: "Kayıtsıza Atılma",
-    [NameFlags.ChangeName]: "İsim Değiştirme (Yetkili)",
-    [NameFlags.BoosterChangeName]: "İsim Değiştirme (Boost)",
-    [NameFlags.BoostFinish]: "Nitrosu Bitti",
-    [NameFlags.ManuelBoostFinish]: "Boostu Çekti",
-    [NameFlags.AutoRegister]: "Oto Kayıt",
-    [NameFlags.Kick]: "Sunucudan Atıldı",
-    [NameFlags.Leave]: "Sunucudan Çıktı"
+    [NameFlags.Register]: 'Kayıt Olma',
+    [NameFlags.ChangeGender]: 'Yanlış Cinsiyet Kaydı',
+    [NameFlags.Unregister]: 'Kayıtsıza Atılma',
+    [NameFlags.ChangeName]: 'İsim Değiştirme (Yetkili)',
+    [NameFlags.BoosterChangeName]: 'İsim Değiştirme (Boost)',
+    [NameFlags.BoostFinish]: 'Nitrosu Bitti',
+    [NameFlags.ManuelBoostFinish]: 'Boostu Çekti',
+    [NameFlags.AutoRegister]: 'Oto Kayıt',
+    [NameFlags.Kick]: 'Sunucudan Atıldı',
+    [NameFlags.Leave]: 'Sunucudan Çıktı',
 };
 
 async function memberPanel(client: Client, interaction: ButtonInteraction, guildData: ModerationClass) {
@@ -70,17 +70,22 @@ async function memberPanel(client: Client, interaction: ButtonInteraction, guild
                 embed.setDescription(
                     [
                         `Toplam da ${document.names.length} isim kayıtınız bulundu:`,
-                        `${document.names.slice(document.names.length > 10 ? document.names.length - 10 : 0, document.names.length > 10 ? document.names.length : 10).map((n) =>
-                            [
-                                inlineCode(`•`),
-                                `${time(Math.floor(n.time / 1000), 'D')}:`,
-                                n.name ? n.name : undefined,
-                                n.role ? roleMention(n.role) : undefined,
-                                n.role ? bold(`(${titles[n.type]})`) : bold(titles[n.type]),
-                            ]
-                                .filter(Boolean)
-                                .join(' '),
-                        )}`,
+                        `${document.names
+                            .slice(
+                                document.names.length > 10 ? document.names.length - 10 : 0,
+                                document.names.length > 10 ? document.names.length : 10,
+                            )
+                            .map((n) =>
+                                [
+                                    inlineCode(`•`),
+                                    `${time(Math.floor(n.time / 1000), 'D')}:`,
+                                    n.name ? n.name : undefined,
+                                    n.role ? roleMention(n.role) : undefined,
+                                    n.role ? bold(`(${titles[n.type]})`) : bold(titles[n.type]),
+                                ]
+                                    .filter(Boolean)
+                                    .join(' '),
+                            )}`,
                     ].join('\n'),
                 ),
             ],

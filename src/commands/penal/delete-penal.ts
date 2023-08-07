@@ -21,8 +21,8 @@ const Command: Moderation.ICommand = {
     examples: ['unpenal @kullanıcı <menüden ceza seçin>', 'unpenal 123456789123456789 <menüden ceza seçin>'],
     checkPermission: ({ message, guildData }) =>
         message.member.permissions.has(PermissionFlagsBits.Administrator) ||
-        (guildData.ownerRoles && guildData.ownerRoles.some(r => message.member.roles.cache.has(r))),
-            execute: async ({ client, message, args, guildData }) => {
+        (guildData.ownerRoles && guildData.ownerRoles.some((r) => message.member.roles.cache.has(r))),
+    execute: async ({ client, message, args, guildData }) => {
         const user =
             (await client.utils.getUser(args[0])) ||
             (message.reference ? (await message.fetchReference()).author : undefined);
@@ -189,7 +189,7 @@ const Command: Moderation.ICommand = {
                         }),
                     ],
                 });
-                
+
                 question.edit({ components: [timeFinished] });
             }
         });

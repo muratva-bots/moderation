@@ -14,7 +14,7 @@ const logChannelNames = [
     'staff-tag-log',
     'tag-log',
     'banned-tag-log',
-    'unfinished-penals'
+    'unfinished-penals',
 ];
 
 const Command: Moderation.ICommand = {

@@ -7,8 +7,9 @@ const Command: Moderation.ICommand = {
     usages: ['erkek', 'man', 'e'],
     description: 'Belirttiğiniz kullanıcıyı erkek olarak kayıt edersiniz.',
     examples: ['e @kullanıcı isim yaş', 'e 123456789123456789 isim yaş'],
-    checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
-        (guildData.registerAuth && guildData.registerAuth.some(r => message.member.roles.cache.has(r))), 
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
+        (guildData.registerAuth && guildData.registerAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
         if (guildData.menuRegister) return;
         if (guildData.registerSystem == false) {

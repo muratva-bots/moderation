@@ -8,7 +8,7 @@ const Command: Moderation.ICommand = {
     examples: ['ban-info 123456789123456789'],
     checkPermission: ({ message, guildData }) =>
         message.member.permissions.has(PermissionFlagsBits.ViewAuditLog) ||
-        (guildData.banAuth && guildData.banAuth.some(r => message.member.roles.cache.has(r))),
+        (guildData.banAuth && guildData.banAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args }) => {
         const user =
             (await client.utils.getUser(args[0])) ||

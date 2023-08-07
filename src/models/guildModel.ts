@@ -121,11 +121,11 @@ export class ModerationClass {
     solvingLog: string;
     monthlyRoles: IMonthlyRole[];
     monthlyRolesSystem: boolean;
-    banAuth: string[]
-    jailAuth: string[]
-    voiceMuteAuth: string[]
-    chatMuteAuth: string[]
-    registerAuth: string[]
+    banAuth: string[];
+    jailAuth: string[];
+    voiceMuteAuth: string[];
+    chatMuteAuth: string[];
+    registerAuth: string[];
     bannedTags: string[];
     bannedTagRole: string;
     autoRegister: boolean;

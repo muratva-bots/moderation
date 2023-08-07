@@ -6,7 +6,7 @@ const Command: Moderation.ICommand = {
     examples: ['staffsay @rol', 'staffsay 123456789123456789'],
     checkPermission: ({ message, guildData }) =>
         message.member.permissions.has(PermissionFlagsBits.ManageRoles) ||
-        (guildData.ownerRoles && guildData.ownerRoles.some(r => message.member.roles.cache.has(r))),
+        (guildData.ownerRoles && guildData.ownerRoles.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
         const minStaffRole = message.guild.roles.cache.get(guildData.minStaffRole);
         if (!minStaffRole) return message.channel.send('En alt yetkili rolü ayarlanmamış.');

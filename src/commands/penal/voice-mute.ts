@@ -21,7 +21,7 @@ import {
     User,
     time,
     ButtonBuilder,
-    ButtonStyle
+    ButtonStyle,
 } from 'discord.js';
 import ms from 'ms';
 import { quarantineUser } from './quarantine';
@@ -32,8 +32,9 @@ const Command: Moderation.ICommand = {
     description: 'Ses kanallarında kurallara uymayan kullanıcıları susturmanızı sağlar.',
     examples: ['vmute 1234567890 <menüden sebep>', 'vmute @kullanıcı <menüden sebep>'],
     chatUsable: true,
-    checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.MuteMembers) ||
-        (guildData.voiceMuteAuth && guildData.voiceMuteAuth.some(r => message.member.roles.cache.has(r))), 
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.MuteMembers) ||
+        (guildData.voiceMuteAuth && guildData.voiceMuteAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
         const user =
             (await client.utils.getUser(args[0])) ||
@@ -99,18 +100,17 @@ const Command: Moderation.ICommand = {
             ],
         });
 
-
-               const timeFinished = new ActionRowBuilder<ButtonBuilder>({
-                    components: [
-                        new ButtonBuilder({
-                            custom_id: 'timefinished',
-                            label: 'Mesajın Geçerlilik Süresi Doldu.',
-                            emoji: { name: '⏱️' },
-                            style: ButtonStyle.Danger,
-                            disabled: true,
-                        }),
-                    ],
-                });
+        const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+            components: [
+                new ButtonBuilder({
+                    custom_id: 'timefinished',
+                    label: 'Mesajın Geçerlilik Süresi Doldu.',
+                    emoji: { name: '⏱️' },
+                    style: ButtonStyle.Danger,
+                    disabled: true,
+                }),
+            ],
+        });
 
         const embed = new EmbedBuilder({
             color: client.utils.getRandomColor(),
@@ -157,8 +157,6 @@ const Command: Moderation.ICommand = {
                         }),
                     ],
                 });
-
-           
 
                 const modal = new ModalBuilder({
                     custom_id: 'voice-mute-modal',
@@ -222,7 +220,7 @@ const Command: Moderation.ICommand = {
                 } else {
                     question.edit({
                         embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
-                        components: [timeFinished]
+                        components: [timeFinished],
                     });
                 }
                 return;
@@ -261,7 +259,7 @@ const Command: Moderation.ICommand = {
                 } else {
                     question.edit({
                         embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
-                        components: [timeFinished]
+                        components: [timeFinished],
                     });
                 }
                 return;
@@ -271,7 +269,7 @@ const Command: Moderation.ICommand = {
         } else {
             question.edit({
                 embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
-                components: [timeFinished]
+                components: [timeFinished],
             });
         }
     },
@@ -294,6 +292,7 @@ async function muteUser(
         const operations = guildData.maxMuteOperations || DEFAULTS.mute.max;
         const userPenals = await PenalModel.countDocuments({
             $or: [{ type: PenalFlags.VoiceMute }, { type: PenalFlags.ChatMute }],
+            visible: true
         });
 
         const operation = operations.find((o) => o.count === userPenals);

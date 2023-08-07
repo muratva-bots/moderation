@@ -21,8 +21,8 @@ const Command: Moderation.ICommand = {
     examples: ['kilit <kilit menü panelinden işleminizi seçin.>'],
     checkPermission: ({ message, guildData }) =>
         message.member.permissions.has(PermissionFlagsBits.ManageChannels) ||
-        (guildData.ownerRoles && guildData.ownerRoles.some(r => message.member.roles.cache.has(r))),
-        execute: async ({ client, message, guildData }) => {
+        (guildData.ownerRoles && guildData.ownerRoles.some((r) => message.member.roles.cache.has(r))),
+    execute: async ({ client, message, guildData }) => {
         const rowOne = new ActionRowBuilder<ChannelSelectMenuBuilder>({
             components: [
                 new ChannelSelectMenuBuilder({

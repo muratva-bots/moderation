@@ -7,7 +7,7 @@ import {
     EmbedBuilder,
     PermissionFlagsBits,
     ButtonBuilder,
-    ButtonStyle
+    ButtonStyle,
 } from 'discord.js';
 
 const Command: Moderation.ICommand = {
@@ -16,7 +16,7 @@ const Command: Moderation.ICommand = {
     examples: ['taşı @kullanıcı <menüden kanal seçin>', 'taşı 123456789123456789 <menüden kanal seçin>'],
     checkPermission: ({ message, guildData }) =>
         message.member.permissions.has(PermissionFlagsBits.MoveMembers) ||
-        (guildData.moveAuth && guildData.moveAuth.some(r => message.member.roles.cache.has(r))),
+        (guildData.moveAuth && guildData.moveAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args }) => {
         const member =
             (await client.utils.getMember(message.guild, args[0])) ||

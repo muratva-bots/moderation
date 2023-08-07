@@ -21,7 +21,7 @@ import {
     User,
     bold,
     inlineCode,
-    time
+    time,
 } from 'discord.js';
 import ms from 'ms';
 import { quarantineUser } from './quarantine';
@@ -33,8 +33,8 @@ const Command: Moderation.ICommand = {
     examples: ['mute @kullanıcı <menüden sebep>', 'mute 123456789123456789 <menüden sebep>'],
     checkPermission: ({ message, guildData }) =>
         message.member.permissions.has(PermissionFlagsBits.MuteMembers) ||
-        (guildData.chatMuteAuth && guildData.chatMuteAuth.some(r => message.member.roles.cache.has(r))),
-            execute: async ({ client, message, args, guildData }) => {
+        (guildData.chatMuteAuth && guildData.chatMuteAuth.some((r) => message.member.roles.cache.has(r))),
+    execute: async ({ client, message, args, guildData }) => {
         if (!message.guild.roles.cache.has(guildData.chatMuteRole)) {
             client.utils.sendTimedMessage(message, 'Rol ayarlanmamış.');
             return;
@@ -104,17 +104,17 @@ const Command: Moderation.ICommand = {
             ],
         });
 
-               const timeFinished = new ActionRowBuilder<ButtonBuilder>({
-                    components: [
-                        new ButtonBuilder({
-                            custom_id: 'timefinished',
-                            label: 'Mesajın Geçerlilik Süresi Doldu.',
-                            emoji: { name: '⏱️' },
-                            style: ButtonStyle.Danger,
-                            disabled: true,
-                        }),
-                    ],
-                });
+        const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+            components: [
+                new ButtonBuilder({
+                    custom_id: 'timefinished',
+                    label: 'Mesajın Geçerlilik Süresi Doldu.',
+                    emoji: { name: '⏱️' },
+                    style: ButtonStyle.Danger,
+                    disabled: true,
+                }),
+            ],
+        });
 
         const embed = new EmbedBuilder({
             color: client.utils.getRandomColor(),
@@ -194,7 +194,8 @@ const Command: Moderation.ICommand = {
                     muteUser(client, message, question, user, member, guildData, timing, reason);
                 } else {
                     question.edit({
-                        embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')], components: [timeFinished]
+                        embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
+                        components: [timeFinished],
                     });
                 }
                 return;
@@ -222,10 +223,9 @@ const Command: Moderation.ICommand = {
                     const attachment = collected.first().attachments.first().proxyURL;
                     muteUser(client, message, question, user, member, guildData, reason.time, reason.name, attachment);
                 } else {
-                    
                     question.edit({
                         embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
-                        components: [timeFinished]
+                        components: [timeFinished],
                     });
                 }
                 return;
@@ -262,10 +262,9 @@ const Command: Moderation.ICommand = {
                         `${reason.name}\nHesap: ${user.username} (${user.id})`,
                     );
                 } else {
-                   
                     question.edit({
                         embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
-                        components: [timeFinished]
+                        components: [timeFinished],
                     });
                 }
                 return;
@@ -273,10 +272,9 @@ const Command: Moderation.ICommand = {
 
             muteUser(client, message, question, user, member, guildData, reason.time, reason.name);
         } else {
-           
             question.edit({
                 embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
-                components: [timeFinished]
+                components: [timeFinished],
             });
         }
     },
@@ -299,6 +297,7 @@ async function muteUser(
         const operations = guildData.maxMuteOperations || DEFAULTS.mute.max;
         const userPenals = await PenalModel.countDocuments({
             $or: [{ type: PenalFlags.VoiceMute }, { type: PenalFlags.ChatMute }],
+            visible: true
         });
 
         const operation = operations.find((o) => o.count === userPenals);
@@ -356,9 +355,10 @@ async function muteUser(
         embeds: [
             new EmbedBuilder({
                 color: client.utils.getRandomColor(),
-                description: `📝 ${user} (${inlineCode(
-                    user.id,
-                )}) adlı kullanıcı "${bold(reason)}" sebebiyle ${time(Math.floor(penal.finish / 1000), 'R')} ${
+                description: `📝 ${user} (${inlineCode(user.id)}) adlı kullanıcı "${bold(reason)}" sebebiyle ${time(
+                    Math.floor(penal.finish / 1000),
+                    'R',
+                )} ${
                     extra !== 0 ? `(${inlineCode(`+${ms(extra)}`)}) ` : ''
                 }yazı susturması cezası aldı. (Ceza Numarası: ${inlineCode(`#${newID}`)})`,
             }),

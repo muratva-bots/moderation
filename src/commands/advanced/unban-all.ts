@@ -27,15 +27,19 @@ const Command: Moderation.ICommand = {
             },
         });
 
-        const penalBans = await PenalModel.find({ 
-            guild: message.guildId, 
-            activity: true, 
-            $or: [{ type: PenalFlags.ForceBan }, { type: PenalFlags.Ban }] 
-        }).select("user");
+        const penalBans = await PenalModel.find({
+            guild: message.guildId,
+            activity: true,
+            $or: [{ type: PenalFlags.ForceBan }, { type: PenalFlags.Ban }],
+        }).select('user');
 
         const filter = args.join(' ');
         if (filter.length && filter.trim().length > 0) {
-            const filteredBans = bans.filter((b) => !penalBans.some(p => p.user === b.user.id) && b.user.username.toLowerCase().includes(filter.toLowerCase()));
+            const filteredBans = bans.filter(
+                (b) =>
+                    !penalBans.some((p) => p.user === b.user.id) &&
+                    b.user.username.toLowerCase().includes(filter.toLowerCase()),
+            );
             if (!filteredBans.size) {
                 return client.utils.sendTimedMessage(
                     message,
@@ -75,7 +79,7 @@ const Command: Moderation.ICommand = {
             return;
         }
 
-        const filteredBans = bans.filter((b) => !penalBans.some(p => p.user === b.user.id));
+        const filteredBans = bans.filter((b) => !penalBans.some((p) => p.user === b.user.id));
         if (!filteredBans.size) {
             return client.utils.sendTimedMessage(message, 'Sunucuda yasaklı üye bulunmuyor.');
         }

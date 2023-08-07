@@ -13,7 +13,7 @@ const Command: Moderation.ICommand = {
     checkPermission: ({ message, guildData }) =>
         message.member.permissions.has(PermissionFlagsBits.ViewAuditLog) ||
         (guildData.minStaffRole && message.member.roles.cache.has(guildData.minStaffRole)),
-            execute: async ({ client, message, args }) => {
+    execute: async ({ client, message, args }) => {
         const embed = new EmbedBuilder({
             color: client.utils.getRandomColor(),
             author: {

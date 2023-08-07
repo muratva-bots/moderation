@@ -21,7 +21,7 @@ import {
     inlineCode,
     time,
     ButtonBuilder,
-    ButtonStyle
+    ButtonStyle,
 } from 'discord.js';
 import ms from 'ms';
 
@@ -32,8 +32,8 @@ const Command: Moderation.ICommand = {
     chatUsable: true,
     checkPermission: ({ message, guildData }) =>
         message.member.permissions.has(PermissionFlagsBits.BanMembers) ||
-        (guildData.banAuth && guildData.banAuth.some(r => message.member.roles.cache.has(r))),
-            execute: async ({ client, message, args, guildData }) => {
+        (guildData.banAuth && guildData.banAuth.some((r) => message.member.roles.cache.has(r))),
+    execute: async ({ client, message, args, guildData }) => {
         const user =
             (await client.utils.getUser(args[0])) ||
             (message.reference ? (await message.fetchReference()).author : undefined);
@@ -106,17 +106,17 @@ const Command: Moderation.ICommand = {
             ],
         });
 
-               const timeFinished = new ActionRowBuilder<ButtonBuilder>({
-                    components: [
-                        new ButtonBuilder({
-                            custom_id: 'timefinished',
-                            label: 'Mesajın Geçerlilik Süresi Doldu.',
-                            emoji: { name: '⏱️' },
-                            style: ButtonStyle.Danger,
-                            disabled: true,
-                        }),
-                    ],
-                });
+        const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+            components: [
+                new ButtonBuilder({
+                    custom_id: 'timefinished',
+                    label: 'Mesajın Geçerlilik Süresi Doldu.',
+                    emoji: { name: '⏱️' },
+                    style: ButtonStyle.Danger,
+                    disabled: true,
+                }),
+            ],
+        });
 
         const embed = new EmbedBuilder({
             color: client.utils.getRandomColor(),
@@ -195,9 +195,9 @@ const Command: Moderation.ICommand = {
 
                     banUser(client, message, user, member, guildData, timing, reason, false, question);
                 } else {
-                 
                     question.edit({
-                        embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')], components: [timeFinished]
+                        embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
+                        components: [timeFinished],
                     });
                 }
                 return;
@@ -236,9 +236,9 @@ const Command: Moderation.ICommand = {
                         attachment,
                     );
                 } else {
-                    
                     question.edit({
-                        embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')], components: [timeFinished]
+                        embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
+                        components: [timeFinished],
                     });
                 }
                 return;
@@ -276,10 +276,9 @@ const Command: Moderation.ICommand = {
                         question,
                     );
                 } else {
-                
                     question.edit({
                         embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
-                        components: [timeFinished]
+                        components: [timeFinished],
                     });
                 }
                 return;
@@ -288,7 +287,8 @@ const Command: Moderation.ICommand = {
             banUser(client, message, user, member, guildData, reason.time, reason.name, false, question);
         } else {
             question.edit({
-                embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')], components: [timeFinished]
+                embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
+                components: [timeFinished],
             });
         }
     },
@@ -323,7 +323,7 @@ export async function banUser(
         await UserModel.updateOne(
             { id: user.id, guild: message.guildId },
             { $set: { lastRoles: roles } },
-            { upsert: true }
+            { upsert: true },
         );
     }
 

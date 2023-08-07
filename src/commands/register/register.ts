@@ -19,24 +19,25 @@ import { quarantineUser } from '../penal/quarantine';
 import { NameFlags } from '@/enums';
 
 const titles = {
-    [NameFlags.Register]: "Kayıt Olma",
-    [NameFlags.ChangeGender]: "Yanlış Cinsiyet Kaydı",
-    [NameFlags.Unregister]: "Kayıtsıza Atılma",
-    [NameFlags.ChangeName]: "İsim Değiştirme (Yetkili)",
-    [NameFlags.BoosterChangeName]: "İsim Değiştirme (Boost)",
-    [NameFlags.BoostFinish]: "Nitrosu Bitti",
-    [NameFlags.ManuelBoostFinish]: "Boostu Çekti",
-    [NameFlags.AutoRegister]: "Oto Kayıt",
-    [NameFlags.Kick]: "Sunucudan Atıldı",
-    [NameFlags.Leave]: "Sunucudan Çıktı"
+    [NameFlags.Register]: 'Kayıt Olma',
+    [NameFlags.ChangeGender]: 'Yanlış Cinsiyet Kaydı',
+    [NameFlags.Unregister]: 'Kayıtsıza Atılma',
+    [NameFlags.ChangeName]: 'İsim Değiştirme (Yetkili)',
+    [NameFlags.BoosterChangeName]: 'İsim Değiştirme (Boost)',
+    [NameFlags.BoostFinish]: 'Nitrosu Bitti',
+    [NameFlags.ManuelBoostFinish]: 'Boostu Çekti',
+    [NameFlags.AutoRegister]: 'Oto Kayıt',
+    [NameFlags.Kick]: 'Sunucudan Atıldı',
+    [NameFlags.Leave]: 'Sunucudan Çıktı',
 };
 
 const Command: Moderation.ICommand = {
     usages: ['register', 'woman', 'kız', 'kadın', 'bayan', 'k'],
     description: 'Belirttiğiniz üyeyi kadın olarak kayıt edersiniz.',
     examples: ['k @kullanıcı isim yaş', 'k 123456789123456789 isim yaş'],
-    checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
-        (guildData.registerAuth && guildData.registerAuth.some(r => message.member.roles.cache.has(r))), 
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
+        (guildData.registerAuth && guildData.registerAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
         if (!guildData.menuRegister) return;
 

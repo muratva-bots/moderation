@@ -8,28 +8,29 @@ import {
     ComponentType,
     EmbedBuilder,
     PermissionFlagsBits,
-    codeBlock
+    codeBlock,
 } from 'discord.js';
 
 const titles = {
-    [NameFlags.Register]: "Kayıt Olma",
-    [NameFlags.ChangeGender]: "Yanlış Cinsiyet Kaydı",
-    [NameFlags.Unregister]: "Kayıtsıza Atılma",
-    [NameFlags.ChangeName]: "İsim Değiştirme (Yetkili)",
-    [NameFlags.BoosterChangeName]: "İsim Değiştirme (Boost)",
-    [NameFlags.BoostFinish]: "Nitrosu Bitti",
-    [NameFlags.ManuelBoostFinish]: "Boostu Çekti",
-    [NameFlags.AutoRegister]: "Oto Kayıt",
-    [NameFlags.Kick]: "Sunucudan Atıldı",
-    [NameFlags.Leave]: "Sunucudan Çıktı"
+    [NameFlags.Register]: 'Kayıt Olma',
+    [NameFlags.ChangeGender]: 'Yanlış Cinsiyet Kaydı',
+    [NameFlags.Unregister]: 'Kayıtsıza Atılma',
+    [NameFlags.ChangeName]: 'İsim Değiştirme (Yetkili)',
+    [NameFlags.BoosterChangeName]: 'İsim Değiştirme (Boost)',
+    [NameFlags.BoostFinish]: 'Nitrosu Bitti',
+    [NameFlags.ManuelBoostFinish]: 'Boostu Çekti',
+    [NameFlags.AutoRegister]: 'Oto Kayıt',
+    [NameFlags.Kick]: 'Sunucudan Atıldı',
+    [NameFlags.Leave]: 'Sunucudan Çıktı',
 };
 
 const Command: Moderation.ICommand = {
     usages: ['isimler'],
     description: 'Belirtilen kullanıcının geçmiş isimlerini görüntülersiniz.',
     examples: ['isimler @kullanıcı', 'isimler 123456789123456789'],
-    checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
-        (guildData.registerAuth && guildData.registerAuth.some(r => message.member.roles.cache.has(r))),
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
+        (guildData.registerAuth && guildData.registerAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args }) => {
         const user =
             (await client.utils.getMember(message.guild, args[0])) ||
@@ -57,10 +58,10 @@ const Command: Moderation.ICommand = {
                     return codeBlock(
                         'fix',
                         [
-                            n.role ? (message.guild.roles.cache.get(n.role)?.name || "@silinmiş") : undefined,
+                            n.role ? message.guild.roles.cache.get(n.role)?.name || '@silinmiş' : undefined,
                             `İşlem: ${n.type}`,
-                            `İsim: ${n.name || "Bulunamadı"}`,
-                            (n.admin || n.admin !== user.id)
+                            `İsim: ${n.name || 'Bulunamadı'}`,
+                            n.admin || n.admin !== user.id
                                 ? user
                                     ? `Yetkili: ${user.username} (${user.id})`
                                     : `Yetkili: ${n.admin}`
@@ -116,10 +117,10 @@ const Command: Moderation.ICommand = {
                                 return codeBlock(
                                     'fix',
                                     [
-                                        n.role ? (message.guild.roles.cache.get(n.role)?.name || "@silinmiş") : undefined,
+                                        n.role ? message.guild.roles.cache.get(n.role)?.name || '@silinmiş' : undefined,
                                         `İşlem: ${titles[n.type]}`,
                                         `İsim: ${n.name}`,
-                                        (n.admin || n.admin !== user.id)
+                                        n.admin || n.admin !== user.id
                                             ? user
                                                 ? `Yetkili: ${user.username} (${user.id})`
                                                 : `Yetkili: ${n.admin}`

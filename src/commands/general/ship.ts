@@ -1,5 +1,13 @@
 import { createCanvas, loadImage } from 'canvas';
-import { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ComponentType, bold } from 'discord.js';
+import {
+    ActionRowBuilder,
+    AttachmentBuilder,
+    ButtonBuilder,
+    ButtonInteraction,
+    ButtonStyle,
+    ComponentType,
+    bold,
+} from 'discord.js';
 
 const Command: Moderation.ICommand = {
     usages: ['ship'],
@@ -13,17 +21,16 @@ const Command: Moderation.ICommand = {
             return;
         }
 
-       const row = new ActionRowBuilder<ButtonBuilder>({
+        const row = new ActionRowBuilder<ButtonBuilder>({
             components: [
                 new ButtonBuilder({
                     custom_id: 'accepted',
-                    label: "Çay iç",
+                    label: 'Çay iç',
                     emoji: { name: '🍵' },
                     style: ButtonStyle.Danger,
                 }),
             ],
         });
-
 
         if (!mention) {
             if (
@@ -83,7 +90,7 @@ const Command: Moderation.ICommand = {
             context.drawImage(think, 275, 60, 150, 150);
         }
         if (lovePercentage > 0 && lovePercentage < 55) {
-            row.components[0].setDisabled(true)
+            row.components[0].setDisabled(true);
             context.drawImage(broken, 275, 60, 150, 150);
         }
 
@@ -92,28 +99,35 @@ const Command: Moderation.ICommand = {
         });
 
         const question = await message.reply({
-            content: `[ ${bold(`• ${mention.displayName}`)} & ${bold(`• ${message.author.displayName}`)} ]\n Ne kadar uyumlusun? ${bold(`%${lovePercentage} Uyumlu`)}`,
+            content: `[ ${bold(`• ${mention.displayName}`)} & ${bold(
+                `• ${message.author.displayName}`,
+            )} ]\n Ne kadar uyumlusun? ${bold(`%${lovePercentage} Uyumlu`)}`,
             files: [attachment],
-            components: [row]
+            components: [row],
         });
 
-         const filter = (i: ButtonInteraction) => i.isButton() && i.user.id === message.author.id || i.user.id === mention.id;
-         const collected = await question.awaitMessageComponent({
+        const filter = (i: ButtonInteraction) =>
+            (i.isButton() && i.user.id === message.author.id) || i.user.id === mention.id;
+        const collected = await question.awaitMessageComponent({
             filter,
             time: 1000 * 60 * 5,
             componentType: ComponentType.Button,
         });
 
-        if(collected) {
-            row.components[0].setDisabled(true)
-            question.edit({ components: [row] })
-            collected.reply({ content: `${collected.user.id == message.author.id ? `${bold(mention.user.username)} selam! ${bold(message.author.username)}` : `${bold(message.author.username)} selam! ${bold(mention.user.username)}`} seninle çay içmek istiyor, bu fırsatı kaçırma derim.`, })
-
+        if (collected) {
+            row.components[0].setDisabled(true);
+            question.edit({ components: [row] });
+            collected.reply({
+                content: `${
+                    collected.user.id == message.author.id
+                        ? `${bold(mention.user.username)} selam! ${bold(message.author.username)}`
+                        : `${bold(message.author.username)} selam! ${bold(mention.user.username)}`
+                } seninle çay içmek istiyor, bu fırsatı kaçırma derim.`,
+            });
         } else {
-            row.components[0].setDisabled(true)
-            question.edit({ components: [row] })
+            row.components[0].setDisabled(true);
+            question.edit({ components: [row] });
         }
-
     },
 };
 

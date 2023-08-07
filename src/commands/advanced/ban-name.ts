@@ -24,12 +24,15 @@ const Command: Moderation.ICommand = {
         }
 
         const members = await message.guild.members.fetch();
-        const penalBans = await PenalModel.find({ 
-            guild: message.guildId, 
-            activity: true, 
-            $or: [{ type: PenalFlags.ForceBan }, { type: PenalFlags.Ban }] 
-        }).select("user");
-        const nameMembers = members.filter((m) => !penalBans.some(p => p.user === m.id) && m.user.username.toLowerCase().includes(name.toLowerCase()));
+        const penalBans = await PenalModel.find({
+            guild: message.guildId,
+            activity: true,
+            $or: [{ type: PenalFlags.ForceBan }, { type: PenalFlags.Ban }],
+        }).select('user');
+        const nameMembers = members.filter(
+            (m) =>
+                !penalBans.some((p) => p.user === m.id) && m.user.username.toLowerCase().includes(name.toLowerCase()),
+        );
 
         const embed = new EmbedBuilder({
             color: client.utils.getRandomColor(),

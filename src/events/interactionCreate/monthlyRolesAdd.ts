@@ -6,17 +6,17 @@ async function monthlyRolesAdd(interaction: ButtonInteraction) {
     if (!interactionMember) return;
 
     const query = { guild: interaction.guildId, id: interaction.user.id };
-    const document = await UserModel.findOne(query) || new UserModel(query);
+    const document = (await UserModel.findOne(query)) || new UserModel(query);
 
     if (interaction.customId === 'monthlyroles-yes') {
         if (document.monthlyRole) {
             interaction.reply({
-                content: "Zaten aylık rol veriliyor.",
-                ephemeral: true
+                content: 'Zaten aylık rol veriliyor.',
+                ephemeral: true,
             });
             return;
         }
-        
+
         interaction.reply({ content: `Artık aylık üye rolleri üzerinize verilecek.`, ephemeral: true });
         document.monthlyRole = true;
         document.save();
@@ -26,8 +26,8 @@ async function monthlyRolesAdd(interaction: ButtonInteraction) {
     if (interaction.customId === 'monthlyroles-no') {
         if (!document.monthlyRole) {
             interaction.reply({
-                content: "Zaten aylık rol verilmiyor.",
-                ephemeral: true
+                content: 'Zaten aylık rol verilmiyor.',
+                ephemeral: true,
             });
             return;
         }

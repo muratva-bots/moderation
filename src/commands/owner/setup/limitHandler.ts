@@ -126,7 +126,7 @@ export async function limitHandler(
                             [`moderation.${option.value}LimitTime`]: guildData[`${option.value}LimitTime`],
                         },
                     },
-                    { upsert: true }
+                    { upsert: true },
                 );
 
                 modalCollector.reply({
@@ -158,7 +158,7 @@ export async function limitHandler(
                         [`moderation.${option.value}LimitTime`]: 1,
                     },
                 },
-                { upsert: true }
+                { upsert: true },
             );
 
             i.reply({

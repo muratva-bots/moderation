@@ -9,5 +9,5 @@ export enum NameFlags {
     ManuelBoostFinish,
     AutoRegister,
     Kick,
-    Leave
+    Leave,
 }
