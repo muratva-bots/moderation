@@ -1,4 +1,5 @@
 import { UserModel } from '@/models';
+import { NameFlags } from '@/enums';
 import { EmbedBuilder, inlineCode, TextChannel, bold, PermissionFlagsBits } from 'discord.js';
 import { quarantineUser } from '../penal/quarantine';
 
@@ -49,7 +50,7 @@ const Command: Moderation.ICommand = {
                 document.names.push({
                     admin: message.author.id,
                     time: Date.now(),
-                    type: 'Yanlış Cinsiyet Kaydı',
+                    type: NameFlags.ChangeGender,
                     name: lastName ? lastName.name : member.displayName,
                     role: guildData.womanRoles[0],
                 });
@@ -157,7 +158,7 @@ const Command: Moderation.ICommand = {
                 $push: {
                     names: {
                         admin: message.author.id,
-                        type: 'Kayıt Olma',
+                        type: NameFlags.Register,
                         time: Date.now(),
                         role:
                             guildData.manRoles && guildData.manRoles.length
