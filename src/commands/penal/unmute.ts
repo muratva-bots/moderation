@@ -29,7 +29,8 @@ const Command: Moderation.ICommand = {
             return;
         }
 
-        if (!member.roles.cache.has(guildData.voiceMuteRole) && !member.roles.cache.has(guildData.chatMuteRole)) {
+        const hasVoiceMute = message.guild.roles.cache.has(guildData.voiceMuteRole) ? member.roles.cache.has(guildData.voiceMuteRole) : member.voice?.serverMute;
+        if (!hasVoiceMute && !member.roles.cache.has(guildData.chatMuteRole)) {
             client.utils.sendTimedMessage(message, 'Kullanıcının cezası yok.');
             return;
         }
@@ -48,7 +49,7 @@ const Command: Moderation.ICommand = {
             },
         });
 
-        if (member.roles.cache.has(guildData.voiceMuteRole) && member.roles.cache.has(guildData.chatMuteRole)) {
+        if (hasVoiceMute && member.roles.cache.has(guildData.chatMuteRole)) {
             const row = new ActionRowBuilder<ButtonBuilder>({
                 components: [
                     new ButtonBuilder({
@@ -179,11 +180,8 @@ const Command: Moderation.ICommand = {
             reason,
         );
 
-        if (guildData.voiceMuteRole) {
-            member.roles.remove([guildData.chatMuteRole, guildData.voiceMuteRole]);
-        } else {
-            member.roles.remove([guildData.chatMuteRole]);
-        }
+        if (member.voice.channelId) member.voice.setMute(false);
+        member.roles.remove([guildData.chatMuteRole, guildData.voiceMuteRole].filter(r => message.guild.roles.cache.has(r)));
     },
 };
 
