@@ -36,7 +36,7 @@ export interface IRegister {
 
 @modelOptions({ options: { customName: 'Users', allowMixed: 0 } })
 export class UserClass {
-    @prop({ type: () => String, required: true, unique: true })
+    @prop({ type: () => String, required: true })
     public id!: string;
 
     @prop({ type: () => String, required: true })
