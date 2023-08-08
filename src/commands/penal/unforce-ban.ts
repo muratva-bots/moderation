@@ -12,7 +12,7 @@ const Command: Moderation.ICommand = {
         (guildData.ownerRoles && guildData.ownerRoles.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args }) => {
         const reference = message.reference ? (await message.fetchReference()).author : undefined;
-        const user = (await client.utils.getMember(message.guild, args[0])) || reference;
+        const user = (await client.utils.getUser(args[0])) || reference;
         if (!user) {
             client.utils.sendTimedMessage(message, 'Geçerli bir kullanıcı belirt!');
             return;
