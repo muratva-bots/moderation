@@ -134,7 +134,7 @@ export class ModerationClass {
 
 @modelOptions({ options: { customName: 'Guilds', allowMixed: 0 } })
 export class GuildClass {
-    @prop({ type: () => String, required: true, unique: true })
+    @prop({ type: () => String, required: true })
     public id!: string;
 
     @prop({
@@ -156,6 +156,9 @@ export class GuildClass {
 
     @prop({ type: Object, default: {} })
     public guard: object;
+
+    @prop({ type: Object, default: {} })
+    public point: object;
 }
 
 export const GuildModel = getModelForClass(GuildClass);
