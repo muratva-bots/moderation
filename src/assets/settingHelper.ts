@@ -9,6 +9,14 @@ export const SETTINGS = {
             isVoice: true,
         },
         {
+            name: 'Yetki Chat',
+            value: 'staffChat',
+            description: 'Yetkili sohbetini belirlersiniz.',
+            type: 'channel',
+            isParent: false,
+            isVoice: false,
+        },
+        {
             name: 'Chat Kanalı',
             value: 'chatChannel',
             description: 'Chat kanalını belirlersiniz.',
