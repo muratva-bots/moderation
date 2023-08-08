@@ -8,7 +8,7 @@ export interface INote {
 
 @modelOptions({ options: { customName: 'Penals', allowMixed: 0 } })
 export class PenalClass {
-    @prop({ type: () => String, required: true, unique: true })
+    @prop({ type: () => String, required: true })
     public id!: string;
 
     @prop({ type: () => String, required: true })
