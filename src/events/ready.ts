@@ -33,9 +33,7 @@ const Ready: Moderation.IEvent<Events.ClientReady> = {
 
         setInterval(() => {
             const now = Date.now();
-            client.utils.limits
-                .filter((v) => 1000 * 60 * 60 >= now - v.lastUsage)
-                .forEach((_, k) => client.limits.delete(k));
+            client.utils.limits.sweep((v) => 1000 * 60 * 60 >= now - v.lastUsage);
         }, 1000 * 10);
     },
 };
