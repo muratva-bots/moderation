@@ -32,7 +32,7 @@ const titles = {
 };
 
 const Command: Moderation.ICommand = {
-    usages: ['register', 'woman', 'kız', 'kadın', 'bayan', 'k'],
+    usages: ['register', 'woman', 'kız', 'kadın', 'bayan', 'k', 'e'],
     description: 'Belirttiğiniz üyeyi kadın olarak kayıt edersiniz.',
     examples: ['k @kullanıcı isim yaş', 'k 123456789123456789 isim yaş'],
     checkPermission: ({ message, guildData }) =>
@@ -268,6 +268,25 @@ const Command: Moderation.ICommand = {
             if (roles.length) client.utils.setRoles(member, [...new Set(roles)]);
 
             if (name) member.setNickname(name);
+
+            await UserModel.updateOne(
+                { id: member.id, guild: message.guildId },
+                {
+                    $push: {
+                        names: {
+                            admin: message.author.id,
+                            type: NameFlags.Register,
+                            time: Date.now(),
+                            role:
+                                collected.customId === 'woman'
+                                    ? guildData.womanRoles[0]
+                                    : guildData.manRoles[0],
+                            name: name ? name : undefined,
+                        },
+                    },
+                },
+                { upsert: true },
+            );
 
             await UserModel.updateOne(
                 { id: message.author.id },

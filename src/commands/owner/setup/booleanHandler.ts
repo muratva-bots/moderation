@@ -53,9 +53,9 @@ export async function booleanHandler(
             guildData[option.value] = i.customId === 'enable';
 
             if (option.name === 'menuRegister') {
-                client.commands.get('register').isDisabled = guildData.menuRegister;
-                client.commands.get('woman').isDisabled = !guildData.menuRegister;
-                client.commands.get('erkek').isDisabled = !guildData.menuRegister;
+                client.commands.get('register').isDisabled = !guildData.menuRegister;
+                client.commands.get('woman').isDisabled = guildData.menuRegister;
+                client.commands.get('erkek').isDisabled = guildData.menuRegister;
             }
 
             await GuildModel.updateOne(

@@ -58,9 +58,9 @@ const Command: Moderation.ICommand = {
                     return codeBlock(
                         'fix',
                         [
-                            n.role ? message.guild.roles.cache.get(n.role)?.name || '@silinmiş' : undefined,
-                            `İşlem: ${n.type}`,
-                            `İsim: ${n.name || 'Bulunamadı'}`,
+                            n.role ? `Rol: ${message.guild.roles.cache.get(n.role)?.name || '@silinmiş'}` : undefined,
+                            `İşlem: ${titles[n.type]}`,
+                            n.name ? `İsim: ${n.name}` : undefined,
                             n.admin || n.admin !== user.id
                                 ? user
                                     ? `Yetkili: ${user.username} (${user.id})`
@@ -79,7 +79,7 @@ const Command: Moderation.ICommand = {
                             .join('\n'),
                     );
                 })
-                .join('\n'),
+                .join(''),
             footer: {
                 text: `${document.names.length} adet isim kayıdı bulunuyor.`,
             },
@@ -138,7 +138,7 @@ const Command: Moderation.ICommand = {
                                         .join('\n'),
                                 );
                             })
-                            .join('\n'),
+                            .join(''),
                     ),
                 ],
                 components: [client.utils.paginationButtons(page, totalData)],
