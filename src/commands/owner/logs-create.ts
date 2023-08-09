@@ -17,6 +17,7 @@ const logChannelNames = [
     'unfinished-penals',
     'message-log',
     'voice-log',
+    'auto-downgrade-staff'
 ];
 
 const Command: Moderation.ICommand = {
