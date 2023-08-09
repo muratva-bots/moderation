@@ -27,8 +27,7 @@ const Command: Moderation.ICommand = {
 
         if (client.utils.checkUser(message, member)) return;
 
-        const tags = guildData.tags || [];
-        const hasTag = tags.some((t) => member.user.displayName.includes(t));
+        const hasTag = guildData.tags?.some((t) => member.user.displayName.includes(t));
 
         args = args.splice(1);
         let name = args
@@ -40,7 +39,7 @@ const Command: Moderation.ICommand = {
             return;
         }
 
-        if (guildData.tags && guildData.tags.length && guildData.secondTag) {
+        if (guildData.tags.length && guildData.secondTag) {
             name = `${hasTag ? guildData.tags[0] : guildData.secondTag} ${name}`;
         }
 

@@ -78,8 +78,7 @@ const Command: Moderation.ICommand = {
 
         if (client.utils.checkUser(message, member)) return;
 
-        const tags = guildData.tags || [];
-        const hasTag = tags.some((t) => member.user.displayName.includes(t));
+        const hasTag = guildData.tags?.some((t) => member.user.displayName.includes(t));
 
         let name;
         if (guildData.needName) {
@@ -93,7 +92,7 @@ const Command: Moderation.ICommand = {
                 return;
             }
 
-            if (guildData.tags.length && guildData.secondTag) {
+            if (guildData.tags?.length && guildData.secondTag) {
                 name = `${hasTag ? guildData.tags[0] : guildData.secondTag} ${name}`;
             }
         }
@@ -147,7 +146,7 @@ const Command: Moderation.ICommand = {
 
         if (name) await member.setNickname(name);
 
-        const roles: string[] = (guildData.womanRoles || []).filter((r) => message.guild.roles.cache.has(r));
+        const roles: string[] = guildData.womanRoles?.filter((r) => message.guild.roles.cache.has(r));
         if (message.guild.roles.cache.has(guildData.familyRole) && hasTag) roles.push(guildData.familyRole);
         if (message.guild.roles.cache.has(guildData.registeredRole)) roles.push(guildData.registeredRole);
         if (roles.length) client.utils.setRoles(member, [...new Set(roles)]);
@@ -160,10 +159,7 @@ const Command: Moderation.ICommand = {
                         admin: message.author.id,
                         type: NameFlags.Register,
                         time: Date.now(),
-                        role:
-                            guildData.womanRoles && guildData.womanRoles.length
-                                ? guildData.womanRoles[0]
-                                : guildData.registeredRole,
+                        role: guildData.womanRoles?.length ? guildData.womanRoles[0] : guildData.registeredRole,
                         name: name ? name : undefined,
                     },
                 },
@@ -206,7 +202,7 @@ const Command: Moderation.ICommand = {
             {
                 $inc: {
                     [`${
-                        (guildData.womanRoles || []).some((r) => message.guild.roles.cache.has(r))
+                        guildData.womanRoles?.some((r) => message.guild.roles.cache.has(r))
                             ? 'registers.woman'
                             : 'registers.normal'
                     }`]: 1,

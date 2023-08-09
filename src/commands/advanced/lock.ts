@@ -39,8 +39,7 @@ const Command: Moderation.ICommand = {
                     label: 'Kayıt Kanallarını Kapat',
                     style: ButtonStyle.Secondary,
                     custom_id: 'register',
-                    disabled:
-                        !guildData.registerParent && !guildData.unregisterRoles && !guildData.unregisterRoles.length,
+                    disabled: !guildData.registerParent && !guildData.unregisterRoles?.length,
                 }),
             ],
         });
@@ -108,7 +107,7 @@ const Command: Moderation.ICommand = {
             if (collected.isButton()) {
                 collected.deferUpdate();
 
-                if (!(guildData.ownerRoles || []).some((r) => message.member.roles.cache.has(r))) {
+                if (!guildData.ownerRoles?.some((r) => message.member.roles.cache.has(r))) {
                     collected.reply({
                         content: 'Bu işlemi gerçekleştirmek için yeterli yetkin yok.',
                     });

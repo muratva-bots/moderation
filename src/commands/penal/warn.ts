@@ -229,8 +229,8 @@ const Command: Moderation.ICommand = {
                     const description = modalCollector.fields.getTextInputValue('description');
                     document.warns.push({ admin: message.author.id, description: description });
 
-                    const warnRoles = (guildData.warnRoles || [])
-                        .sort((a, b) => b.count - a.count)
+                    const warnRoles = guildData.warnRoles
+                        ?.sort((a, b) => b.count - a.count)
                         .filter((w) => document.warns.length >= w.count && message.guild.roles.cache.has(w.role));
                     if (warnRoles) {
                         if (guildData.removeWarnRole) {

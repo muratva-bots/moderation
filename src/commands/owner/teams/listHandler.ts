@@ -13,7 +13,7 @@ import { ModerationClass } from '@/models';
 async function listHandler(client: Client, message: Message, guildData: ModerationClass, botMessage?: Message) {
     const members = await message.guild.members.fetch();
 
-    const teams = (guildData.teams || []).filter((t) => message.guild.roles.cache.has(t.role));
+    const teams = guildData.teams?.filter((t) => message.guild.roles.cache.has(t.role));
     const row = new ActionRowBuilder<StringSelectMenuBuilder>({
         components: [
             new StringSelectMenuBuilder({

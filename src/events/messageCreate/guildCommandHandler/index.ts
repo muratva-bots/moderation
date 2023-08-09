@@ -11,7 +11,7 @@ async function guildCommandHandler(client: Client, message: Message, guildData: 
     if (!message.content || !message.guild || message.author.bot) return;
 
     const [commandName, ...args] = message.content.slice(prefix.length).trim().split(' ');
-    const command = (guildData.specialCommands || []).find((command) =>
+    const command = guildData.specialCommands?.find((command) =>
         command.usages.map((u) => u.toLowerCase().trim()).includes(commandName?.toLowerCase()),
     );
     if (!command) return;
@@ -25,7 +25,7 @@ async function guildCommandHandler(client: Client, message: Message, guildData: 
         client.utils.sendTimedMessage(
             message,
             `Çok hızlı komut kullanıyorsun ${limit.time} bekle.`,
-            Date.now() - needTime
+            Date.now() - needTime,
         );
         return;
     }

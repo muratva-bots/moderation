@@ -176,8 +176,8 @@ const Command: Moderation.ICommand = {
         }
 
         if (
-            !(guildData.womanRoles || []).some((r) => message.guild.roles.cache.has(r)) &&
-            !(guildData.manRoles || []).some((r) => message.guild.roles.cache.has(r))
+            !guildData.womanRoles?.some((r) => message.guild.roles.cache.has(r)) &&
+            !guildData.manRoles?.some((r) => message.guild.roles.cache.has(r))
         ) {
             await register(member, message, guildData, name);
             await member.roles.remove(guildData.unregisterRoles);
@@ -260,8 +260,8 @@ const Command: Moderation.ICommand = {
         if (collected) {
             let roles: string[];
             if (collected.customId === 'man')
-                roles = (guildData.manRoles || []).filter((r) => message.guild.roles.cache.has(r));
-            else roles = (guildData.womanRoles || []).filter((r) => message.guild.roles.cache.has(r));
+                roles = guildData.manRoles?.filter((r) => message.guild.roles.cache.has(r));
+            else roles = guildData.womanRoles?.filter((r) => message.guild.roles.cache.has(r));
 
             if (message.guild.roles.cache.has(guildData.familyRole) && hasTag) roles.push(guildData.familyRole);
             if (message.guild.roles.cache.has(guildData.registeredRole)) roles.push(guildData.registeredRole);
@@ -277,10 +277,7 @@ const Command: Moderation.ICommand = {
                             admin: message.author.id,
                             type: NameFlags.Register,
                             time: Date.now(),
-                            role:
-                                collected.customId === 'woman'
-                                    ? guildData.womanRoles[0]
-                                    : guildData.manRoles[0],
+                            role: collected.customId === 'woman' ? guildData.womanRoles[0] : guildData.manRoles[0],
                             name: name ? name : undefined,
                         },
                     },

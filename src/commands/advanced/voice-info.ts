@@ -37,12 +37,11 @@ const Command: Moderation.ICommand = {
         const totalMemberVoices = members.filter((m) => m.voice.channelId && !m.user.bot).size;
         const totalBotVoices = members.filter((m) => m.voice.channelId && m.user.bot).size;
 
-        const tags = guildData.tags || [];
         const taggedVoices = members.filter(
-            (m) => m.voice.channelId && tags.some((r) => m.user.displayName.toLowerCase().includes(r)),
+            (m) => m.voice.channelId && guildData.tags?.some((r) => m.user.displayName.toLowerCase().includes(r)),
         ).size;
         const untaggedVoices = members.filter(
-            (m) => m.voice.channelId && !tags.some((r) => m.user.displayName.toLowerCase().includes(r)),
+            (m) => m.voice.channelId && !guildData.tags?.some((r) => m.user.displayName.toLowerCase().includes(r)),
         ).size;
 
         const minStaffRole = message.guild.roles.cache.get(guildData.minStaffRole);
@@ -50,9 +49,8 @@ const Command: Moderation.ICommand = {
             ? members.filter((m) => m.voice.channelId && m.roles.highest.position >= minStaffRole.position)
             : 0;
 
-        const ownerRoles = guildData.ownerRoles || [];
         const ownerVoices = members.filter(
-            (m) => m.voice.channelId && ownerRoles.some((r) => m.roles.cache.has(r)),
+            (m) => m.voice.channelId && guildData.ownerRoles?.some((r) => m.roles.cache.has(r)),
         ).size;
 
         const streamVoices = members.filter((m) => m.voice.channelId && m.voice.streaming).size;
@@ -103,10 +101,16 @@ const Command: Moderation.ICommand = {
                         [
                             `Sesli kanallarda toplam ${totalMemberVoices} (+${totalBotVoices}) adet kişi var!`,
                             guildData.publicParent ? `Public odalarda ${totalPublicMembers} adet kişi var!` : undefined,
-                            tags.length ? `Ses kanallarında ${untaggedVoices} tagsız kullanıcı var!` : undefined,
-                            tags.length ? `Ses kanallarında ${taggedVoices} taglı kullanıcı var!` : undefined,
+                            guildData.tags?.length
+                                ? `Ses kanallarında ${untaggedVoices} tagsız kullanıcı var!`
+                                : undefined,
+                            guildData.tags?.length
+                                ? `Ses kanallarında ${taggedVoices} taglı kullanıcı var!`
+                                : undefined,
                             minStaffRole ? `Ses kanallarında toplam ${staffVoices} yetkili var!` : undefined,
-                            ownerRoles.length ? `Ses kanallarında toplam ${ownerVoices} kurucu var!` : undefined,
+                            guildData.ownerRoles?.length
+                                ? `Ses kanallarında toplam ${ownerVoices} kurucu var!`
+                                : undefined,
                         ]
                             .filter(Boolean)
                             .join('\n'),
@@ -133,10 +137,16 @@ const Command: Moderation.ICommand = {
                         [
                             `Sesli kanallarda toplam ${totalMemberVoices} (+${totalBotVoices}) adet kişi var!`,
                             guildData.publicParent ? `Public odalarda ${totalPublicMembers} adet kişi var!` : undefined,
-                            tags.length ? `Ses kanallarında ${untaggedVoices} tagsız kullanıcı var!` : undefined,
-                            tags.length ? `Ses kanallarında ${taggedVoices} taglı kullanıcı var!` : undefined,
+                            guildData.tags?.length
+                                ? `Ses kanallarında ${untaggedVoices} tagsız kullanıcı var!`
+                                : undefined,
+                            guildData.tags?.length
+                                ? `Ses kanallarında ${taggedVoices} taglı kullanıcı var!`
+                                : undefined,
                             minStaffRole ? `Ses kanallarında toplam ${staffVoices} yetkili var!` : undefined,
-                            ownerRoles.length ? `Ses kanallarında toplam ${ownerVoices} kurucu var!` : undefined,
+                            guildData.ownerRoles?.length
+                                ? `Ses kanallarında toplam ${ownerVoices} kurucu var!`
+                                : undefined,
                         ]
                             .filter(Boolean)
                             .join('\n'),
@@ -159,10 +169,16 @@ const Command: Moderation.ICommand = {
                                 guildData.publicParent
                                     ? `# Public odalarda ${totalPublicMembers} adet kişi var!`
                                     : undefined,
-                                tags.length ? `# Ses kanallarında ${untaggedVoices} tagsız kullanıcı var!` : undefined,
-                                tags.length ? `# Ses kanallarında ${taggedVoices} taglı kullanıcı var!` : undefined,
+                                guildData.tags?.length
+                                    ? `# Ses kanallarında ${untaggedVoices} tagsız kullanıcı var!`
+                                    : undefined,
+                                guildData.tags?.length
+                                    ? `# Ses kanallarında ${taggedVoices} taglı kullanıcı var!`
+                                    : undefined,
                                 minStaffRole ? `# Ses kanallarında toplam ${staffVoices} yetkili var!` : undefined,
-                                ownerRoles.length ? `# Ses kanallarında toplam ${ownerVoices} kurucu var!` : undefined,
+                                guildData.ownerRoles?.length
+                                    ? `# Ses kanallarında toplam ${ownerVoices} kurucu var!`
+                                    : undefined,
                             ]
                                 .filter(Boolean)
                                 .join('\n'),

@@ -33,7 +33,7 @@ async function mainHandler(client: Client, message: Message, guildData: Moderati
                                 value: c,
                                 emoji: { id: '1134953137262841906' },
                             })),
-                            guildData.specialCommands && guildData.specialCommands.length
+                            guildData.specialCommands?.length
                                 ? {
                                       label: 'Sunucuya Özel Komutlar',
                                       value: 'special-commands',

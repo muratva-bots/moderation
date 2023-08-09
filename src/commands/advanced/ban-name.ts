@@ -28,7 +28,7 @@ const Command: Moderation.ICommand = {
             guild: message.guildId,
             activity: true,
             $or: [{ type: PenalFlags.ForceBan }, { type: PenalFlags.Ban }],
-            visible: true
+            visible: true,
         }).select('user');
         const nameMembers = members.filter(
             (m) =>

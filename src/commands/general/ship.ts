@@ -34,12 +34,8 @@ const Command: Moderation.ICommand = {
 
         if (!mention) {
             if (
-                ((!guildData.manRoles ||
-                    !guildData.manRoles.length ||
-                    !guildData.manRoles.some((r) => message.guild.roles.cache.has(r))) &&
-                    (!guildData.womanRoles ||
-                        !guildData.womanRoles.length ||
-                        !guildData.womanRoles.some((r) => message.guild.roles.cache.has(r)))) ||
+                (!guildData.manRoles?.some((r) => message.guild.roles.cache.has(r)) &&
+                    !guildData.womanRoles?.some((r) => message.guild.roles.cache.has(r))) ||
                 (guildData.registeredRole && !message.guild.roles.cache.has(guildData.registeredRole))
             ) {
                 message.channel.send(

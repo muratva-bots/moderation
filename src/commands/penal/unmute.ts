@@ -29,7 +29,9 @@ const Command: Moderation.ICommand = {
             return;
         }
 
-        const hasVoiceMute = message.guild.roles.cache.has(guildData.voiceMuteRole) ? member.roles.cache.has(guildData.voiceMuteRole) : member.voice?.serverMute;
+        const hasVoiceMute = message.guild.roles.cache.has(guildData.voiceMuteRole)
+            ? member.roles.cache.has(guildData.voiceMuteRole)
+            : member.voice?.serverMute;
         if (!hasVoiceMute && !member.roles.cache.has(guildData.chatMuteRole)) {
             client.utils.sendTimedMessage(message, 'Kullanıcının cezası yok.');
             return;
@@ -181,7 +183,9 @@ const Command: Moderation.ICommand = {
         );
 
         if (member.voice.channelId) member.voice.setMute(false);
-        member.roles.remove([guildData.chatMuteRole, guildData.voiceMuteRole].filter(r => message.guild.roles.cache.has(r)));
+        member.roles.remove(
+            [guildData.chatMuteRole, guildData.voiceMuteRole].filter((r) => message.guild.roles.cache.has(r)),
+        );
     },
 };
 

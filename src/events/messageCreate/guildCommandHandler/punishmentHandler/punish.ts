@@ -60,7 +60,7 @@ async function punish(client: Client, message: Message, command: ISpecialCommand
         }
     }
 
-    if (!(command.quickReasons || []).length) {
+    if (!command.quickReasons?.length) {
         const arg = args[reference ? 0 : 1];
         const timing = arg ? ms(arg) : undefined;
         if (!timing) {

@@ -39,7 +39,7 @@ const Command: Moderation.ICommand = {
             return;
         }
 
-        const teams = (guildData.teams || []).filter((t) => message.guild.roles.cache.has(t.role));
+        const teams = guildData.teams?.filter((t) => message.guild.roles.cache.has(t.role));
 
         const row = new ActionRowBuilder<ButtonBuilder>({
             components: [
