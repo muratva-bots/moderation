@@ -12,19 +12,17 @@ import {
 import { Client } from '@/structures';
 import createMenu from './createMenu';
 
-export interface IChannelOption {
+export interface IBooleanOption {
     name: string;
     value: string;
     description: string;
     type: string;
-    isParent: boolean;
-    isVoice: boolean;
 }
 
 export async function booleanHandler(
     client: Client,
     message: Message,
-    option: IChannelOption,
+    option: IBooleanOption,
     guildData: ModerationClass,
     question: Message,
     menuType: 'general' | 'register' | 'penal',
