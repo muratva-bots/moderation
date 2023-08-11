@@ -32,7 +32,7 @@ const Command: Moderation.ICommand = {
 
         const document = await UserModel.findOne({ guild: message.guildId, id: member.id }).select('lastRoles');
         if (!document || !document.lastRoles) {
-            if (!(guildData.unregisterRoles || []).some((r) => message.guild.roles.cache.has(r))) {
+            if (!guildData.unregisterRoles?.some((r) => message.guild.roles.cache.has(r))) {
                 client.utils.sendTimedMessage(message, 'Kayıtsız rolleri ayarlanmamış.');
                 return;
             }

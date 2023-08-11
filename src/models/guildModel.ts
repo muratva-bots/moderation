@@ -87,7 +87,6 @@ export class ModerationClass {
     voiceMuteRole: string;
     warnRoles: IWarnRoles[];
     removeWarnRole: boolean;
-    meetingRole: string;
     underworldLimitCount: number;
     underworldLimitTime: number;
     afkRoom: string;

@@ -30,8 +30,7 @@ const Command: Moderation.ICommand = {
             return;
         }
 
-        const tags = guildData.tags || [];
-        if (tags.length && !guildData.secondTag) {
+        if (guildData.tags?.length && !guildData.secondTag) {
             client.utils.sendTimedMessage(message, 'Tagsızların tagı ayarlanmamış.');
             return;
         }
@@ -49,8 +48,8 @@ const Command: Moderation.ICommand = {
             return;
         }
 
-        const hasTag = tags.some((t) => message.author.username.includes(t));
-        const newName = tags.length ? `${hasTag ? tags[0] : guildData.secondTag} ${name}` : name;
+        const hasTag = guildData.tags?.some((t) => message.author.username.includes(t));
+        const newName = guildData.tags?.length ? `${hasTag ? guildData.tags[0] : guildData.secondTag} ${name}` : name;
         if (newName.length > 30)
             return client.utils.sendTimedMessage(message, '30 karakteri geçmeyecek bir isim belirt.');
 

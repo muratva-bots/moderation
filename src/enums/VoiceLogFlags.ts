@@ -3,5 +3,5 @@ export enum VoiceLogFlags {
     Join,
     Leave,
     Transport,
-    Kick
+    Kick,
 }

@@ -12,19 +12,17 @@ import {
 import { Client } from '@/structures';
 import createMenu from './createMenu';
 
-export interface IChannelOption {
+export interface IBooleanOption {
     name: string;
     value: string;
     description: string;
     type: string;
-    isParent: boolean;
-    isVoice: boolean;
 }
 
 export async function booleanHandler(
     client: Client,
     message: Message,
-    option: IChannelOption,
+    option: IBooleanOption,
     guildData: ModerationClass,
     question: Message,
     menuType: 'general' | 'register' | 'penal',
@@ -53,9 +51,9 @@ export async function booleanHandler(
             guildData[option.value] = i.customId === 'enable';
 
             if (option.name === 'menuRegister') {
-                client.commands.get('register').isDisabled = guildData.menuRegister;
-                client.commands.get('woman').isDisabled = !guildData.menuRegister;
-                client.commands.get('erkek').isDisabled = !guildData.menuRegister;
+                client.commands.get('register').isDisabled = !guildData.menuRegister;
+                client.commands.get('woman').isDisabled = guildData.menuRegister;
+                client.commands.get('erkek').isDisabled = guildData.menuRegister;
             }
 
             await GuildModel.updateOne(

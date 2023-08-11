@@ -52,11 +52,10 @@ function botCommandHandler(client: Client, message: Message, guildData: Moderati
     )
         canExecute = true;
 
-    const canExecuteData = (guildData.canExecutes || []).find((c) => c.name === command.usages[0]);
+    const canExecuteData = guildData.canExecutes?.find((c) => c.name === command.usages[0]);
     if (
         canExecuteData &&
-        canExecuteData.specialPass.length &&
-        canExecuteData.specialPass.some((id) => id === message.author.id || message.member.roles.cache.has(id))
+        canExecuteData.specialPass?.some((id) => id === message.author.id || message.member.roles.cache.has(id))
     )
         canExecute = true;
 
@@ -69,9 +68,9 @@ function botCommandHandler(client: Client, message: Message, guildData: Moderati
         if (limit.hasLimit) {
             const needTime = Number(limit.time.match(/\d+/)[0]);
             client.utils.sendTimedMessage(
-                message, 
+                message,
                 `Çok hızlı komut kullanıyorsun ${limit.time} bekle.`,
-                Date.now()- needTime
+                Date.now() - needTime,
             );
             return;
         }

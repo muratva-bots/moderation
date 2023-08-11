@@ -17,7 +17,7 @@ const types = {
     [VoiceLogFlags.Join]: 'Kanala Giriş Yapma',
     [VoiceLogFlags.Leave]: 'Kanaldan Çıkış Yapma',
     [VoiceLogFlags.Transport]: 'Sağ Tık Taşıma',
-    [VoiceLogFlags.Kick]: 'Sesten Atılma'
+    [VoiceLogFlags.Kick]: 'Sesten Atılma',
 };
 
 const Command: Moderation.ICommand = {
@@ -44,37 +44,35 @@ const Command: Moderation.ICommand = {
 
         let page = 1;
         const totalData = Math.ceil(document.voiceLogs.length / 5);
+        const mappedDatas = document.voiceLogs.map((d) => {
+            const channel = message.guild.channels.cache.get(d.channel) as VoiceChannel;
+            const user = client.users.cache.get(d.admin);
+            return codeBlock(
+                [
+                    channel ? `Kanal: ${channel.name} (${channel.id})` : `Kanal: ${d.channel}`,
+                    `İşlem: ${types[d.type]}`,
+                    d.admin
+                        ? user
+                            ? `Yetkili: ${user.username} (${d.admin})`
+                            : `Yetkili: ${d.admin}`
+                        : undefined,
+                    `Tarih: ${new Date(d.time).toLocaleString('tr-TR', {
+                        month: '2-digit',
+                        day: '2-digit',
+                        year: 'numeric',
+                        hour12: false,
+                        hour: '2-digit',
+                        minute: '2-digit',
+                    })}`,
+                ]
+                    .filter(Boolean)
+                    .join('\n'),
+            );
+        })
 
         const embed = new EmbedBuilder({
             color: client.utils.getRandomColor(),
-            description: document.voiceLogs
-                .slice(0, 5)
-                .map((d) => {
-                    const channel = message.guild.channels.cache.get(d.channel) as VoiceChannel;
-                    const user = client.users.cache.get(d.admin);
-                    return codeBlock(
-                        [
-                            channel ? `Kanal: ${channel.name} (${channel.id})` : `Kanal: ${d.channel}`,
-                            `İşlem: ${types[d.type]}`,
-                            d.admin
-                                ? user
-                                    ? `Yetkili: ${user.username} (${d.admin})`
-                                    : `Yetkili: ${d.admin}`
-                                : undefined,
-                            `Tarih: ${new Date(d.time).toLocaleString('tr-TR', {
-                                month: '2-digit',
-                                day: '2-digit',
-                                year: 'numeric',
-                                hour12: false,
-                                hour: '2-digit',
-                                minute: '2-digit',
-                            })}`,
-                        ]
-                            .filter(Boolean)
-                            .join('\n'),
-                    );
-                })
-                .join('\n'),
+            description: mappedDatas.slice(0, 5).join('\n'),
             footer: {
                 text: `${document.voiceLogs.length} adet ses güncellemesi bulunuyor.`,
             },
@@ -103,38 +101,7 @@ const Command: Moderation.ICommand = {
             if (i.customId === 'last') page = totalData;
 
             question.edit({
-                embeds: [
-                    embed.setDescription(
-                        document.voiceLogs
-                            .slice(page === 1 ? 0 : page * 5 - 5, page * 5)
-                            .map((d) => {
-                                const channel = message.guild.channels.cache.get(d.channel) as VoiceChannel;
-                                const user = client.users.cache.get(d.admin);
-                                return codeBlock(
-                                    [
-                                        channel ? `Kanal: ${channel.name} (${channel.id})` : `Kanal: ${d.channel}`,
-                                        `İşlem: ${types[d.type]}`,
-                                        d.admin
-                                            ? user
-                                                ? `Yetkili: ${user.username} (${d.admin})`
-                                                : `Yetkili: ${d.admin}`
-                                            : undefined,
-                                        `Tarih: ${new Date(d.time).toLocaleString('tr-TR', {
-                                            month: '2-digit',
-                                            day: '2-digit',
-                                            year: 'numeric',
-                                            hour12: false,
-                                            hour: '2-digit',
-                                            minute: '2-digit',
-                                        })}`,
-                                    ]
-                                        .filter(Boolean)
-                                        .join('\n'),
-                                );
-                            })
-                            .join('\n'),
-                    ),
-                ],
+                embeds: [embed.setDescription(mappedDatas.slice(page === 1 ? 0 : page * 5 - 5, page * 5).join('\n'))],
                 components: [client.utils.paginationButtons(page, totalData)],
             });
         });

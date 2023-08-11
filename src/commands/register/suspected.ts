@@ -8,11 +8,7 @@ const Command: Moderation.ICommand = {
         message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
         (guildData.registerAuth && guildData.registerAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
-        if (
-            !guildData.unregisterRoles ||
-            !guildData.unregisterRoles.length ||
-            !guildData.unregisterRoles.some((i) => message.guild.roles.cache.has(i))
-        ) {
+        if (!guildData.unregisterRoles?.some((i) => message.guild.roles.cache.has(i))) {
             client.utils.sendTimedMessage(message, 'Kayıtsız rolü ayarlanmamış.');
             return;
         }

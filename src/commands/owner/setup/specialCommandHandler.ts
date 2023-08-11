@@ -182,13 +182,9 @@ export async function specialCommandHandler(
                             const description = modalCollected.fields.getTextInputValue('description');
 
                             if (
-                                usages.some((u) =>
-                                    (guildData.specialCommands || []).some((c) => c.usages.includes(u)),
-                                ) ||
+                                usages.some((u) => guildData.specialCommands?.some((c) => c.usages.includes(u))) ||
                                 client.commands.some((cc) =>
-                                    cc.usages.some((u) =>
-                                        (guildData.specialCommands || []).some((c) => c.usages.includes(u)),
-                                    ),
+                                    cc.usages.some((u) => guildData.specialCommands?.some((c) => c.usages.includes(u))),
                                 )
                             ) {
                                 client.utils.sendTimedMessage(message, 'Belirttiğin isimde komut bulunuyor.');
@@ -313,12 +309,12 @@ export async function specialCommandHandler(
                                         .toLowerCase()
                                         .split(',');
                                     if (
-                                        usages.some((u) =>
-                                            (guildData.specialCommands || []).some((c) => c.usages.includes(u)),
+                                        usages.some(
+                                            (u) => guildData.specialCommands?.some((c) => c.usages.includes(u)),
                                         ) ||
                                         client.commands.some((cc) =>
-                                            cc.usages.some((u) =>
-                                                (guildData.specialCommands || []).some((c) => c.usages.includes(u)),
+                                            cc.usages.some(
+                                                (u) => guildData.specialCommands?.some((c) => c.usages.includes(u)),
                                             ),
                                         )
                                     ) {
@@ -635,12 +631,10 @@ export async function specialCommandHandler(
                                     .toLowerCase()
                                     .split(',');
                                 if (
-                                    usages.some((u) =>
-                                        (guildData.specialCommands || []).some((c) => c.usages.includes(u)),
-                                    ) ||
+                                    usages.some((u) => guildData.specialCommands?.some((c) => c.usages.includes(u))) ||
                                     client.commands.some((cc) =>
-                                        cc.usages.some((u) =>
-                                            (guildData.specialCommands || []).some((c) => c.usages.includes(u)),
+                                        cc.usages.some(
+                                            (u) => guildData.specialCommands?.some((c) => c.usages.includes(u)),
                                         ),
                                     )
                                 ) {
@@ -680,7 +674,7 @@ export async function specialCommandHandler(
         }
 
         if (i.isStringSelectMenu() && i.customId === 'remove-row') {
-            let commands = (guildData.specialCommands || []).filter((c) => c.type !== SpecialCommandFlags.Team);
+            let commands = guildData.specialCommands?.filter((c) => c.type !== SpecialCommandFlags.Team);
             commands = commands.filter(
                 (c) => !i.values.some((cc) => c.usages.includes(cc) || c.usages.includes(`un${cc}`)),
             );

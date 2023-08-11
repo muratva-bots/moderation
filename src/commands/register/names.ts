@@ -48,38 +48,36 @@ const Command: Moderation.ICommand = {
 
         let page = 1;
         const totalData = Math.ceil(document.voiceLogs.length / 10);
+        const mappedDatas = document.names.map((n) => {
+            const user = client.users.cache.get(n.admin);
+            return codeBlock(
+                'fix',
+                [
+                    n.role ? message.guild.roles.cache.get(n.role)?.name || '@silinmiş' : undefined,
+                    `İşlem: ${titles[n.type]}`,
+                    `İsim: ${n.name}`,
+                    n.admin || n.admin !== user.id
+                        ? user
+                            ? `Yetkili: ${user.username} (${user.id})`
+                            : `Yetkili: ${n.admin}`
+                        : undefined,
+                    `Tarih: ${new Date(n.time).toLocaleString('tr-TR', {
+                        month: '2-digit',
+                        day: '2-digit',
+                        year: 'numeric',
+                        hour12: false,
+                        hour: '2-digit',
+                        minute: '2-digit',
+                    })}`,
+                ]
+                    .filter(Boolean)
+                    .join('\n'),
+            );
+        })
 
         const embed = new EmbedBuilder({
             color: client.utils.getRandomColor(),
-            description: document.names
-                .slice(0, 5)
-                .map((n) => {
-                    const user = client.users.cache.get(n.admin);
-                    return codeBlock(
-                        'fix',
-                        [
-                            n.role ? message.guild.roles.cache.get(n.role)?.name || '@silinmiş' : undefined,
-                            `İşlem: ${n.type}`,
-                            `İsim: ${n.name || 'Bulunamadı'}`,
-                            n.admin || n.admin !== user.id
-                                ? user
-                                    ? `Yetkili: ${user.username} (${user.id})`
-                                    : `Yetkili: ${n.admin}`
-                                : undefined,
-                            `Tarih: ${new Date(n.time).toLocaleString('tr-TR', {
-                                month: '2-digit',
-                                day: '2-digit',
-                                year: 'numeric',
-                                hour12: false,
-                                hour: '2-digit',
-                                minute: '2-digit',
-                            })}`,
-                        ]
-                            .filter(Boolean)
-                            .join('\n'),
-                    );
-                })
-                .join('\n'),
+            description: mappedDatas.slice(0, 5).join(''),
             footer: {
                 text: `${document.names.length} adet isim kayıdı bulunuyor.`,
             },
@@ -108,39 +106,7 @@ const Command: Moderation.ICommand = {
             if (i.customId === 'last') page = totalData;
 
             question.edit({
-                embeds: [
-                    embed.setDescription(
-                        document.names
-                            .slice(page === 1 ? 0 : page * 5 - 5, page * 5)
-                            .map((n) => {
-                                const user = client.users.cache.get(n.admin);
-                                return codeBlock(
-                                    'fix',
-                                    [
-                                        n.role ? message.guild.roles.cache.get(n.role)?.name || '@silinmiş' : undefined,
-                                        `İşlem: ${titles[n.type]}`,
-                                        `İsim: ${n.name}`,
-                                        n.admin || n.admin !== user.id
-                                            ? user
-                                                ? `Yetkili: ${user.username} (${user.id})`
-                                                : `Yetkili: ${n.admin}`
-                                            : undefined,
-                                        `Tarih: ${new Date(n.time).toLocaleString('tr-TR', {
-                                            month: '2-digit',
-                                            day: '2-digit',
-                                            year: 'numeric',
-                                            hour12: false,
-                                            hour: '2-digit',
-                                            minute: '2-digit',
-                                        })}`,
-                                    ]
-                                        .filter(Boolean)
-                                        .join('\n'),
-                                );
-                            })
-                            .join('\n'),
-                    ),
-                ],
+                embeds: [embed.setDescription(mappedDatas.slice(page === 1 ? 0 : page * 5 - 5, page * 5).join(''))],
                 components: [client.utils.paginationButtons(page, totalData)],
             });
         });

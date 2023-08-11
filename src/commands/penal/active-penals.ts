@@ -40,7 +40,7 @@ const ActivePenals: Moderation.ICommand = {
             guild: message.guildId,
             user: user.id,
             activity: true,
-            visible: true
+            visible: true,
         });
         if (!activePenals.length) {
             client.utils.sendTimedMessage(message, 'Kullanıcının verisi bulunmuyor.');

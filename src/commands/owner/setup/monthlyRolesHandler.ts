@@ -96,8 +96,8 @@ export async function monthlyRolesHandler(
                 }
 
                 if (
-                    (guildData.monthlyRoles || [])
-                        .filter((r) => message.guild.roles.cache.has(r.role))
+                    guildData.monthlyRoles
+                        ?.filter((r) => message.guild.roles.cache.has(r.role))
                         .some((r) => r.time === timing)
                 ) {
                     modalCollector.reply({

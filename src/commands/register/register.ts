@@ -32,7 +32,7 @@ const titles = {
 };
 
 const Command: Moderation.ICommand = {
-    usages: ['register', 'woman', 'kız', 'kadın', 'bayan', 'k'],
+    usages: ['register', 'woman', 'kız', 'kadın', 'bayan', 'k', 'e'],
     description: 'Belirttiğiniz üyeyi kadın olarak kayıt edersiniz.',
     examples: ['k @kullanıcı isim yaş', 'k 123456789123456789 isim yaş'],
     checkPermission: ({ message, guildData }) =>
@@ -176,8 +176,8 @@ const Command: Moderation.ICommand = {
         }
 
         if (
-            !(guildData.womanRoles || []).some((r) => message.guild.roles.cache.has(r)) &&
-            !(guildData.manRoles || []).some((r) => message.guild.roles.cache.has(r))
+            !guildData.womanRoles?.some((r) => message.guild.roles.cache.has(r)) &&
+            !guildData.manRoles?.some((r) => message.guild.roles.cache.has(r))
         ) {
             await register(member, message, guildData, name);
             await member.roles.remove(guildData.unregisterRoles);
@@ -260,14 +260,30 @@ const Command: Moderation.ICommand = {
         if (collected) {
             let roles: string[];
             if (collected.customId === 'man')
-                roles = (guildData.manRoles || []).filter((r) => message.guild.roles.cache.has(r));
-            else roles = (guildData.womanRoles || []).filter((r) => message.guild.roles.cache.has(r));
+                roles = guildData.manRoles?.filter((r) => message.guild.roles.cache.has(r));
+            else roles = guildData.womanRoles?.filter((r) => message.guild.roles.cache.has(r));
 
             if (message.guild.roles.cache.has(guildData.familyRole) && hasTag) roles.push(guildData.familyRole);
             if (message.guild.roles.cache.has(guildData.registeredRole)) roles.push(guildData.registeredRole);
             if (roles.length) client.utils.setRoles(member, [...new Set(roles)]);
 
             if (name) member.setNickname(name);
+
+            await UserModel.updateOne(
+                { id: member.id, guild: message.guildId },
+                {
+                    $push: {
+                        names: {
+                            admin: message.author.id,
+                            type: NameFlags.Register,
+                            time: Date.now(),
+                            role: collected.customId === 'woman' ? guildData.womanRoles[0] : guildData.manRoles[0],
+                            name: name ? name : undefined,
+                        },
+                    },
+                },
+                { upsert: true },
+            );
 
             await UserModel.updateOne(
                 { id: message.author.id },

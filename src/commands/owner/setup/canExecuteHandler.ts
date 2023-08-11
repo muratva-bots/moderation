@@ -134,7 +134,7 @@ export async function canExecuteHandler(
         }
 
         if (i.isStringSelectMenu() && i.customId === 'remove-row') {
-            guildData.canExecutes = (guildData.canExecutes || []).filter((c) => !i.values.some((cc) => c.name === cc));
+            guildData.canExecutes = guildData.canExecutes?.filter((c) => !i.values.some((cc) => c.name === cc));
 
             await GuildModel.updateOne(
                 { id: message.guildId },

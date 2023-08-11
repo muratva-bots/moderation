@@ -104,13 +104,6 @@ export const SETTINGS = {
             isVoice: false,
         },
         {
-            name: 'Katıldı Rolü',
-            value: 'meetingRole',
-            description: 'Katıldı rolünü ayarlarsınız.',
-            type: 'role',
-            isMultiple: false,
-        },
-        {
             name: 'En Alt Yetkili Rolü',
             value: 'minStaffRole',
             description: 'En alt yetkili rollerini ayarlarsınız.',

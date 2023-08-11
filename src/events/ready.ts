@@ -20,9 +20,9 @@ const Ready: Moderation.IEvent<Events.ClientReady> = {
         const document = (await GuildModel.findOne({ id: guild.id })) || (await GuildModel.create({ id: guild.id }));
         client.servers.set(guild.id, { ...document.moderation });
 
-        client.commands.get('register').isDisabled = document.moderation.menuRegister;
-        client.commands.get('woman').isDisabled = !document.moderation.menuRegister;
-        client.commands.get('erkek').isDisabled = !document.moderation.menuRegister;
+        client.commands.get('register').isDisabled = !document.moderation.menuRegister;
+        client.commands.get('woman').isDisabled = document.moderation.menuRegister;
+        client.commands.get('erkek').isDisabled = document.moderation.menuRegister;
 
         const guildEventEmitter = GuildModel.watch([{ $match: { 'fullDocument.id': guild.id } }], {
             fullDocument: 'updateLookup',
@@ -33,9 +33,7 @@ const Ready: Moderation.IEvent<Events.ClientReady> = {
 
         setInterval(() => {
             const now = Date.now();
-            client.utils.limits
-                .filter((v) => 1000 * 60 * 60 >= now - v.lastUsage)
-                .forEach((_, k) => client.limits.delete(k));
+            client.utils.limits.sweep((v) => 1000 * 60 * 60 >= now - v.lastUsage);
         }, 1000 * 10);
     },
 };

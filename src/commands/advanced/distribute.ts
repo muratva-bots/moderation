@@ -26,12 +26,9 @@ const Command: Moderation.ICommand = {
                 c.id !== guildData.afkRoom &&
                 c.type === ChannelType.GuildVoice,
         );
-        [...message.member.voice.channel.members.values()].forEach((m, index) => {
-            setTimeout(() => {
-                if (m.voice.channelId !== message.member.voice.channelId) return;
-                m.voice.setChannel(publicRooms.random().id);
-            }, index * 1000);
-        });
+        [...message.member.voice.channel.members.values()]
+            .filter((m) => m.voice.channelId !== message.member.voice.channelId)
+            .forEach((m) => m.voice.setChannel(publicRooms.random().id));
 
         message.channel.send({
             embeds: [

@@ -103,34 +103,37 @@ const Command: Moderation.ICommand = {
         if (collected) {
             collected.deferUpdate();
 
-            const specialCommands = (guildData.specialCommands || []).filter(
-                (c) => c.type === SpecialCommandFlags.Punishment,
-            );
+            const specialCommands = guildData.specialCommands?.filter((c) => c.type === SpecialCommandFlags.Punishment);
             const roles = collected.values
-                .filter((roleId) => ![
+                .filter(
+                    (roleId) =>
+                        ![
+                            guildData.adsRole,
+                            guildData.chatMuteRole,
+                            guildData.voiceMuteRole,
+                            guildData.quarantineRole,
+                            guildData.underworldRole,
+                            ...specialCommands.map((c) => c.punishRole),
+                        ].includes(roleId),
+                )
+                .map((roleId) => message.guild.roles.cache.get(roleId));
+            const added: string[] = [];
+            const removed: string[] = [];
+            const now = Date.now();
+            const hasPenalRole = collected.values.some((roleId) =>
+                [
                     guildData.adsRole,
                     guildData.chatMuteRole,
                     guildData.voiceMuteRole,
                     guildData.quarantineRole,
                     guildData.underworldRole,
                     ...specialCommands.map((c) => c.punishRole),
-                ].includes(roleId))
-                .map((roleId) => message.guild.roles.cache.get(roleId));
-            const added: string[] = [];
-            const removed: string[] = [];
-            const now = Date.now();
-            const hasPenalRole = collected.values.some((roleId) => [
-                guildData.adsRole,
-                guildData.chatMuteRole,
-                guildData.voiceMuteRole,
-                guildData.quarantineRole,
-                guildData.underworldRole,
-                ...specialCommands.map((c) => c.punishRole),
-            ].includes(roleId));
+                ].includes(roleId),
+            );
 
             for (const role of roles) {
                 if (
-                    !(guildData.ownerRoles || []).some((r) => message.member.roles.cache.has(r)) &&
+                    !guildData.ownerRoles?.some((r) => message.member.roles.cache.has(r)) &&
                     role.position >= minStaffRole.position
                 )
                     return;
@@ -227,17 +230,21 @@ const Command: Moderation.ICommand = {
             let content = `${member} adlı `;
             if (added.length && removed.length) {
                 content += [
-                    `kullanıcıya ${added.map((r) => bold(r)).join(', ')} ${added.length > 1 ? 'rolleri' : 'rolü'
+                    `kullanıcıya ${added.map((r) => bold(r)).join(', ')} ${
+                        added.length > 1 ? 'rolleri' : 'rolü'
                     } eklendi`,
-                    `ve ${removed.map((r) => bold(r)).join(', ')} ${removed.length > 1 ? 'rolleri' : 'rolü'
+                    `ve ${removed.map((r) => bold(r)).join(', ')} ${
+                        removed.length > 1 ? 'rolleri' : 'rolü'
                     } çıkarıldı.`,
                 ].join(' ');
             } else if (added.length) {
-                content += `kullanıcıya ${added.map((r) => bold(r)).join(', ')} ${added.length > 1 ? 'rolleri' : 'rolü'
-                    } eklendi.`;
+                content += `kullanıcıya ${added.map((r) => bold(r)).join(', ')} ${
+                    added.length > 1 ? 'rolleri' : 'rolü'
+                } eklendi.`;
             } else if (removed.length) {
-                content += `kullanıcıdan ${removed.map((r) => bold(r)).join(', ')} ${removed.length > 1 ? 'adlı roller' : 'rolü'
-                    } çıkarıldı.`;
+                content += `kullanıcıdan ${removed.map((r) => bold(r)).join(', ')} ${
+                    removed.length > 1 ? 'adlı roller' : 'rolü'
+                } çıkarıldı.`;
             } else if (!added.length && !removed.length) {
                 content = 'Geçersiz rol girmişsin.';
             }
@@ -246,10 +253,16 @@ const Command: Moderation.ICommand = {
                 embeds: [
                     embed
                         .setColor('Random')
-                        .setDescription([
-                            content,
-                            hasPenalRole ? `Ceza rollerini vermek için ceza komutlarını kullanabilirsin.` : undefined
-                        ].filter(Boolean).join(" "))
+                        .setDescription(
+                            [
+                                content,
+                                hasPenalRole
+                                    ? `Ceza rollerini vermek için ceza komutlarını kullanabilirsin.`
+                                    : undefined,
+                            ]
+                                .filter(Boolean)
+                                .join(' '),
+                        )
                         .setFields([])
                         .setTitle(null),
                 ],

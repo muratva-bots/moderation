@@ -46,40 +46,38 @@ const Command: Moderation.ICommand = {
 
         let page = 1;
         const totalData = Math.ceil(document.roleLogs.length / 5);
+        const mappedDatas = document.roleLogs.map((d) => {
+            const roles = d.roles
+                .filter((r) => message.guild.roles.cache.has(r))
+                .map((r) => message.guild.roles.cache.get(r).name);
+            const user = client.users.cache.get(d.admin);
+            return codeBlock(
+                'fix',
+                [
+                    `${roles.length === 1 ? 'Rol' : 'Roller'}: ${roles.join(', ')}`,
+                    `İşlem: ${types[d.type]}`,
+                    d.admin
+                        ? user
+                            ? `Yetkili: ${user.username} (${user.id})`
+                            : `Yetkili: ${d.admin}`
+                        : undefined,
+                    `Tarih: ${new Date(d.time).toLocaleString('tr-TR', {
+                        month: '2-digit',
+                        day: '2-digit',
+                        year: 'numeric',
+                        hour12: false,
+                        hour: '2-digit',
+                        minute: '2-digit',
+                    })}`,
+                ]
+                    .filter(Boolean)
+                    .join('\n'),
+            );
+        })
 
         const embed = new EmbedBuilder({
             color: client.utils.getRandomColor(),
-            description: document.roleLogs
-                .slice(0, 5)
-                .map((d) => {
-                    const roles = d.roles
-                        .filter((r) => message.guild.roles.cache.has(r))
-                        .map((r) => message.guild.roles.cache.get(r).name);
-                    const user = client.users.cache.get(d.admin);
-                    return codeBlock(
-                        'fix',
-                        [
-                            `${roles.length === 1 ? 'Rol' : 'Roller'}: ${roles.join(', ')}`,
-                            `İşlem: ${types[d.type]}`,
-                            d.admin
-                                ? user
-                                    ? `Yetkili: ${user.username} (${user.id})`
-                                    : `Yetkili: ${d.admin}`
-                                : undefined,
-                            `Tarih: ${new Date(d.time).toLocaleString('tr-TR', {
-                                month: '2-digit',
-                                day: '2-digit',
-                                year: 'numeric',
-                                hour12: false,
-                                hour: '2-digit',
-                                minute: '2-digit',
-                            })}`,
-                        ]
-                            .filter(Boolean)
-                            .join('\n'),
-                    );
-                })
-                .join(''),
+            description: mappedDatas.slice(0, 5).join(''),
             footer: {
                 text: `${document.roleLogs.length} adet rol güncellemesi bulunuyor.`,
             },
@@ -108,41 +106,7 @@ const Command: Moderation.ICommand = {
             if (i.customId === 'last') page = totalData;
             // murat tasarım yapamıyorken
             question.edit({
-                embeds: [
-                    embed.setDescription(
-                        document.roleLogs
-                            .slice(page === 1 ? 0 : page * 5 - 5, page * 5)
-                            .map((d) => {
-                                const roles = d.roles
-                                    .filter((r) => message.guild.roles.cache.has(r))
-                                    .map((r) => message.guild.roles.cache.get(r).name);
-                                const user = client.users.cache.get(d.admin);
-                                return codeBlock(
-                                    'fix',
-                                    [
-                                        `${roles.length === 1 ? 'Rol' : 'Roller'}: ${roles.join(', ')}`,
-                                        `İşlem: ${types[d.type]}`,
-                                        d.admin
-                                            ? user
-                                                ? `Yetkili: ${user.username} (${user.id})`
-                                                : `Yetkili: ${d.admin}`
-                                            : undefined,
-                                        `Tarih: ${new Date(d.time).toLocaleString('tr-TR', {
-                                            month: '2-digit',
-                                            day: '2-digit',
-                                            year: 'numeric',
-                                            hour12: false,
-                                            hour: '2-digit',
-                                            minute: '2-digit',
-                                        })}`,
-                                    ]
-                                        .filter(Boolean)
-                                        .join('\n'),
-                                );
-                            })
-                            .join(''),
-                    ),
-                ],
+                embeds: [embed.setDescription(mappedDatas.slice(page === 1 ? 0 : page * 5 - 5, page * 5).join(''))],
                 components: [client.utils.paginationButtons(page, totalData)],
             });
         });

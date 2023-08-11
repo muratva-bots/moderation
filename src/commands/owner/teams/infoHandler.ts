@@ -87,7 +87,7 @@ async function infoHandler(
 
         botMessage.edit({ components: [] });
         guildData.teams = guildData.teams.filter((t) => t.name !== team.name);
-        guildData.specialCommands = (guildData.specialCommands || []).filter(
+        guildData.specialCommands = guildData.specialCommands?.filter(
             (s) => !s.usages.includes(team.name.toLowerCase().split(' ').join('-')),
         );
         await GuildModel.updateOne(

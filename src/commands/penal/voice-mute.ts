@@ -292,7 +292,7 @@ async function muteUser(
         const operations = guildData.maxMuteOperations || DEFAULTS.mute.max;
         const userPenals = await PenalModel.countDocuments({
             $or: [{ type: PenalFlags.VoiceMute }, { type: PenalFlags.ChatMute }],
-            visible: true
+            visible: true,
         });
 
         const operation = operations.find((o) => o.count === userPenals);
