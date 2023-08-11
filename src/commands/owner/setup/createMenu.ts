@@ -12,7 +12,7 @@ import { Client } from '@/structures';
 import { IRoleOption, roleHandler } from './roleHandler';
 import { SETTINGS } from '@/assets';
 import { IChannelOption, channelHandler } from './channelHandler';
-import { booleanHandler } from './booleanHandler';
+import { IBooleanOption, booleanHandler } from './booleanHandler';
 import { IStringOption, stringHandler } from './stringHandler';
 import { ILimitOption, limitHandler } from './limitHandler';
 import { IQuickReasonOption, reasonHandler } from './quickReasonHandler';
@@ -101,7 +101,7 @@ async function createMenu(
             if (option.type === 'channel')
                 channelHandler(client, message, option as IChannelOption, guildData, question, type, authorId);
             if (option.type === 'boolean')
-                booleanHandler(client, message, option as IChannelOption, guildData, question, type, authorId);
+                booleanHandler(client, message, option as IBooleanOption, guildData, question, type, authorId);
             if (option.type === 'string')
                 stringHandler(client, message, option as IStringOption, guildData, question, type, authorId);
             if (option.type === 'limit')
