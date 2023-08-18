@@ -94,17 +94,16 @@ const Command: Moderation.ICommand = {
         });
 
         const filter = (i: RoleSelectMenuInteraction) => i.user.id === message.author.id;
-        const collected = await question.awaitMessageComponent({
+        const collector = question.createMessageComponentCollector({
             filter,
             time: 1000 * 60 * 2,
             componentType: ComponentType.RoleSelect,
         });
 
-        if (collected) {
-            collected.deferUpdate();
-
+        collector.on('collect', async(i: RoleSelectMenuInteraction) => {
+            i.deferUpdate()
             const specialCommands = guildData.specialCommands?.filter((c) => c.type === SpecialCommandFlags.Punishment);
-            const roles = collected.values
+            const roles = i.values
                 .filter(
                     (roleId) =>
                         ![
@@ -120,7 +119,7 @@ const Command: Moderation.ICommand = {
             const added: string[] = [];
             const removed: string[] = [];
             const now = Date.now();
-            const hasPenalRole = collected.values.some((roleId) =>
+            const hasPenalRole = i.values.some((roleId) =>
                 [
                     guildData.adsRole,
                     guildData.chatMuteRole,
@@ -268,22 +267,25 @@ const Command: Moderation.ICommand = {
                 ],
                 components: [],
             });
-        } else {
-            const timeFinished = new ActionRowBuilder<ButtonBuilder>({
-                components: [
-                    new ButtonBuilder({
-                        custom_id: 'timefinished',
-                        disabled: true,
-                        emoji: { name: '⏱️' },
-                        style: ButtonStyle.Danger,
-                    }),
-                ],
-            });
-            question.edit({
-                embeds: [embed.setDescription('İşlem süresi dolduğu için işlem kapatıldı.')],
-                components: [timeFinished],
-            });
-        }
+         })
+            
+         collector.on('end', (_, reason) => {
+            if (reason === 'time') {
+                const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+                    components: [
+                        new ButtonBuilder({
+                            custom_id: 'timefinished',
+                            disabled: true,
+                            emoji: { name: '⏱️' },
+                            style: ButtonStyle.Danger,
+                        }),
+                    ],
+                });
+
+                question.edit({ embeds: [embed.setDescription('İşlem süresi dolduğu için işlem kapatıldı.')],
+                components: [timeFinished] });
+            }
+        })
     },
 };
 

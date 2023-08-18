@@ -102,28 +102,46 @@ const Command: Moderation.ICommand = {
             components: [row],
         });
 
-        const filter = (i: ButtonInteraction) =>
-            (i.isButton() && i.user.id === message.author.id) || i.user.id === mention.id;
-        const collected = await question.awaitMessageComponent({
+        const filter = (i: ButtonInteraction) =>  (i.isButton() && i.user.id === message.author.id) || i.user.id === mention.id;
+        const collector = question.createMessageComponentCollector({
             filter,
             time: 1000 * 60 * 5,
             componentType: ComponentType.Button,
         });
+        collector.on("collect", async(i:ButtonInteraction) => {
+            if(i.customId=== "accepted") {
+                row.components[0].setDisabled(true);
+                question.edit({ components: [row] });
+                i.reply({
+                    content: `${
+                        i.user.id == message.author.id
+                            ? `${bold(mention.user.username)} selam! ${bold(message.author.username)}`
+                            : `${bold(message.author.username)} selam! ${bold(mention.user.username)}`
+                    } seninle çay içmek istiyor, bu fırsatı kaçırma derim.`,
+                });
+            }
+        }) 
 
-        if (collected) {
-            row.components[0].setDisabled(true);
-            question.edit({ components: [row] });
-            collected.reply({
-                content: `${
-                    collected.user.id == message.author.id
-                        ? `${bold(mention.user.username)} selam! ${bold(message.author.username)}`
-                        : `${bold(message.author.username)} selam! ${bold(mention.user.username)}`
-                } seninle çay içmek istiyor, bu fırsatı kaçırma derim.`,
-            });
-        } else {
-            row.components[0].setDisabled(true);
-            question.edit({ components: [row] });
-        }
+
+            collector.on('end', (_, reason) => {
+                if (reason === 'time') {
+                    const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+                        components: [
+                            new ButtonBuilder({
+                                custom_id: 'timefinished',
+                                disabled: true,
+                                emoji: { name: '⏱️' },
+                                style: ButtonStyle.Danger,
+                            }),
+                        ],
+                    });
+    
+                    question.edit({ 
+                    components: [timeFinished] });
+                }
+            })
+
+
     },
 };
 

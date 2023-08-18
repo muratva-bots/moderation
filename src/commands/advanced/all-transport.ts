@@ -9,6 +9,7 @@ import {
     PermissionFlagsBits,
     ButtonBuilder,
     ButtonStyle,
+    ButtonInteraction,
 } from 'discord.js';
 
 const Command: Moderation.ICommand = {
@@ -55,14 +56,17 @@ const Command: Moderation.ICommand = {
         });
 
         const filter = (i: ChannelSelectMenuInteraction) => i.user.id === message.author.id;
-        const collected = await question.awaitMessageComponent({
+        const collector = question.createMessageComponentCollector({
             filter,
             time: 1000 * 60,
             componentType: ComponentType.ChannelSelect,
         });
 
-        if (collected) {
-            const channel = message.guild.channels.cache.get(collected.values[0]);
+
+        collector.on("collect", async (i: ChannelSelectMenuInteraction) => {
+            const channel = message.guild.channels.cache.get(i.values[0])
+
+            
             message.member.voice.channel.members.forEach((b) => b.voice.setChannel(channel.id));
 
             question.edit({
@@ -75,22 +79,24 @@ const Command: Moderation.ICommand = {
                 ],
                 components: [],
             });
-        } else {
-            const timeFinished = new ActionRowBuilder<ButtonBuilder>({
-                components: [
-                    new ButtonBuilder({
-                        custom_id: 'timefinished',
-                        disabled: true,
-                        emoji: { name: '⏱️' },
-                        style: ButtonStyle.Danger,
-                    }),
-                ],
-            });
-            question.edit({
-                embeds: [embed.setDescription('İşlem süresi dolduğu için işlem kapatıldı.')],
-                components: [timeFinished],
-            });
-        }
+        })
+
+        collector.on('end', (_, reason) => {
+            if (reason === 'time') {
+                const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+                    components: [
+                        new ButtonBuilder({
+                            custom_id: 'timefinished',
+                            disabled: true,
+                            emoji: { name: '⏱️' },
+                            style: ButtonStyle.Danger,
+                        }),
+                    ],
+                });
+
+                question.edit({ components: [timeFinished] });
+            }
+        })
     },
 };
 

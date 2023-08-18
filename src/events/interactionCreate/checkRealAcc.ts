@@ -40,6 +40,7 @@ async function checkRealAcc(client: Client, interaction: ButtonInteraction, guil
                 ephemeral: true,
             });
         } else {
+            if (guildData.changeName) interactionMember.setNickname("İsim | Yaş");
             await interactionMember.roles.add(guildData.unregisterRoles);
 
             interaction.reply({

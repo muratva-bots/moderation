@@ -7,7 +7,9 @@ const Command: Moderation.ICommand = {
     description: 'Reklam yapan kullanıcının cezasını kaldırırsınız.',
     examples: ['unads @kullanıcı', 'unads 123456789123456789'],
     chatUsable: true,
-    checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers),
+    checkPermission: ({ message, guildData }) =>  
+    message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
+    (guildData.jailAuth && guildData.jailAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
         if (!message.guild.roles.cache.has(guildData.adsRole)) return message.channel.send('Cezalı rolü ayarlanmamış.');
 

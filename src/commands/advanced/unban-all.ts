@@ -131,36 +131,39 @@ async function removeApproval(message: Message, content: string, embed: EmbedBui
     });
 
     const filter = (i: ButtonInteraction) => i.isButton() && i.user.id === message.author.id;
-    const collected = await question.awaitMessageComponent({
+    const collector = question.createMessageComponentCollector({
         filter,
         time: 1000 * 60 * 5,
         componentType: ComponentType.Button,
     });
-    if (collected) {
-        if (collected.customId === 'cancel') {
+
+    collector.on("collect", async(i: ButtonInteraction) => {
+        if(i.customId === "cancel") {
             question.edit({
                 embeds: [embed.setDescription('İşlem iptal edildi.')],
                 components: [],
             });
             return null;
         }
+        
+    })
 
-        return question;
-    }
+        collector.on('end', (_, reason) => {
+            if (reason === 'time') {
+                const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+                    components: [
+                        new ButtonBuilder({
+                            custom_id: 'timefinished',
+                            disabled: true,
+                            emoji: { name: '⏱️' },
+                            style: ButtonStyle.Danger,
+                        }),
+                    ],
+                });
 
-    const timeFinished = new ActionRowBuilder<ButtonBuilder>({
-        components: [
-            new ButtonBuilder({
-                custom_id: 'timefinished',
-                disabled: true,
-                emoji: { name: '⏱️' },
-                style: ButtonStyle.Danger,
-            }),
-        ],
-    });
-    question.edit({
-        embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
-        components: [timeFinished],
-    });
+                question.edit({ embeds: [embed.setDescription('İşlem süresi dolduğu için işlem kapatıldı.')],
+                components: [timeFinished] });
+            }
+        })
     return null;
 }

@@ -51,19 +51,19 @@ const Command: Moderation.ICommand = {
             components: [
                 new ButtonBuilder({
                     custom_id: 'add',
-                    emoji: { id: '1134147890185515058' },
+                    emoji: { id: '1136280646701043783' },
                     label: 'Ekle',
                     style: ButtonStyle.Secondary,
                 }),
                 new ButtonBuilder({
                     custom_id: 'remove',
-                    emoji: { id: '1134147892978917477' },
+                    emoji: { id: '1136280643580465193' },
                     label: 'Çıkar',
                     style: ButtonStyle.Secondary,
                 }),
                 new ButtonBuilder({
                     custom_id: 'list',
-                    emoji: { id: '1134147894836998275' },
+                    emoji: { id: '1137495100335861810' },
                     label: 'Uyarılar',
                     disabled: !document.warns.length,
                     style: ButtonStyle.Secondary,

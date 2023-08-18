@@ -17,7 +17,9 @@ export class Client extends Core {
     utils = new Utils(this);
     config = config;
 
+
     constructor() {
+     
         super({
             intents: Object.keys(GatewayIntentBits).map((intent) => GatewayIntentBits[intent]),
             presence: {

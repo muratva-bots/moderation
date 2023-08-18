@@ -66,7 +66,7 @@ const Command: Moderation.ICommand = {
                     })}`,
                 ]
                     .filter(Boolean)
-                    .join('\n'),
+                    .join(''),
             );
         })
 
@@ -101,7 +101,7 @@ const Command: Moderation.ICommand = {
             if (i.customId === 'last') page = totalData;
 
             question.edit({
-                embeds: [embed.setDescription(mappedDatas.slice(page === 1 ? 0 : page * 5 - 5, page * 5).join('\n'))],
+                embeds: [embed.setDescription(mappedDatas.slice(page === 1 ? 0 : page * 5 - 5, page * 5).join(''))],
                 components: [client.utils.paginationButtons(page, totalData)],
             });
         });

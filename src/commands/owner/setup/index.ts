@@ -6,11 +6,8 @@ const Command: Moderation.ICommand = {
     description: 'Bot kurulumlarını tamamlarsınız.',
     examples: ['setup <menüyü takip edin>'],
     checkPermission: ({ client, message }) => {
-        const ownerID =
-            client.application.owner instanceof Team
-                ? (client.application.owner as Team).ownerId
-                : client.application.owner.id;
-        return message.guild.ownerId === message.author.id || ownerID === message.author.id;
+        return message.guild.ownerId === message.author.id || client.config.BOT_OWNERS.includes(message.author.id);
+
     },
     execute: async ({ client, message, guildData }) => {
         mainHandler(client, message, guildData);

@@ -7,6 +7,7 @@ import {
     PermissionFlagsBits,
     bold,
     inlineCode,
+    ButtonInteraction,
 } from 'discord.js';
 
 const waitings = new Set();
@@ -59,7 +60,7 @@ const Command: Moderation.ICommand = {
             color: client.utils.getRandomColor(),
         });
         if (
-            message.member.permissions.has(PermissionFlagsBits.Administrator) ||
+            message.member.permissions.has(PermissionFlagsBits.MoveMembers) ||
             (guildData.moveAuth && guildData.moveAuth.some((r) => message.member.roles.cache.has(r)))
         ) {
             message.member.voice.setChannel(member.voice.channelId);
@@ -110,27 +111,29 @@ const Command: Moderation.ICommand = {
                 components: [row],
             });
 
-            const filter = (i) => i.user.id === member.id;
-            const collected = await question.awaitMessageComponent({
+            const filter = (i: ButtonInteraction) => i.user.id === member.id && i.isButton();
+            const collector = question.createMessageComponentCollector({
                 filter,
                 time: 1000 * 30,
                 componentType: ComponentType.Button,
             });
-            if (collected) {
-                if (collected.customId === 'accept') {
-                    if (message.member.voice.channelId && member.voice.channelId)
-                        message.member.voice.setChannel(member.voice.channelId);
 
-                    question.edit({
-                        content: ``,
-                        embeds: [
-                            embed.setDescription(
-                                `${message.author} adlı kullanıcı ${member} adlı kullanıcının yanına taşındı.`,
-                            ),
-                        ],
-                        components: [],
-                    });
-                } else {
+            collector.on("collect", async(i: ButtonInteraction) => {
+                if(i.customId === "accept") {
+                    if (message.member.voice.channelId && member.voice.channelId)
+                    message.member.voice.setChannel(member.voice.channelId);
+
+                question.edit({
+                    content: ``,
+                    embeds: [
+                        embed.setDescription(
+                            `${message.author} adlı kullanıcı ${member} adlı kullanıcının yanına taşındı.`,
+                        ),
+                    ],
+                    components: [],
+                });
+                } if(i.customId === "cancel") {
+                    waitings.delete(message.author.id);
                     question.edit({
                         content: ``,
                         embeds: [
@@ -141,28 +144,27 @@ const Command: Moderation.ICommand = {
                         components: [],
                     });
                 }
-            } else {
-                const timeFinished = new ActionRowBuilder<ButtonBuilder>({
-                    components: [
-                        new ButtonBuilder({
-                            custom_id: 'timefinished',
-                            disabled: true,
-                            emoji: { name: '⏱️' },
-                            style: ButtonStyle.Danger,
-                        }),
-                    ],
-                });
-                question.edit({
-                    content: ``,
-                    embeds: [
-                        embed.setDescription(
-                            `${member} adlı kullanıcı ${message.author} adlı kullanıcının isteğine cevap vermediği için işlem iptal edildi.`,
-                        ),
-                    ],
-                    components: [timeFinished],
-                });
-                waitings.delete(message.author.id);
-            }
+            })
+
+            collector.on('end', (_, reason) => {
+                if (reason === 'time') {
+                    waitings.delete(message.author.id);
+                    const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+                        components: [
+                            new ButtonBuilder({
+                                custom_id: 'timefinished',
+                                disabled: true,
+                                emoji: { name: '⏱️' },
+                                style: ButtonStyle.Danger,
+                            }),
+                        ],
+                    });
+    
+                    question.edit({ components: [timeFinished] });
+                }
+            })
+        
+
         }
     },
 };

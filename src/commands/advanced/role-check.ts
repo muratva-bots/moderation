@@ -30,7 +30,7 @@ const Command: Moderation.ICommand = {
 
         const notVoiceText = notVoiceMembers.map((member) => `→ ${member.displayName} (${member.id})`).join('\n');
         const notVoice = client.utils.splitMessage(
-            `# Roldeki Seste Olmayan Kullanıcılar (${offlineMembers.size})\n${notVoiceText}`,
+            `# Roldeki Seste Olmayan Kullanıcılar (${notVoiceMembers.size})\n${notVoiceText}`,
             { maxLength: 2000, char: '\n' },
         );
 

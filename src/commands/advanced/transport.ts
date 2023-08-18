@@ -55,13 +55,14 @@ const Command: Moderation.ICommand = {
         });
 
         const filter = (i: ChannelSelectMenuInteraction) => i.user.id === message.author.id;
-        const collected = await question.awaitMessageComponent({
+        const collector = question.createMessageComponentCollector({
             filter,
             time: 1000 * 60,
             componentType: ComponentType.ChannelSelect,
         });
-        if (collected) {
-            const channel = message.guild.channels.cache.get(collected.values[0]);
+
+        collector.on("collect", async(i: ChannelSelectMenuInteraction) => {
+            const channel = message.guild.channels.cache.get(i.values[0]);
             if (!channel.permissionsFor(message.member).has(PermissionFlagsBits.Connect)) {
                 question.edit({
                     embeds: [
@@ -86,22 +87,26 @@ const Command: Moderation.ICommand = {
                 ],
                 components: [],
             });
-        } else {
-            const timeFinished = new ActionRowBuilder<ButtonBuilder>({
-                components: [
-                    new ButtonBuilder({
-                        custom_id: 'timefinished',
-                        disabled: true,
-                        emoji: { name: '⏱️' },
-                        style: ButtonStyle.Danger,
-                    }),
-                ],
-            });
-            question.edit({
-                embeds: [embed.setDescription('İşlem süresi dolduğu için işlem kapatıldı.')],
-                components: [timeFinished],
-            });
-        }
+        })
+
+
+       collector.on('end', (_, reason) => {
+            if (reason === 'time') {
+                const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+                    components: [
+                        new ButtonBuilder({
+                            custom_id: 'timefinished',
+                            disabled: true,
+                            emoji: { name: '⏱️' },
+                            style: ButtonStyle.Danger,
+                        }),
+                    ],
+                });
+
+                question.edit({ embeds: [embed.setDescription('İşlem süresi dolduğu için işlem kapatıldı.')],
+                components: [timeFinished] });
+            }
+        })
     },
 };
 

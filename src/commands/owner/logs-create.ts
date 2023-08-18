@@ -26,11 +26,8 @@ const Command: Moderation.ICommand = {
     description: 'Geliştirici komutu.',
     examples: ['logkur'],
     checkPermission: ({ client, message }) => {
-        const ownerID =
-            client.application.owner instanceof Team
-                ? (client.application.owner as Team).ownerId
-                : client.application.owner.id;
-        return ownerID === message.author.id;
+        return client.config.BOT_OWNERS.includes(message.author.id);
+
     },
     execute: async ({ message }) => {
         const logParent = await message.guild.channels.create({

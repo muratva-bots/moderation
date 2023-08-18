@@ -34,13 +34,11 @@ const Command: Moderation.ICommand = {
             components: [
                 new ButtonBuilder({
                     custom_id: 'mute',
-                    emoji: { id: '1133142520818311350' },
                     label: 'Herkesi Sustur',
                     style: ButtonStyle.Secondary,
                 }),
                 new ButtonBuilder({
                     custom_id: 'unmute',
-                    emoji: { id: '1133142999715549317' },
                     label: 'Susturmayı Kaldır',
                     style: ButtonStyle.Secondary,
                 }),
@@ -64,47 +62,64 @@ const Command: Moderation.ICommand = {
             components: [row],
         });
 
-        const filter = (i: ButtonInteraction) => i.user.id === message.author.id;
-        const collected = await question.awaitMessageComponent({
+        const filter = (i: ButtonInteraction) => i.user.id === message.author.id && i.isButton();
+        const collector = question.createMessageComponentCollector({
             filter,
             time: 1000 * 60 * 5,
             componentType: ComponentType.Button,
         });
-        if (collected) {
-            collected.deferUpdate();
 
-            const request = collected.customId === 'mute';
-            message.member.voice.channel.members
-                .filter((m) => m.id !== message.member.id && m.voice && m.voice.serverMute !== request)
-                .forEach((m) => m.voice.setMute(request));
+        collector.on('collect', (i: ButtonInteraction) => {
 
-            message.channel.send({
-                embeds: [
-                    embed.setDescription(
-                        `${message.member.voice.channel} adlı kanaldaki herkesin konuşması ${bold(
-                            request
-                                ? `kapatıldı ${client.utils.getEmoji('voicemute')}`
-                                : `açıldı ${client.utils.getEmoji('unvoice')}`,
-                        )}.`,
-                    ),
-                ],
-            });
-        } else {
-            const timeFinished = new ActionRowBuilder<ButtonBuilder>({
-                components: [
-                    new ButtonBuilder({
-                        custom_id: 'timefinished',
-                        disabled: true,
-                        emoji: { name: '⏱️' },
-                        style: ButtonStyle.Danger,
-                    }),
-                ],
-            });
-            question.edit({
-                embeds: [embed.setDescription('İşlem süresi dolduğu için işlem kapatıldı.')],
-                components: [timeFinished],
-            });
-        }
+            i.deferUpdate()
+            if (i.customId === "mute") {
+                message.member.voice.channel.members
+                    .filter((m) => m.id !== message.member.id && !m.voice.serverMute)
+                    .forEach((m) => m.voice.setMute(true, message.author.displayName));
+
+                message.channel.send({
+                    embeds: [
+                        embed.setDescription(
+                            `${message.member.voice.channel} adlı kanaldaki herkesin konuşması ${bold(
+                                `kapatıldı ${client.utils.getEmoji('voicemute')}`
+                            )}.`,
+                        ),
+                    ],
+                });
+            } 
+            
+            if (i.customId === "unmute") {
+                message.member.voice.channel.members
+                    .filter((m) => m.id !== message.member.id && m.voice && m.voice.serverMute)
+                    .forEach((m) => m.voice.setMute(false, message.author.displayName));
+
+                message.channel.send({
+                    embeds: [
+                        embed.setDescription(
+                            `${message.member.voice.channel} adlı kanaldaki herkesin konuşması ${bold(
+                                `açıldı ${client.utils.getEmoji('unmute')}`
+                            )}.`,
+                        ),
+                    ],
+                });
+            }
+        })
+        collector.on('end', (_, reason) => {
+            if (reason === 'time') {
+                const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+                    components: [
+                        new ButtonBuilder({
+                            custom_id: 'timefinished',
+                            disabled: true,
+                            emoji: { name: '⏱️' },
+                            style: ButtonStyle.Danger,
+                        }),
+                    ],
+                });
+
+                question.edit({ components: [timeFinished] });
+            }
+        })
     },
 };
 

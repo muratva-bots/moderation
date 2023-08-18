@@ -86,7 +86,7 @@ const Command: Moderation.ICommand = {
             registerLogChannel.send({
                 content: `${member} (${inlineCode(member.id.toString())}) adlı kullanıcının ismi ${
                     message.author
-                } (${inlineCode(message.author.id.toString())}) tarafından değiştirildi.`,
+                } (${inlineCode(message.author.username)}) tarafından değiştirildi.`,
             });
         }
 

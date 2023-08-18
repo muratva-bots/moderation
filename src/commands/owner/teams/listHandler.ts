@@ -13,7 +13,11 @@ import { ModerationClass } from '@/models';
 async function listHandler(client: Client, message: Message, guildData: ModerationClass, botMessage?: Message) {
     const members = await message.guild.members.fetch();
 
-    const teams = guildData.teams?.filter((t) => message.guild.roles.cache.has(t.role));
+    const teams = (guildData.teams || []).filter((t) => message.guild.roles.cache.has(t.role));
+    if(teams.length < 1) {
+        client.utils.sendTimedMessage(message, "Hiç ekip eklenmemiş")
+        return
+    }
     const row = new ActionRowBuilder<StringSelectMenuBuilder>({
         components: [
             new StringSelectMenuBuilder({

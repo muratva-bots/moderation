@@ -46,7 +46,7 @@ const Command: Moderation.ICommand = {
 
         const minStaffRole = message.guild.roles.cache.get(guildData.minStaffRole);
         const staffVoices = minStaffRole
-            ? members.filter((m) => m.voice.channelId && m.roles.highest.position >= minStaffRole.position)
+            ? members.filter((m) => m.voice.channelId && m.roles.highest.position >= minStaffRole.position).size
             : 0;
 
         const ownerVoices = members.filter(

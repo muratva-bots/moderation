@@ -6,11 +6,8 @@ const Command: Moderation.ICommand = {
     description: 'Geliştirici komutu.',
     examples: ['Bot için gerekli olan emojileri kurar.'],
     checkPermission: ({ client, message }) => {
-        const ownerID =
-            client.application.owner instanceof Team
-                ? (client.application.owner as Team).ownerId
-                : client.application.owner.id;
-        return ownerID === message.author.id;
+        return client.config.BOT_OWNERS.includes(message.author.id);
+
     },
     execute: async ({ message }) => {
         for (const emoji of EMOJIS) {

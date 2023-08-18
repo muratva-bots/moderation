@@ -16,11 +16,8 @@ const Command: Moderation.ICommand = {
     description: 'Rol seçme mesajını attırırsınız.',
     examples: ['roleselect <menüden işlem seçin>'],
     checkPermission: ({ client, message }) => {
-        const ownerID =
-            client.application.owner instanceof Team
-                ? (client.application.owner as Team).ownerId
-                : client.application.owner.id;
-        return message.guild.ownerId === message.author.id || ownerID === message.author.id;
+        return message.guild.ownerId === message.author.id || client.config.BOT_OWNERS.includes(message.author.id);
+
     },
     execute: async ({ client, message, guildData }) => {
         const embed = new EmbedBuilder({
@@ -98,7 +95,7 @@ const Command: Moderation.ICommand = {
                 message.channel.send({
                     content: [
                         `Merhaba ${bold(message.guild.name)} üyeleri,`,
-                        `Çekiliş katılımcısı alarak  🍆, 🍆, 🍑 , 🍆, 🍌 gibi çeşitli ödüllerin sahibi olabilirsiniz.`,
+                        `Çekiliş katılımcısı alarak ${client.utils.getEmoji("spotify")}, ${client.utils.getEmoji("netflix")}, ${client.utils.getEmoji("nitroboost")}, ${client.utils.getEmoji("exxen")} gibi çeşitli ödüllerin sahibi olabilirsiniz.`,
                         `Etkinlik katılımcısı alarak çeşitli etkinliklerin yapıldığı anlarda herkesten önce haberdar olabilirsiniz ve çekilişlere önceden katılma hakkı kazanabilirsiniz.`,
 
                         `Aşağıda ki butonlara basarak siz de bu ödülleri kazanmaya hemen başlayabilirsiniz!`,

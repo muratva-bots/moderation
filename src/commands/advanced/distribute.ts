@@ -27,7 +27,7 @@ const Command: Moderation.ICommand = {
                 c.type === ChannelType.GuildVoice,
         );
         [...message.member.voice.channel.members.values()]
-            .filter((m) => m.voice.channelId !== message.member.voice.channelId)
+            .filter((m) => m.voice.channelId === message.member.voice.channelId)
             .forEach((m) => m.voice.setChannel(publicRooms.random().id));
 
         message.channel.send({

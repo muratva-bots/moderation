@@ -4,8 +4,11 @@ const Command: Moderation.ICommand = {
     usages: ['clear', 'sil', 'temizle'],
     description: 'Kanalda belirtilen sayıda mesaj siler. (Dilerseniz spesifik bir kullanıcı da belirtebilirsiniz)',
     examples: ['sil @kullanıcı 10', 'sil 10'],
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.ManageMessages),
-    execute: async ({ client, message, args }) => {
+    chatUsable: true,
+    checkPermission: ({ message, guildData }) =>
+        message.member.permissions.has(PermissionFlagsBits.ManageMessages) ||
+        (guildData.jailAuth && guildData.jailAuth.some((r) => message.member.roles.cache.has(r))),
+        execute: async ({ client, message, args }) => {
         const reference = message.reference ? (await message.fetchReference()).author : undefined;
         const user = (await client.utils.getUser(args[0])) || reference;
         const count = parseInt(args[reference ? 0 : user ? 1 : 0]);

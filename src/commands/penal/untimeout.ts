@@ -5,7 +5,8 @@ const Command: Moderation.ICommand = {
     usages: ['untimeout'],
     description: 'Sunucudan uzaklaştırılmış bir kullanıcının uzaklaştırılmasını kaldırır.',
     examples: ['untimeout 123456789123456789', 'untimeout @kullanıcı'],
-    checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers),
+    checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
+    (guildData.jailAuth && guildData.jailAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
         const member =
             (await client.utils.getMember(message.guild, args[0])) ||

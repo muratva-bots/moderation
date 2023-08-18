@@ -313,6 +313,27 @@ const Command: Moderation.ICommand = {
                 ],
                 components: [],
             });
+            const chatChannel = message.guild.channels.cache.find(
+                (c) => c.isTextBased() && c.id === guildData.chatChannel,
+            ) as TextChannel;
+            if (chatChannel) {
+                chatChannel
+                    .send({
+                        content: `${member} aramıza hoşgeldin, seninle beraber ${bold(
+                            message.guild.memberCount.toString(),
+                        )} kişi olduk.`,
+                    })
+                    .then((msg) => setTimeout(() => msg.delete(), 5000));
+            }
+        
+        const registerLogChannel = message.guild.channels.cache.find((c) => c.name === 'register-log') as TextChannel;
+        if (registerLogChannel) {
+            registerLogChannel.send({
+                content: `${member} (${inlineCode(member.id.toString())}) adlı kullanıcı ${message.author.username} (${inlineCode(
+                    message.author.id.toString(),
+                )}) tarafından kayıt edildi.`,
+            });
+        }
         } else {
             const timeFinished = new ActionRowBuilder<ButtonBuilder>({
                 components: [
@@ -356,25 +377,4 @@ async function register(member: GuildMember, message: Message, guildData: Modera
         { upsert: true },
     );
 
-    const chatChannel = message.guild.channels.cache.find(
-        (c) => c.isTextBased() && c.id === guildData.chatChannel,
-    ) as TextChannel;
-    if (chatChannel) {
-        chatChannel
-            .send({
-                content: `${member} aramıza hoşgeldin, seninle beraber ${bold(
-                    message.guild.memberCount.toString(),
-                )} kişi olduk.`,
-            })
-            .then((msg) => setTimeout(() => msg.delete(), 5000));
-    }
-
-    const registerLogChannel = message.guild.channels.cache.find((c) => c.id === 'register-log') as TextChannel;
-    if (registerLogChannel) {
-        registerLogChannel.send({
-            content: `${member} (${inlineCode(member.id.toString())}) adlı kullanıcı ${message.author} (${inlineCode(
-                message.author.id.toString(),
-            )}) tarafından kayıt edildi.`,
-        });
-    }
 }

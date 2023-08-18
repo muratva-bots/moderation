@@ -23,23 +23,18 @@ const Command: Moderation.ICommand = {
     description: 'Sunucudaki ekip sistemini yönetir.',
     examples: ['team <buttonlar ile yönetim>'],
     checkPermission: ({ client, message }) => {
-        const ownerID =
-            client.application.owner instanceof Team
-                ? (client.application.owner as Team).ownerId
-                : client.application.owner.id;
-        return message.guild.ownerId === message.author.id || ownerID === message.author.id;
+        return message.guild.ownerId === message.author.id || client.config.BOT_OWNERS.includes(message.author.id);
+
     },
     execute: async ({ client, message, guildData }) => {
-        const ownerID =
-            client.application.owner instanceof Team
-                ? (client.application.owner as Team).ownerId
-                : client.application.owner.id;
-        if (ownerID !== message.author.id) {
+      
+        if (!client.config.BOT_OWNERS.includes(message.author.id)) {
             listHandler(client, message, guildData);
             return;
         }
 
-        const teams = guildData.teams?.filter((t) => message.guild.roles.cache.has(t.role));
+        const teams = (guildData.teams || [])
+                        .filter((t) => message.guild.roles.cache.has(t.role))
 
         const row = new ActionRowBuilder<ButtonBuilder>({
             components: [

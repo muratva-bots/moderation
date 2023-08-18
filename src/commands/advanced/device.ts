@@ -22,10 +22,12 @@ const Command: Moderation.ICommand = {
             },
         });
 
-        const channel =
-            message.mentions.channels.first() ||
+        const member = await client.utils.getMember(message.guild, args[0]) || (message.reference ? (await message.fetchReference()).member : undefined);
+
+        const channel = member ? undefined :
+            (message.mentions.channels.first() ||
             message.guild.channels.cache.get(args[0]) ||
-            (message.member.voice.channelId ? message.member.voice.channel : undefined);
+            (message.member.voice.channelId ? message.member.voice.channel : undefined));
         if (channel && channel.isVoiceBased()) {
             const members: string[] = [];
             channel.members.forEach((member) => {
@@ -50,10 +52,6 @@ const Command: Moderation.ICommand = {
             return;
         }
 
-        const member =
-            message.mentions.members!.first() ||
-            message.guild.members.cache.get(args[0]) ||
-            (message.reference ? (await message.fetchReference()).member : undefined);
         if (!member) {
             client.utils.sendTimedMessage(message, 'Geçerli bir kullanıcı veya kanal belirt!');
             return;

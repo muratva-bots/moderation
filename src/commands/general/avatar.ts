@@ -20,14 +20,13 @@ const Command: Moderation.ICommand = {
         const embed = new EmbedBuilder({
             author: {
                 name: user.username,
-                icon_url: user.displayAvatarURL({ forceStatic: true, size: 4096 }),
+                icon_url: user.displayAvatarURL({ size: 4096 }),
             },
             color: client.utils.getRandomColor(),
             title: 'Discord Kullanıcı Profili',
             timestamp: Date.now(),
             image: {
                 url: user.displayAvatarURL({
-                    forceStatic: true,
                     size: 4096,
                 }),
             },
@@ -74,11 +73,10 @@ const Command: Moderation.ICommand = {
             if (value === 'discord-avatar')
                 embed
                     .setTitle('Discord Kullanıcı Profili')
-                    .setImage(user.displayAvatarURL({ forceStatic: true, size: 4096 }));
+                    .setImage(user.displayAvatarURL({ size: 4096 }));
             if (value === 'discord-banner')
                 embed.setTitle('Discord Kullanıcı Bannerı').setImage(
                     user.bannerURL({
-                        forceStatic: true,
                         size: 4096,
                         extension: user.banner.startsWith('a_') ? 'gif' : 'png',
                     }),
@@ -86,7 +84,7 @@ const Command: Moderation.ICommand = {
             if (value === 'server-avatar')
                 embed
                     .setTitle('Sunucu Kullanıcı Profili')
-                    .setImage(member.displayAvatarURL({ forceStatic: true, size: 4096 }));
+                    .setImage(member.displayAvatarURL({ size: 4096 }));
 
             question.edit({ embeds: [embed] });
         });

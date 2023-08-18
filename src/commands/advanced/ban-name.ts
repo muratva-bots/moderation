@@ -69,58 +69,61 @@ const Command: Moderation.ICommand = {
             components: [row],
         });
 
-        const filter = (i: ButtonInteraction) => i.isButton() && i.user.id === message.author.id;
-        const collected = await question.awaitMessageComponent({
+        const filter = (i: ButtonInteraction) => i.user.id === message.author.id && i.isButton();
+        const collector = question.createMessageComponentCollector({
             filter,
-            time: 1000 * 60 * 5,
+            time: 1000 * 60,
             componentType: ComponentType.Button,
         });
-        if (collected) {
-            if (collected.customId === 'cancel') {
+
+        collector.on("collect", async(i: ButtonInteraction) => {
+            if(i.customId === "accepted") {
+                question.edit({
+                    embeds: [
+                        embed.setDescription(
+                            `Kullanıcı adında ${inlineCode(name)} içeren kullanıcılar yasaklanıyor ${client.utils.getEmoji(
+                                'loading',
+                            )}`,
+                        ),
+                    ],
+                    components: [],
+                });
+        
+                for (const [id] of nameMembers) message.guild.members.ban(id);
+        
+                question.edit({
+                    embeds: [
+                        embed.setDescription(
+                            `${inlineCode(name)} ismine sahip kullanıcılar yasaklandı ${client.utils.getEmoji('greentick')}`,
+                        ),
+                    ],
+                });
+            } if(i.customId === "cancel") {
                 question.edit({
                     embeds: [embed.setDescription('İşlem iptal edildi.')],
                     components: [],
                 });
                 return;
             }
-        } else {
-            const timeFinished = new ActionRowBuilder<ButtonBuilder>({
-                components: [
-                    new ButtonBuilder({
-                        custom_id: 'timefinished',
-                        disabled: true,
-                        emoji: { name: '⏱️' },
-                        style: ButtonStyle.Danger,
-                    }),
-                ],
-            });
-            question.edit({
-                embeds: [embed.setDescription('Süre dolduğu için işlem iptal edildi.')],
-                components: [timeFinished],
-            });
-            return;
-        }
+        })
 
-        question.edit({
-            embeds: [
-                embed.setDescription(
-                    `Kullanıcı adında ${inlineCode(name)} içeren kullanıcılar yasaklanıyor ${client.utils.getEmoji(
-                        'loading',
-                    )}`,
-                ),
-            ],
-            components: [],
-        });
+        collector.on('end', (_, reason) => {
+            if (reason === 'time') {
+                const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+                    components: [
+                        new ButtonBuilder({
+                            custom_id: 'timefinished',
+                            disabled: true,
+                            emoji: { name: '⏱️' },
+                            style: ButtonStyle.Danger,
+                        }),
+                    ],
+                });
 
-        for (const [id] of nameMembers) message.guild.members.ban(id);
-
-        question.edit({
-            embeds: [
-                embed.setDescription(
-                    `${inlineCode(name)} ismine sahip kullanıcılar yasaklandı ${client.utils.getEmoji('greentick')}`,
-                ),
-            ],
-        });
+                question.edit({ components: [timeFinished] });
+            }
+        })
+    
     },
 };
 

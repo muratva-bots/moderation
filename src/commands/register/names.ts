@@ -53,7 +53,7 @@ const Command: Moderation.ICommand = {
             return codeBlock(
                 'fix',
                 [
-                    n.role ? message.guild.roles.cache.get(n.role)?.name || '@silinmiş' : undefined,
+                    n.role ? `Rol: ${message.guild.roles.cache.get(n.role)?.name || '@silinmiş'}` : undefined,
                     `İşlem: ${titles[n.type]}`,
                     `İsim: ${n.name}`,
                     n.admin || n.admin !== user.id

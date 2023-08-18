@@ -11,6 +11,7 @@ const MessageCreate: Moderation.IEvent<Events.MessageCreate> = {
         if (!message.guild || message.author.bot || !message.content.length) return;
 
         const prefix = client.config.PREFIXES.find((prefix) => message.content.toLowerCase().startsWith(prefix));
+        afkHandler(client, message, prefix);
         if (!prefix) return;
 
         const guildData = client.servers.get(message.guildId) || new ModerationClass();
@@ -37,7 +38,6 @@ const MessageCreate: Moderation.IEvent<Events.MessageCreate> = {
         botCommandHandler(client, message, guildData, prefix);
         guildCommandHandler(client, message, guildData, prefix);
         complimentHandler(client, message, guildData);
-        afkHandler(client, message, prefix);
     },
 };
 

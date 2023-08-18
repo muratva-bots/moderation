@@ -15,11 +15,8 @@ const Command: Moderation.ICommand = {
     description: 'İstila koruması (otorol) açar-kapatırsınız.',
     examples: ['istila <menüden işlem seçin>'],
     checkPermission: ({ client, message }) => {
-        const ownerID =
-            client.application.owner instanceof Team
-                ? (client.application.owner as Team).ownerId
-                : client.application.owner.id;
-        return message.guild.ownerId === message.author.id || ownerID === message.author.id;
+        return message.guild.ownerId === message.author.id || client.config.BOT_OWNERS.includes(message.author.id);
+
     },
     execute: async ({ client, message, guildData }) => {
         const embed = new EmbedBuilder({

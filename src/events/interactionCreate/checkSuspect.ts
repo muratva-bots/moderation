@@ -46,6 +46,7 @@ ${bold(
                 .setColor('Red');
             interaction.reply({ embeds: [embed], ephemeral: true });
         } else {
+            if (guildData.changeName) interactionMember.setNickname("İsim | Yaş");
             await interactionMember.roles.set(guildData.unregisterRoles);
 
             const embed = new EmbedBuilder()

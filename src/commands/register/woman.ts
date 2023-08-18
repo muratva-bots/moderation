@@ -184,7 +184,7 @@ const Command: Moderation.ICommand = {
         if (registerLogChannel) {
             registerLogChannel.send({
                 content: `${member} (${inlineCode(member.id.toString())}) adlı kullanıcı ${
-                    message.author
+                    message.author.username
                 } (${inlineCode(message.author.id.toString())}) tarafından kayıt edildi.`,
             });
         }

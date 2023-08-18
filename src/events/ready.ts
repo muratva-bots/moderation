@@ -1,5 +1,5 @@
 import { GuildModel, GuildClass } from '@/models';
-import { Events } from 'discord.js';
+import { Events, VoiceChannel } from 'discord.js';
 
 const Ready: Moderation.IEvent<Events.ClientReady> = {
     name: Events.ClientReady,
@@ -17,6 +17,7 @@ const Ready: Moderation.IEvent<Events.ClientReady> = {
         console.log(`${client.user.tag} is online!`);
 
         await client.application.fetch();
+
         const document = (await GuildModel.findOne({ id: guild.id })) || (await GuildModel.create({ id: guild.id }));
         client.servers.set(guild.id, { ...document.moderation });
 

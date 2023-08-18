@@ -48,7 +48,7 @@ const Command: Moderation.ICommand = {
             return;
         }
 
-        const hasTag = guildData.tags?.some((t) => message.author.username.includes(t));
+        const hasTag = guildData.tags?.some((t) => message.author.displayName.includes(t));
         const newName = guildData.tags?.length ? `${hasTag ? guildData.tags[0] : guildData.secondTag} ${name}` : name;
         if (newName.length > 30)
             return client.utils.sendTimedMessage(message, '30 karakteri geçmeyecek bir isim belirt.');

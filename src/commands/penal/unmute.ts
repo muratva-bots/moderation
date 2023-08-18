@@ -20,7 +20,8 @@ const Command: Moderation.ICommand = {
     description: 'Muteli bir kullanıcının mutesini kaldırırsınız.',
     examples: ['unmute @kullanıcı <menüden ceza türü seçin>', 'unmute 123456789123456789 <menüden ceza türü seçin>'],
     chatUsable: true,
-    checkPermission: ({ message }) => message.member.permissions.has(PermissionFlagsBits.MuteMembers),
+    checkPermission: ({ message, guildData }) => message.member.permissions.has(PermissionFlagsBits.MuteMembers) ||
+    (guildData.chatMuteAuth && guildData.chatMuteAuth.some((r) => message.member.roles.cache.has(r))) ||  (guildData.voiceMuteAuth && guildData.voiceMuteAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
         const reference = message.reference ? (await message.fetchReference()).member : undefined;
         const member = (await client.utils.getMember(message.guild, args[0])) || reference;

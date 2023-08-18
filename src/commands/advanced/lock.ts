@@ -19,6 +19,7 @@ const Command: Moderation.ICommand = {
     usages: ['lock', 'kilit', 'kanal'],
     description: 'Belirttiğiniz kanalın mesaj gönderme iznini açar/kapatırsınız.',
     examples: ['kilit <kilit menü panelinden işleminizi seçin.>'],
+    chatUsable: true,
     checkPermission: ({ message, guildData }) =>
         message.member.permissions.has(PermissionFlagsBits.ManageChannels) ||
         (guildData.ownerRoles && guildData.ownerRoles.some((r) => message.member.roles.cache.has(r))),
@@ -28,7 +29,7 @@ const Command: Moderation.ICommand = {
                 new ChannelSelectMenuBuilder({
                     custom_id: 'spesific-channel',
                     placeholder: 'Kanal ara..',
-                    maxValues: message.guild.channels.cache.filter((c) => c.type === ChannelType.GuildText).size,
+                    maxValues: 25,
                     channel_types: [ChannelType.GuildText],
                 }),
             ],
@@ -59,17 +60,17 @@ const Command: Moderation.ICommand = {
             components: [rowOne, rowTwo],
         });
 
-        const filter = (i: Interaction) => i.user.id === message.author.id && (i.isButton() || i.isChannelSelectMenu());
-        const collected = await question.awaitMessageComponent({
+        const filter = (i: Interaction) =>  i.user.id === message.author.id && (i.isButton() || i.isChannelSelectMenu());
+        const collector = question.createMessageComponentCollector({
             filter,
             time: 1000 * 60 * 5,
         });
-        if (collected) {
-            if (collected.isChannelSelectMenu()) {
-                collected.deferUpdate();
-
+       
+        collector.on("collect", async(i: Interaction) => {
+            if(i.isChannelSelectMenu()) {
+                i.deferUpdate()
                 const channels = [];
-                collected.values.forEach((v) => {
+                i.values.forEach((v) => {
                     const channel = message.guild.channels.cache.get(v) as TextChannel;
                     if (!channel) return;
 
@@ -102,13 +103,11 @@ const Command: Moderation.ICommand = {
                 });
 
                 return;
-            }
-
-            if (collected.isButton()) {
-                collected.deferUpdate();
+            }  if (i.isButton()) {
+                i.deferUpdate();
 
                 if (!guildData.ownerRoles?.some((r) => message.member.roles.cache.has(r))) {
-                    collected.reply({
+                    i.reply({
                         content: 'Bu işlemi gerçekleştirmek için yeterli yetkin yok.',
                     });
                     return;
@@ -116,7 +115,7 @@ const Command: Moderation.ICommand = {
                 const channels = message.guild.channels.cache.filter((c) => c.parentId === guildData.registerParent);
                 const unregisterRole = message.guild.roles.cache.get(guildData.unregisterRoles[0]);
                 if (!unregisterRole) {
-                    collected.reply({
+                    i.reply({
                         content: 'Kayıtsız rolü silinmiş.',
                         ephemeral: true,
                     });
@@ -145,22 +144,26 @@ const Command: Moderation.ICommand = {
                 });
                 return;
             }
-        } else {
-            const timeFinished = new ActionRowBuilder<ButtonBuilder>({
-                components: [
-                    new ButtonBuilder({
-                        custom_id: 'timefinished',
-                        disabled: true,
-                        emoji: { name: '⏱️' },
-                        style: ButtonStyle.Danger,
-                    }),
-                ],
-            });
-            question.edit({
-                embeds: [embed.setDescription('İşlem süresi dolduğu için işlem kapatıldı.')],
-                components: [timeFinished],
-            });
-        }
+        })
+
+        collector.on('end', (_, reason) => {
+            if (reason === 'time') {
+                const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+                    components: [
+                        new ButtonBuilder({
+                            custom_id: 'timefinished',
+                            disabled: true,
+                            emoji: { name: '⏱️' },
+                            style: ButtonStyle.Danger,
+                        }),
+                    ],
+                });
+
+                question.edit({ embeds: [embed.setDescription('İşlem süresi dolduğu için işlem kapatıldı.')],
+                components: [timeFinished] });
+            }
+        })
+      
     },
 };
 
