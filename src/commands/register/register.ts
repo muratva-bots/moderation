@@ -39,7 +39,6 @@ const Command: Moderation.ICommand = {
         message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
         (guildData.registerAuth && guildData.registerAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
-        if (!guildData.menuRegister) return;
 
         if (guildData.registerSystem == false) {
             message.channel.send({

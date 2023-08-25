@@ -1,7 +1,6 @@
 import { ChannelType, PermissionFlagsBits, Team, inlineCode } from 'discord.js';
 
 const logChannelNames = [
-    'guard-log',
     'role-log',
     'voice-mute-log',
     'chat-mute-log',

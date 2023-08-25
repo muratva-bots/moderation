@@ -21,9 +21,9 @@ const Ready: Moderation.IEvent<Events.ClientReady> = {
         const document = (await GuildModel.findOne({ id: guild.id })) || (await GuildModel.create({ id: guild.id }));
         client.servers.set(guild.id, { ...document.moderation });
 
-        client.commands.get('register').isDisabled = !document.moderation.menuRegister;
-        client.commands.get('woman').isDisabled = document.moderation.menuRegister;
-        client.commands.get('erkek').isDisabled = document.moderation.menuRegister;
+        // client.commands.get('register').isDisabled = !document.moderation.menuRegister;
+        // client.commands.get('woman').isDisabled = document.moderation.menuRegister;
+        // client.commands.get('erkek').isDisabled = document.moderation.menuRegister;
 
         const guildEventEmitter = GuildModel.watch([{ $match: { 'fullDocument.id': guild.id } }], {
             fullDocument: 'updateLookup',

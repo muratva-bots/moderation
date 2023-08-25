@@ -64,7 +64,7 @@ function botCommandHandler(client: Client, message: Message, guildData: Moderati
         message.author.id !== message.guild.ownerId &&
         message.member.permissions.has(PermissionFlagsBits.Administrator)
     ) {
-        const limit = client.utils.checkLimit(message.author.id, 1000, 3, 1000 * 20);
+        const limit = client.utils.checkLimit(message.author.id, 1000, 5, 1000 * 20);
         if (limit.hasLimit) {
             const needTime = Number(limit.time.match(/\d+/)[0]);
             client.utils.sendTimedMessage(
