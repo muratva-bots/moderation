@@ -13,6 +13,7 @@ import {
     userMention,
     time,
     Guild,
+    inlineCode,
 } from 'discord.js';
 
 const Command: Moderation.ICommand = {
@@ -75,6 +76,7 @@ const Command: Moderation.ICommand = {
 				) && !rol.managed,
 		);
 
+        const vanityURL = await message.guild.fetchVanityData();
 
         const question = await message.channel.send({
             embeds: [
@@ -82,8 +84,8 @@ const Command: Moderation.ICommand = {
                     [
                         `${bold("Sunucu Bilgileri")}`,
                         `Taç Sahibi: ${userMention(message.guild.ownerId)}`,
-                        `Özel URL: ${message.guild.vanityURLCode
-                            ? `${message.guild.vanityURLCode} / (${(await (await message.guild.fetchVanityData()).uses)})`
+                        `Özel URL: ${!vanityURL
+                            ? `${message.guild.vanityURLCode} / (${inlineCode(vanityURL.uses.toString())})`
                             : "Özel URL Yok"}`,
                             `Sunucu Kurulma Tarihi: ${time(Math.floor(message.guild.createdTimestamp / 1000), 'R')}`,
                             `Rol/Kanal Sayısı: ${bold(`${message.guild.roles.cache.size}/${message.guild.channels.cache.size}`)}\n`,
