@@ -22,6 +22,11 @@ import { Client } from '@/structures';
 import { NeedFlags, SpecialCommandFlags } from '@/enums';
 import ms from 'ms';
 
+const reasonType = {
+    kullanıcı: NeedFlags.User,
+    resim: NeedFlags.Image
+}
+
 const types = {
     [SpecialCommandFlags.Message]: 'Mesaj',
     [SpecialCommandFlags.Punishment]: 'Ceza',
@@ -523,8 +528,8 @@ export async function specialCommandHandler(
 
                                                         reasons.push({
                                                             name: reasonModalCollector.fields.getTextInputValue('name'),
-                                                            needType: types[needType]
-                                                                ? types[needType]
+                                                            needType: reasonType[needType]
+                                                                ? reasonType[needType]
                                                                 : NeedFlags.Disable,
                                                             placeholder:
                                                                 reasonModalCollector.fields.getTextInputValue(

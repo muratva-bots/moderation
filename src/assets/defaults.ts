@@ -5,7 +5,7 @@ const ONE_DAY = ONE_MINUTE * 60 * 24;
 const ONE_MONTH = ONE_DAY * 30;
 
 export const DEFAULTS = {
-    extraMuteTime: 300000,
+    extraMuteTime: 900000,
     mute: {
         reasons: [
             {

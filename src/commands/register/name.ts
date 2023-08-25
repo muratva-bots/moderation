@@ -11,7 +11,7 @@ const Command: Moderation.ICommand = {
         message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
         (guildData.registerAuth && guildData.registerAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
-        if (guildData.registerSystem == false) {
+        if (guildData.registerSystem === false) {
             message.channel.send({
                 content: `🔒 Kayıtlar bir yönetici tarafından __geçici bir süreliğine kapatılmıştır.__ Lütfen bu süreçte beklemede kalın. Anlayışla karşıladığınız için teşekkürler!`,
             });
@@ -27,7 +27,7 @@ const Command: Moderation.ICommand = {
 
         if (client.utils.checkUser(message, member)) return;
 
-        const hasTag = guildData.tags?.some((t) => member.user.displayName.includes(t));
+        const hasTag = (guildData.tags || []).some((t) => member.user.displayName.includes(t));
 
         args = args.splice(1);
         let name = args

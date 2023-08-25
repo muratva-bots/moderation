@@ -14,9 +14,10 @@ import {
     roleMention,
     ButtonInteraction,
     ComponentType,
+    StringSelectMenuInteraction,
 } from 'discord.js';
 import { quarantineUser } from '../penal/quarantine';
-import { NameFlags } from '@/enums';
+import { NameFlags, RegisterFlags } from '@/enums';
 
 const titles = {
     [NameFlags.Register]: 'Kayıt Olma',
@@ -122,7 +123,7 @@ const Command: Moderation.ICommand = {
                 return;
             }
 
-            if (guildData.tags.length && guildData.secondTag) {
+            if (guildData.tags && guildData.tags.length && guildData.secondTag) {
                 name = `${hasTag ? guildData.tags[0] : guildData.secondTag} ${name}`;
             }
         }
@@ -221,28 +222,28 @@ const Command: Moderation.ICommand = {
             description:
                 document.names.length > 0
                     ? [
-                          `Bu Kullanıcının Sunucudaki Eski İsimleri [ ${bold(document.names.length.toString())} ]`,
-                          `${document.names
-                              .slice(
-                                  document.names.length ? document.names.length - 10 : 0,
-                                  document.names.length ? document.names.length : 10,
-                              )
-                              .map((n) =>
-                                  [
-                                      inlineCode(`•`),
-                                      `${time(Math.floor(n.time / 1000), 'D')}:`,
-                                      n.name ? n.name : undefined,
-                                      n.role ? roleMention(n.role) : undefined,
-                                      n.role ? bold(`(${titles[n.type]})`) : bold(titles[n.type]),
-                                  ]
-                                      .filter(Boolean)
-                                      .join(' '),
-                              )
-                              .join('\n')}`,
-                      ].join('\n')
+                        `Bu Kullanıcının Sunucudaki Eski İsimleri [ ${bold(document.names.length.toString())} ]`,
+                        `${document.names
+                            .slice(
+                                document.names.length ? document.names.length - 10 : 0,
+                                document.names.length ? document.names.length : 10,
+                            )
+                            .map((n) =>
+                                [
+                                    inlineCode(`•`),
+                                    `${time(Math.floor(n.time / 1000), 'D')}:`,
+                                    n.name ? n.name : undefined,
+                                    n.role ? roleMention(n.role) : undefined,
+                                    n.role ? bold(`(${titles[n.type]})`) : bold(titles[n.type]),
+                                ]
+                                    .filter(Boolean)
+                                    .join(' '),
+                            )
+                            .join('\n')}`,
+                    ].join('\n')
                     : name
-                    ? `${member} kişisinin ismi "**${name}**" olarak değiştirildi.`
-                    : 'Kullanıcının cinsiyetini belirleyin.',
+                        ? `${member} kişisinin ismi "**${name}**" olarak değiştirildi.`
+                        : 'Kullanıcının cinsiyetini belirleyin.',
         });
 
         const question = await message.channel.send({
@@ -250,13 +251,15 @@ const Command: Moderation.ICommand = {
             components: [row],
         });
 
-        const filter = (i: ButtonInteraction) => i.user.id === message.author.id && i.isButton();
-        const collected = await question.awaitMessageComponent({
+        const filter = (i: ButtonInteraction) => i.user.id === message.author.id;
+        const collector = await question.createMessageComponentCollector({
             filter,
             time: 1000 * 60 * 3,
             componentType: ComponentType.Button,
         });
-        if (collected) {
+        collector.on("collect", async (collected: ButtonInteraction) => {
+            collector.stop("FINISHED");
+
             let roles: string[];
             if (collected.customId === 'man')
                 roles = guildData.manRoles?.filter((r) => message.guild.roles.cache.has(r));
@@ -268,39 +271,6 @@ const Command: Moderation.ICommand = {
 
             if (name) member.setNickname(name);
 
-            await UserModel.updateOne(
-                { id: member.id, guild: message.guildId },
-                {
-                    $push: {
-                        names: {
-                            admin: message.author.id,
-                            type: NameFlags.Register,
-                            time: Date.now(),
-                            role: collected.customId === 'woman' ? guildData.womanRoles[0] : guildData.manRoles[0],
-                            name: name ? name : undefined,
-                        },
-                    },
-                },
-                { upsert: true },
-            );
-
-            await UserModel.updateOne(
-                { id: message.author.id },
-                {
-                    $inc: {
-                        [`registers.${
-                            [...(guildData.manRoles || []), ...(guildData.womanRoles || [])].some((r) =>
-                                message.guild.roles.cache.has(r),
-                            )
-                                ? collected.customId === 'man'
-                                    ? 'man'
-                                    : 'woman'
-                                : 'normal'
-                        }`]: 1,
-                    },
-                },
-                { upsert: true, setDefaultsOnInsert: true, strict: false },
-            );
 
             question.edit({
                 embeds: [
@@ -324,31 +294,71 @@ const Command: Moderation.ICommand = {
                     })
                     .then((msg) => setTimeout(() => msg.delete(), 5000));
             }
-        
-        const registerLogChannel = message.guild.channels.cache.find((c) => c.name === 'register-log') as TextChannel;
-        if (registerLogChannel) {
-            registerLogChannel.send({
-                content: `${member} (${inlineCode(member.id.toString())}) adlı kullanıcı ${message.author.username} (${inlineCode(
-                    message.author.id.toString(),
-                )}) tarafından kayıt edildi.`,
-            });
-        }
-        } else {
-            const timeFinished = new ActionRowBuilder<ButtonBuilder>({
-                components: [
-                    new ButtonBuilder({
-                        custom_id: 'timefinished',
-                        disabled: true,
-                        emoji: { name: '⏱️' },
-                        style: ButtonStyle.Danger,
-                    }),
-                ],
-            });
-            question.edit({
-                embeds: [embed.setDescription('İşlem süresi dolduğu için işlem kapatıldı.')],
-                components: [timeFinished],
-            });
-        }
+
+            await UserModel.updateOne(
+                { id: member.id, guild: message.guildId },
+                {
+                    $push: {
+                        names: {
+                            admin: message.author.id,
+                            type: NameFlags.Register,
+                            time: Date.now(),
+                            role: collected.customId === 'woman' ? guildData.womanRoles[0] : guildData.manRoles[0],
+                            name: name ? name : undefined,
+                        },
+                    },
+                },
+                { upsert: true },
+            );
+
+            await UserModel.updateOne(
+                { id: message.author.id, guild: message.guildId },
+                {
+                    $push: {
+                        registers: {
+                            type: [...(guildData.manRoles || []), ...(guildData.womanRoles || [])].some((r) =>
+                                message.guild.roles.cache.has(r),
+                            )
+                                ? collected.customId === 'man'
+                                    ? RegisterFlags.Man
+                                    : RegisterFlags.Woman
+                                : RegisterFlags.Normal,
+                            user: member.id,
+                            time: Date.now(),
+                        }
+                    },
+                },
+                { upsert: true, setDefaultsOnInsert: true, strict: false },
+            );
+
+            const registerLogChannel = message.guild.channels.cache.find((c) => c.name === 'register-log') as TextChannel;
+            if (registerLogChannel) {
+                registerLogChannel.send({
+                    content: `${member} (${inlineCode(member.id.toString())}) adlı kullanıcı ${message.author.username} (${inlineCode(
+                        message.author.id.toString(),
+                    )}) tarafından kayıt edildi.`,
+                });
+            }
+        });
+
+        collector.on("end", (_, reason) => {
+            if (reason === "time") {
+                const timeFinished = new ActionRowBuilder<ButtonBuilder>({
+                    components: [
+                        new ButtonBuilder({
+                            custom_id: 'timefinished',
+                            disabled: true,
+                            emoji: { name: '⏱️' },
+                            style: ButtonStyle.Danger,
+                        }),
+                    ],
+                });
+                question.edit({
+                    embeds: [embed.setDescription('İşlem süresi dolduğu için işlem kapatıldı.')],
+                    components: [timeFinished],
+                });
+            }
+        })
     },
 };
 

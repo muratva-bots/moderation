@@ -1,8 +1,8 @@
-import { PENAL_TITLES } from '@/assets';
-import { NameFlags, PenalFlags, SpecialCommandFlags } from '@/enums';
+import { DEFAULTS, PENAL_TITLES } from '@/assets';
+import { LimitFlags, NameFlags, PenalFlags, SpecialCommandFlags } from '@/enums';
 import { ModerationClass, PenalModel, UserModel } from '@/models';
 import { Client } from '@/structures';
-import { ButtonInteraction, EmbedBuilder, bold, inlineCode, roleMention, time } from 'discord.js';
+import { ActionRowBuilder, ButtonInteraction, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, bold, inlineCode, roleMention, time } from 'discord.js';
 
 const titles = {
     [NameFlags.Register]: 'Kayıt Olma',
@@ -16,6 +16,10 @@ const titles = {
     [NameFlags.Kick]: 'Sunucudan Atıldı',
     [NameFlags.Leave]: 'Sunucudan Çıktı',
 };
+
+const inviteRegex =
+    /\b(?:https?:\/\/)?(?:www\.)?(?:discord\.(?:gg|io|me|li)|discordapp\.com\/invite)\/([a-zA-Z0-9\-]{2,32})\b/;
+const adsRegex = /([^a-zA-ZIıİiÜüĞğŞşÖöÇç\s])+/gi;
 
 async function memberPanel(client: Client, interaction: ButtonInteraction, guildData: ModerationClass) {
     const interactionMember = interaction.guild.members.cache.get(interaction.user.id);
@@ -251,12 +255,11 @@ async function memberPanel(client: Client, interaction: ButtonInteraction, guild
         interaction.reply({
             embeds: [
                 embed.setDescription(
-                    `${inlineCode('•')} Rolleri(${memberRoles.length}): ${
-                        memberRoles.length
-                            ? memberRoles.length > 6
-                                ? `${memberRoles.slice(0, 6).join(', ')} ${memberRoles.slice(0, 6).length} daha...`
-                                : memberRoles.join(', ')
-                            : 'Rolü bulunmuyor.'
+                    `${inlineCode('•')} Rolleri(${memberRoles.length}): ${memberRoles.length
+                        ? memberRoles.length > 6
+                            ? `${memberRoles.slice(0, 6).join(', ')} ${memberRoles.slice(0, 6).length} daha...`
+                            : memberRoles.join(', ')
+                        : 'Rolü bulunmuyor.'
                     }`,
                 ),
             ],
@@ -279,6 +282,103 @@ async function memberPanel(client: Client, interaction: ButtonInteraction, guild
             )} (${time(Math.floor(interactionMember.user.createdTimestamp / 1000), 'R')})`,
             ephemeral: true,
         });
+    }
+
+    if (interaction.customId === 'booster') {
+        const limit = client.utils.checkLimit(interaction.user.id, 1019, 1, 1000 * 60 * 60);
+        if (limit.hasLimit) {
+            interaction.reply({
+                content: `Butonlarla çok fazla işlem yaptığın için sınırlandırıldın daha sonra tekrar dene.`,
+                ephemeral: true,
+            });
+            return;
+        }
+
+        const nameRow = new ActionRowBuilder<TextInputBuilder>({
+            components: [
+                new TextInputBuilder({
+                    custom_id: "name",
+                    label: "İsim:",
+                    max_length: 30,
+                    style: TextInputStyle.Short,
+                    placeholder: "Muratva Stark",
+                    required: true,
+                })
+            ]
+        });
+
+        const modal = new ModalBuilder({ custom_id: "modal", components: [nameRow], title: "Booster İsim Değiştirme" });
+
+        await interaction.showModal(modal);
+
+        const modalCollected = await interaction.awaitModalSubmit({ time: 1000 * 60 * 2 });
+        if (modalCollected) {
+            const name = modalCollected.fields.getTextInputValue("name");
+
+            if (name.match(adsRegex)) {
+                modalCollected.reply({
+                    content: 'Belirttiğin kullanıcı adında özel harflerin bulunmaması gerekiyor!',
+                    ephemeral: true
+                });
+                return;
+            }
+
+            if (inviteRegex.test(name)) {
+                interaction.reply({
+                    content: 'Reklam yapmasak mı?',
+                    ephemeral: true
+                });
+                return;
+            }
+
+            if ((guildData.tags || []).length && !guildData.secondTag) {
+                modalCollected.reply({
+                    content: 'Tagsızların tagı ayarlanmamış.',
+                    ephemeral: true
+                });
+                return;
+            }
+            const limit = client.utils.checkLimit(
+                interaction.user.id,
+                LimitFlags.Booster,
+                DEFAULTS.booster.limit.count,
+                DEFAULTS.booster.limit.time,
+            );
+            if (limit.hasLimit) {
+                modalCollected.reply({
+                    content: `Atabileceğiniz maksimum kayıtsız limitine ulaştınız. Komutu tekrar kullanabilmek için ${limit.time}.`,
+                    ephemeral: true
+                });
+                return;
+            }
+
+            const hasTag = (guildData.tags || []).some((t) => interaction.user.displayName.includes(t));
+            const newName = (guildData.tags || []).length ? `${hasTag ? guildData.tags[0] : guildData.secondTag} ${name}` : name;
+            if (newName.length > 30) {
+                modalCollected.reply({
+                    content: '30 karakteri geçmeyecek bir isim belirt.',
+                    ephemeral: true
+                });
+                return;
+            }
+
+            const member = await client.utils.getMember(interaction.guild, interaction.user.id);
+
+            if (!member.manageable) {
+                modalCollected.reply({
+                    content: 'Yetkim yetmediği için kullanıcı adını değiştiremiyorum!',
+                    ephemeral: true
+                });
+                return;
+            }
+
+            member.setNickname(newName);
+
+            modalCollected.reply({
+                content: `İsmin "${bold(newName)}" olarak değiştirildi.`,
+                ephemeral: true
+            });
+        }
     }
 }
 

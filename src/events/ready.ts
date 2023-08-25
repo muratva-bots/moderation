@@ -1,5 +1,5 @@
 import { GuildModel, GuildClass } from '@/models';
-import { Events, VoiceChannel } from 'discord.js';
+import { Events } from 'discord.js';
 
 const Ready: Moderation.IEvent<Events.ClientReady> = {
     name: Events.ClientReady,

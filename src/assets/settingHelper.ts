@@ -66,6 +66,13 @@ export const SETTINGS = {
             isMultiple: false,
         },
         {
+            name: 'En Alt Yönetim Rolü',
+            value: 'minAdminRole',
+            description: 'En alt yönetim rolünü ayarlarsınız.',
+            type: 'role',
+            isMultiple: false,
+        },
+        {
             name: 'Yasaklı Tag Rolü',
             value: 'bannedTagRole',
             description: 'Yasaklı tag rolünü ayarlarsınız.',

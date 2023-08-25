@@ -53,6 +53,11 @@ const Command: Moderation.ICommand = {
                     label: '7',
                     style: ButtonStyle.Success,
                 }),
+                new ButtonBuilder({
+                    custom_id: 'booster',
+                    label: '8',
+                    style: ButtonStyle.Success,
+                }),
             ],
         });
 
@@ -66,7 +71,9 @@ Aşağıdaki menüden kendinize bir işlem seçip sunucu içi depolanan verileri
 
 • 5: Ceza sayınız öğrenin.
 • 6: Üzerinizdeki rolleri sıralayın.
-• 7: Hesabınızın açılış tarihini öğrenin.`,
+• 7: Hesabınızın açılış tarihini öğrenin.
+• 8: İsim değiştirme (Sadece booster.).
+`,
             components: [row, row2],
         });
     },

@@ -15,7 +15,7 @@ const MessageCreate: Moderation.IEvent<Events.MessageCreate> = {
         if (!prefix) return;
 
         const guildData = client.servers.get(message.guildId) || new ModerationClass();
-        if (message.content.trim() === `${prefix}tag` && guildData.tags?.length) {
+        if (message.content.trim() === `${prefix}tag` && (guildData.tags || []).length) {
             message.reply({ content: guildData.tags.join(', ') });
             return;
         }

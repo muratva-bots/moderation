@@ -92,23 +92,13 @@ const Snipe: Moderation.ICommand = {
             const embed = new EmbedBuilder({
                 color: client.utils.getRandomColor(),
                 timestamp: snipe.timestamp,
+                url: 'https://starkva.me',
                 description: snipe.content || 'Mesaj içeriği bulunmuyor.',
                 author: {
                     name: snipe.author.username,
                     iconURL: snipe.author.displayAvatarURL({ forceStatic: true, size: 4096 }),
                 },
             });
-
-            if (snipe.attachments.size > 1) {
-                embed.addFields([
-                    {
-                        name: 'Resimler',
-                        value: snipe.attachments.map((snipe) => `${hyperlink('Resim', snipe.proxyURL)}`).join(', '),
-                    },
-                ]);
-            }
-
-            if (snipe.attachments.size === 1) embed.setImage(snipe.attachments.first().proxyURL);
 
             if (i.customId === 'updated') {
                 embed.addFields([
@@ -119,7 +109,16 @@ const Snipe: Moderation.ICommand = {
                 ]);
             }
 
-            i.reply({ embeds: [embed], ephemeral: true });
+            const anotherEmbeds = [...snipe.attachments.values()].map((img) => {
+                return new EmbedBuilder({
+                    url: 'https://starkva.me',
+                    image: {
+                        url: img.proxyURL,
+                    },
+                });
+            });
+
+            i.reply({ embeds: [embed, ...anotherEmbeds], ephemeral: true });
         });
 
         collector.on('end', () => {

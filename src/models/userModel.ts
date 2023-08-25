@@ -28,12 +28,6 @@ export interface IRoleLog {
     admin?: string;
 }
 
-export interface IRegister {
-    woman: number;
-    man: number;
-    normal: number;
-}
-
 @modelOptions({ options: { customName: 'Users', allowMixed: 0 } })
 export class UserClass {
     @prop({ type: () => String, required: true })
@@ -56,9 +50,6 @@ export class UserClass {
 
     @prop({ type: () => Boolean, default: false })
     public monthlyRole: boolean;
-
-    @prop({ type: () => Object, default: {} })
-    public registers!: IRegister;
 
     @prop({ type: () => [String], default: [] })
     public lastRoles: string[];

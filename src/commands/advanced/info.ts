@@ -18,7 +18,7 @@ const Command: Moderation.ICommand = {
         const voiceMembers = members.filter((m) => m.voice.channelId).size;
         const staffVoiceMembers = members.filter((m) => m.voice.channelId && m.roles.cache.has(minStaffRole.id)).size;
         const taggedMembers = members.filter(
-            (m) => guildData.tags?.some((t) => (m.user.displayName as string).toLowerCase().includes(t.toLowerCase())),
+            (m) => (guildData.tags || []).some((t) => (m.user.displayName as string).toLowerCase().includes(t.toLowerCase())),
         ).size;
 
         message.channel.send({
@@ -31,7 +31,7 @@ const Command: Moderation.ICommand = {
                             staffVoiceMembers.toString(),
                         )} aktif yetkili var.`,
                         `${inlineCode('>')} Şuan sunucuda toplam ${bold(members.size.toString())} üye var.`,
-                        guildData.tags?.length
+                        (guildData.tags || []).length
                             ? `${inlineCode('>')} Tagı alarak bizi destekleyen ${bold(
                                   taggedMembers.toString(),
                               )} üye var.`

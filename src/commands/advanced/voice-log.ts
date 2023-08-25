@@ -66,7 +66,7 @@ const Command: Moderation.ICommand = {
                     })}`,
                 ]
                     .filter(Boolean)
-                    .join(''),
+                    .join('\n'),
             );
         })
 

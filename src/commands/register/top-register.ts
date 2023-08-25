@@ -1,4 +1,5 @@
-import { IRegister, UserModel } from '@/models';
+import { RegisterFlags } from '@/enums';
+import { IRegister, UserStatModel } from '@/models';
 import { Client } from '@/structures';
 import {
     EmbedBuilder,
@@ -30,8 +31,8 @@ const Command: Moderation.ICommand = {
         message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
         (guildData.registerAuth && guildData.registerAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message }) => {
-        const datas = await UserModel.find({
-            $or: [{ 'registers.man': { $gt: 0 } }, { 'registers.woman': { $gt: 0 } }],
+        const datas = await UserStatModel.find({
+            $expr: { $gt: [{ $size: "$registers" }, 0] }
         }).lean();
         if (!datas.length)
             return client.utils.sendTimedMessage(
@@ -42,17 +43,15 @@ const Command: Moderation.ICommand = {
         const mappedDatas = datas
             .map((d) => ({
                 id: d.id,
-                man: d.registers.man || 0,
-                woman: d.registers.woman || 0,
-                normal: d.registers.normal || 0,
+                man: d.registers.filter(r => r.type === RegisterFlags.Man).length,
+                woman: d.registers.filter(r => r.type === RegisterFlags.Woman).length,
+                normal: d.registers.filter(r => r.type === RegisterFlags.Normal).length,
             }))
             .sort((a, b) => b.man + b.woman - (a.man + a.woman));
         const totalData = Math.ceil(datas.length / 10);
 
         const userRank = mappedDatas.findIndex((m) => m.id === message.author.id) + 1;
-        const userData = (
-            datas.find((m) => m.id === message.author.id) || { registers: { man: 0, woman: 0, normal: 0 } }
-        ).registers;
+        const userData = (datas.find((m) => m.id === message.author.id) || { registers: [] }).registers;
 
         let page = 1;
         const embed = new EmbedBuilder({
@@ -123,19 +122,19 @@ export default Command;
 async function createContent(
     client: Client,
     message: Message,
-    userData: IRegister,
+    userData: IRegister[],
     userRank: number,
-    datas: IRegister[] & { id: string }[],
+    datas: { id: string, man: number, woman: number, normal: number }[],
     page: number,
 ) {
     let content = [
         `< ${message.guild.name} Sunucusunun Kayıt Sıralaması >`,
         `> Senin sıralaman: ${userRank === 0 ? 'henüz kayıdın bulunmuyor' : userRank}`,
         `> ${' '.repeat(6)} ${
-            userData.normal
-                ? `${userData.normal || 0} kayıt`
-                : `${userData.man || 0} erkek, ${userData.woman || 0} kadın, ${
-                      (userData.man || 0) + (userData.woman || 0)
+            userData.some(t => t.type === RegisterFlags.Normal)
+                ? `${userData.filter(t => t.type === RegisterFlags.Normal).length} kayıt`
+                : `${userData.filter(t => t.type === RegisterFlags.Man).length} erkek, ${userData.filter(t => t.type === RegisterFlags.Woman).length} kadın, ${
+                      (userData.filter(t => t.type === RegisterFlags.Man).length) + (userData.filter(t => t.type === RegisterFlags.Woman).length)
                   } toplam`
         }\n`,
     ];

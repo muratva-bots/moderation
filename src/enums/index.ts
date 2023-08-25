@@ -5,3 +5,4 @@ export * from './VoiceLogFlags';
 export * from './RoleLogFlags';
 export * from './NeedFlags';
 export * from './NameFlags';
+export * from './RegisterFlags';

@@ -10,6 +10,7 @@ function botCommandHandler(client: Client, message: Message, guildData: Moderati
     const command = client.commands.find(
         (command) => command.usages.includes(commandName?.toLowerCase()) && !command.isDisabled,
     );
+    console.log(command)
     const ownerID =
         client.application.owner instanceof Team
             ? (client.application.owner as Team).ownerId

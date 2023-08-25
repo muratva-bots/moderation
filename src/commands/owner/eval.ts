@@ -4,10 +4,7 @@ const Command: Moderation.ICommand = {
     usages: ['eval', 'sıla'],
     description: 'gixli.',
     examples: ['gixli'],
-    checkPermission: ({ client, message }) => {
-        return client.config.BOT_OWNERS.includes(message.author.id);
-
-    },
+    checkPermission: ({ client, message }) => client.config.BOT_OWNERS.includes(message.author.id),
     execute: async ({ client, message, args }) => {
         const code = args.join(' ');
         let evaled: string;
