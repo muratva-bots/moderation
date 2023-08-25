@@ -84,7 +84,7 @@ const Command: Moderation.ICommand = {
                     [
                         `${bold("Sunucu Bilgileri")}`,
                         `Taç Sahibi: ${userMention(message.guild.ownerId)}`,
-                        `Özel URL: ${!vanityURL
+                        `Özel URL: ${vanityURL
                             ? `${message.guild.vanityURLCode} / (${inlineCode(vanityURL.uses.toString())})`
                             : "Özel URL Yok"}`,
                             `Sunucu Kurulma Tarihi: ${time(Math.floor(message.guild.createdTimestamp / 1000), 'R')}`,
