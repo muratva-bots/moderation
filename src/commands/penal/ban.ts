@@ -1,6 +1,6 @@
 import { DEFAULTS } from '@/assets';
 import { LimitFlags, NeedFlags, PenalFlags } from '@/enums';
-import { ModerationClass, PenalModel, UserModel } from '@/models';
+import { PenalModel, UserModel } from '@/models';
 import { Client } from '@/structures';
 import {
     APISelectMenuOption,
@@ -301,7 +301,7 @@ export async function banUser(
     message: Message,
     user: User,
     member: GuildMember,
-    guildData: ModerationClass,
+    guildData: Moderation.IGuildData,
     timing: number,
     reason: string,
     system: boolean = false,

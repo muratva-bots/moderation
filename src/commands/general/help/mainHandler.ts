@@ -9,7 +9,6 @@ import {
     StringSelectMenuInteraction,
 } from 'discord.js';
 import categoryHandler from './categoryHandler';
-import { ModerationClass } from '@/models';
 
 const titles = {
     advanced: 'Yetkili Komutları',
@@ -18,7 +17,7 @@ const titles = {
     register: 'Kayıt Komutları',
 };
 
-async function mainHandler(client: Client, message: Message, guildData: ModerationClass, botMessage?: Message) {
+async function mainHandler(client: Client, message: Message, guildData: Moderation.IGuildData, botMessage?: Message) {
     const query = {
         content: 'Bakacağınız kategoriyi seçin.',
         components: [

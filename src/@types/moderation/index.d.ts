@@ -1,4 +1,4 @@
-import { ModerationClass } from '@/models';
+import { IRank, ModerationClass } from '@/models';
 import { Client } from '@/structures';
 import { Collection, Attachment, ClientEvents, Message, User } from 'discord.js';
 
@@ -7,6 +7,8 @@ export {};
 declare global {
     namespace Moderation {
         export type EventKeys = keyof ClientEvents;
+
+        export type IGuildData = ModerationClass & { ranks: IRank[], registerPoints: number };
 
         export interface ISnipe {
             id: string;
@@ -29,7 +31,7 @@ declare global {
         export interface ICheckPermission {
             client: Client;
             message: Message;
-            guildData: ModerationClass;
+            guildData: IGuildData;
         }
 
         export interface ICommand {
@@ -47,7 +49,7 @@ declare global {
             client: Client;
             message: Message;
             args: string[];
-            guildData: ModerationClass;
+            guildData: IGuildData;
         }
 
         export interface IMention {

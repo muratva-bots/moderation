@@ -9,7 +9,6 @@ import {
     codeBlock,
 } from 'discord.js';
 import mainHandler from './mainHandler';
-import { ModerationClass } from '@/models';
 import { SpecialCommandFlags } from '@/enums';
 
 const types = {
@@ -23,7 +22,7 @@ async function categoryHandler(
     message: Message,
     question: Message,
     type: string,
-    guildData: ModerationClass,
+    guildData: Moderation.IGuildData,
 ) {
     const splitedCommands = client.utils.chunkArray(
         type === 'special-commands'

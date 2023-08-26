@@ -14,7 +14,7 @@ const MessageCreate: Moderation.IEvent<Events.MessageCreate> = {
         afkHandler(client, message, prefix);
         if (!prefix) return;
 
-        const guildData = client.servers.get(message.guildId) || new ModerationClass();
+        const guildData = client.servers.get(message.guildId) || { ...(new ModerationClass()), registerPoints: 70, ranks: [] };
         if (message.content.trim() === `${prefix}tag` && (guildData.tags || []).length) {
             message.reply({ content: guildData.tags.join(', ') });
             return;

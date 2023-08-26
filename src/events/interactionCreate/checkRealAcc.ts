@@ -1,8 +1,7 @@
-import { ModerationClass } from '@/models';
 import { Client } from '@/structures';
 import { ButtonInteraction } from 'discord.js';
 
-async function checkRealAcc(client: Client, interaction: ButtonInteraction, guildData: ModerationClass) {
+async function checkRealAcc(client: Client, interaction: ButtonInteraction, guildData: Moderation.IGuildData) {
     if (interaction.customId === 'fastlogin') {
         const interactionMember = interaction.guild.members.cache.get(interaction.user.id);
         if (!interactionMember) return;

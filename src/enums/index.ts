@@ -6,3 +6,4 @@ export * from './RoleLogFlags';
 export * from './NeedFlags';
 export * from './NameFlags';
 export * from './RegisterFlags';
+export * from './TaskFlags';

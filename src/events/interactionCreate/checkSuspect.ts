@@ -1,8 +1,7 @@
-import { ModerationClass } from '@/models';
 import { Client } from '@/structures';
 import { ButtonInteraction, EmbedBuilder, bold, time } from 'discord.js';
 
-async function checkSuspect(client: Client, interaction: ButtonInteraction, guildData: ModerationClass) {
+async function checkSuspect(client: Client, interaction: ButtonInteraction, guildData: Moderation.IGuildData) {
     const interactionMember = interaction.guild.members.cache.get(interaction.user.id);
     if (!interactionMember) return;
 

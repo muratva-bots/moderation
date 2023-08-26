@@ -1,11 +1,10 @@
-import { ModerationClass } from '@/models';
 import { Client } from '@/structures';
 import { ButtonInteraction, roleMention, StringSelectMenuInteraction } from 'discord.js';
 
 async function roleSelect(
     client: Client,
     interaction: ButtonInteraction | StringSelectMenuInteraction,
-    guildData: ModerationClass,
+    guildData: Moderation.IGuildData,
 ) {
     const interactionMember = interaction.guild.members.cache.get(interaction.user.id);
     if (!interactionMember) return;

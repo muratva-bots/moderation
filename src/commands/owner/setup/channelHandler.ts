@@ -1,4 +1,4 @@
-import { GuildModel, ModerationClass } from '@/models';
+import { GuildModel } from '@/models';
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -28,7 +28,7 @@ export async function channelHandler(
     client: Client,
     message: Message,
     option: IChannelOption,
-    guildData: ModerationClass,
+    guildData: Moderation.IGuildData,
     question: Message,
     menuType: 'general' | 'register' | 'penal',
     authorId: string,
@@ -137,7 +137,7 @@ export async function channelHandler(
     });
 }
 
-function createComponent(message: Message, option: IChannelOption, guildData: ModerationClass) {
+function createComponent(message: Message, option: IChannelOption, guildData: Moderation.IGuildData) {
     const hasChannel = message.guild.channels.cache.has(guildData[option.value]);
     return new ActionRowBuilder<StringSelectMenuBuilder>({
         components: [

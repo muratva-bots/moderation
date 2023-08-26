@@ -2,6 +2,15 @@ import { SpecialCommandFlags } from '@/enums';
 import { prop, getModelForClass, modelOptions } from '@typegoose/typegoose';
 import { NeedFlags } from '@/enums';
 
+export interface IRank {
+    point: number;
+    role: string;
+    taskCount?: number;
+    roleTime?: number;
+    extraRole?: string;
+    maxSleep: number;
+}
+
 export interface ITeam {
     name: string;
     owners: string[];

@@ -39,7 +39,7 @@ export const DEFAULTS = {
         ] as IReason[],
         limit: {
             count: 5,
-            time: 43200000,
+            time: 900000,
         },
         max: [
             { count: 10, time: ONE_DAY, clear: 0 },
@@ -158,13 +158,13 @@ export const DEFAULTS = {
         ] as IReason[],
         limit: {
             count: 3,
-            time: 43200000,
+            time: 900000,
         },
     },
     warn: {
         limit: {
             count: 3,
-            time: 43200000,
+            time: 900000,
         },
     },
     underworld: {
@@ -214,20 +214,20 @@ export const DEFAULTS = {
         ] as IReason[],
         limit: {
             count: 5,
-            time: 43200000,
+            time: 900000,
         },
         image: 'https://cdn.discordapp.com/attachments/839954721187037184/848339514052706344/can.gif',
     },
     unregistered: {
         limit: {
             count: 5,
-            time: 43200000,
+            time: 900000,
         },
     },
     booster: {
         limit: {
-            count: 3,
-            time: 86400000,
+            count: 5,
+            time: 900000,
         },
     },
 };

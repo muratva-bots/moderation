@@ -1,4 +1,3 @@
-import { ModerationClass } from '@/models';
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -31,7 +30,7 @@ async function createMenu(
     authorId: string,
     question: Message,
     type: 'general' | 'register' | 'penal',
-    guildData: ModerationClass,
+    guildData: Moderation.IGuildData,
 ) {
     const settingOptions = SETTINGS[type];
 

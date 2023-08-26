@@ -1,4 +1,4 @@
-import { UserModel, UserStatModel } from '@/models';
+import { StaffModel, UserModel, UserStatModel } from '@/models';
 import { NameFlags, RegisterFlags } from '@/enums';
 import { EmbedBuilder, inlineCode, TextChannel, bold, PermissionFlagsBits } from 'discord.js';
 import { quarantineUser } from '../penal/quarantine';
@@ -215,6 +215,17 @@ const Command: Moderation.ICommand = {
             },
             { upsert: true, setDefaultsOnInsert: true, strict: false },
         );
+
+        if (client.utils.checkStaff(message.member, guildData)) {
+            const staffDocument = await StaffModel.findOneAndUpdate(
+                { id: message.member.id, guild: message.guildId },
+                { $inc: { registerPoints: guildData.registerPoints, totalPoints: guildData.registerPoints, allPoints: guildData.registerPoints } },
+                { upsert: true, setDefaultsOnInsert: true, new: true }
+            );
+            await client.utils.checkRegisterTask(staffDocument);
+            await client.utils.checkRank(message.member, staffDocument, guildData);
+            staffDocument.save();
+        }
     },
 };
 

@@ -1,6 +1,6 @@
 import { PENAL_TITLES } from '@/assets';
 import { SpecialCommandFlags } from '@/enums';
-import { ModerationClass, PenalClass, PenalModel } from '@/models';
+import { PenalClass, PenalModel } from '@/models';
 import { Client } from '@/structures';
 import {
     ActionRowBuilder,
@@ -238,7 +238,7 @@ const ActivePenals: Moderation.ICommand = {
 
 export default ActivePenals;
 
-function createContent(client: Client, penal: PenalClass, embed: EmbedBuilder, guildData: ModerationClass) {
+function createContent(client: Client, penal: PenalClass, embed: EmbedBuilder, guildData: Moderation.IGuildData) {
     let type = PENAL_TITLES[penal.type];
     if (!type) {
         const specialCommand = guildData.specialCommands.find(
@@ -276,7 +276,7 @@ function createContent(client: Client, penal: PenalClass, embed: EmbedBuilder, g
 function createComponents(
     client: Client,
     message: Message,
-    guildData: ModerationClass,
+    guildData: Moderation.IGuildData,
     penal: PenalClass,
     penalsSize: number,
     currentPage: number,

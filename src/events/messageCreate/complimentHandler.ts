@@ -1,11 +1,10 @@
 import { Client } from '@/structures';
 import { Message } from 'discord.js';
 import { COMPLIMENTS } from '@/assets';
-import { ModerationClass } from '@/models';
 
 let complimentCounter = 0;
 
-async function complimentHandler(client: Client, message: Message, guildData: ModerationClass) {
+async function complimentHandler(client: Client, message: Message, guildData: Moderation.IGuildData) {
     if (
         message.author.bot ||
         !message.guildId ||

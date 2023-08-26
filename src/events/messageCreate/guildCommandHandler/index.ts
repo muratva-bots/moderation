@@ -1,13 +1,12 @@
 import { Message, PermissionFlagsBits } from 'discord.js';
 
 import { Client } from '@/structures';
-import { ModerationClass } from '@/models';
 import { SpecialCommandFlags } from '@/enums';
 import roleHandler from './roleHandler';
 import punishmentHandler from './punishmentHandler';
 import { teamHandler } from './team';
 
-async function guildCommandHandler(client: Client, message: Message, guildData: ModerationClass, prefix: string) {
+async function guildCommandHandler(client: Client, message: Message, guildData: Moderation.IGuildData, prefix: string) {
     if (!message.content || !message.guild || message.author.bot) return;
 
     const [commandName, ...args] = message.content.slice(prefix.length).trim().split(' ');
@@ -30,7 +29,7 @@ async function guildCommandHandler(client: Client, message: Message, guildData: 
         return;
     }
 
-    if (command.type === SpecialCommandFlags.Team) teamHandler(client, message, command, args);
+    if (command.type === SpecialCommandFlags.Team) teamHandler(client, message, command);
     if (command.type === SpecialCommandFlags.Role) roleHandler(client, message, command, args);
     if (command.type === SpecialCommandFlags.Punishment) punishmentHandler(client, message, command, args);
     if (command.type === SpecialCommandFlags.Message) message.channel.send(command.content);

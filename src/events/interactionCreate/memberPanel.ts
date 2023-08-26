@@ -1,6 +1,6 @@
 import { DEFAULTS, PENAL_TITLES } from '@/assets';
 import { LimitFlags, NameFlags, PenalFlags, SpecialCommandFlags } from '@/enums';
-import { ModerationClass, PenalModel, UserModel } from '@/models';
+import { PenalModel, UserModel } from '@/models';
 import { Client } from '@/structures';
 import { ActionRowBuilder, ButtonInteraction, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, bold, inlineCode, roleMention, time } from 'discord.js';
 
@@ -21,7 +21,7 @@ const inviteRegex =
     /\b(?:https?:\/\/)?(?:www\.)?(?:discord\.(?:gg|io|me|li)|discordapp\.com\/invite)\/([a-zA-Z0-9\-]{2,32})\b/;
 const adsRegex = /([^a-zA-ZIıİiÜüĞğŞşÖöÇç\s])+/gi;
 
-async function memberPanel(client: Client, interaction: ButtonInteraction, guildData: ModerationClass) {
+async function memberPanel(client: Client, interaction: ButtonInteraction, guildData: Moderation.IGuildData) {
     const interactionMember = interaction.guild.members.cache.get(interaction.user.id);
     if (!interactionMember) return;
 

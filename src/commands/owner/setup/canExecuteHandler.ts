@@ -1,4 +1,4 @@
-import { GuildModel, ICanExecute, ModerationClass } from '@/models';
+import { GuildModel, ICanExecute } from '@/models';
 import { Client } from '@/structures';
 import {
     ActionRowBuilder,
@@ -17,7 +17,7 @@ import mainHandler from './mainHandler';
 export async function canExecuteHandler(
     client: Client,
     message: Message,
-    guildData: ModerationClass,
+    guildData: Moderation.IGuildData,
     question: Message,
 ) {
     const row = new ActionRowBuilder<ButtonBuilder>({

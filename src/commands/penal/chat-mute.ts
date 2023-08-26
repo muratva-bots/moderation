@@ -1,6 +1,6 @@
 import { DEFAULTS } from '@/assets';
 import { LimitFlags, NeedFlags, PenalFlags } from '@/enums';
-import { ModerationClass, PenalModel } from '@/models';
+import { PenalModel } from '@/models';
 import { Client } from '@/structures';
 import {
     APISelectMenuOption,
@@ -288,7 +288,7 @@ async function muteUser(
     question: Message,
     user: User,
     member: GuildMember,
-    guildData: ModerationClass,
+    guildData: Moderation.IGuildData,
     timing: number,
     reason: string,
     image?: string,

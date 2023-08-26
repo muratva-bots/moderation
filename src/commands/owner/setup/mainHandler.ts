@@ -1,4 +1,4 @@
-import { GuildModel, ModerationClass } from '@/models';
+import { GuildModel } from '@/models';
 import { Client } from '@/structures';
 import {
     ActionRowBuilder,
@@ -13,7 +13,7 @@ import createMenu from './createMenu';
 import { specialCommandHandler } from './specialCommandHandler';
 import { canExecuteHandler } from './canExecuteHandler';
 
-async function mainHandler(client: Client, message: Message, guildData: ModerationClass, botMessage?: Message) {
+async function mainHandler(client: Client, message: Message, guildData: Moderation.IGuildData, botMessage?: Message) {
     const defaultRow = new ActionRowBuilder<StringSelectMenuBuilder>({
         components: [
             new StringSelectMenuBuilder({
@@ -101,8 +101,8 @@ async function mainHandler(client: Client, message: Message, guildData: Moderati
         if (value === 'reset') {
             await GuildModel.deleteOne({ id: message.guildId });
             const newDocument = await GuildModel.create({ id: message.guildId });
-            client.servers.set(message.guild.id, { ...newDocument.moderation });
-            guildData = newDocument.moderation;
+            client.servers.set(message.guildId, { ...newDocument.moderation, registerPoints: 70, ranks: [] });
+            guildData = client.servers.get(message.guildId);
 
             question.edit({ content: 'Sunucunun ayarları varsayalına çevirildi.', components: [] });
         }

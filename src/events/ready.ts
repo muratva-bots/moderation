@@ -19,18 +19,28 @@ const Ready: Moderation.IEvent<Events.ClientReady> = {
         await client.application.fetch();
 
         const document = (await GuildModel.findOne({ id: guild.id })) || (await GuildModel.create({ id: guild.id }));
-        client.servers.set(guild.id, { ...document.moderation });
+        const statDocument = (document.stat as any) || {};
+        client.servers.set(guild.id, { 
+            ...document.moderation,
+            registerPoints: statDocument.registerPoints || 0,
+            ranks: statDocument.ranks || []
+        });
 
-        // client.commands.get('register').isDisabled = !document.moderation.menuRegister;
-        // client.commands.get('woman').isDisabled = document.moderation.menuRegister;
-        // client.commands.get('erkek').isDisabled = document.moderation.menuRegister;
+        client.commands.get('register').isDisabled = !document.moderation.menuRegister;
+        client.commands.get('woman').isDisabled = document.moderation.menuRegister;
+        client.commands.get('erkek').isDisabled = document.moderation.menuRegister;
 
         const guildEventEmitter = GuildModel.watch([{ $match: { 'fullDocument.id': guild.id } }], {
             fullDocument: 'updateLookup',
         });
-        guildEventEmitter.on('change', ({ fullDocument }: { fullDocument: GuildClass }) =>
-            client.servers.set(guild.id, { ...fullDocument.moderation }),
-        );
+        guildEventEmitter.on('change', ({ fullDocument }: { fullDocument: GuildClass }) => {
+            const statDocument = (fullDocument.stat as any) || {};
+            client.servers.set(guild.id, { 
+                ...fullDocument.moderation, 
+                registerPoints: statDocument.registerPoints || 0,
+                ranks: statDocument.ranks || []
+            });
+        });
 
         setInterval(() => {
             const now = Date.now();

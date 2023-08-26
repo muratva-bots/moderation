@@ -1,5 +1,4 @@
 import { SETTINGS } from '@/assets';
-import { ModerationClass } from '@/models';
 import { Client } from '@/structures';
 import {
     ActionRowBuilder,
@@ -42,7 +41,7 @@ const Command: Moderation.ICommand = {
 
 export default Command;
 
-async function createCollector(client: Client, message: Message, content: string, guildData: ModerationClass) {
+async function createCollector(client: Client, message: Message, content: string, guildData: Moderation.IGuildData) {
     const defaultRow = new ActionRowBuilder<StringSelectMenuBuilder>({
         components: [
             new StringSelectMenuBuilder({
@@ -147,7 +146,7 @@ function generateSettingsDescription(
     guildName: string,
     title: string,
     settings,
-    guildData: ModerationClass,
+    guildData: Moderation.IGuildData,
 ) {
     return [
         `# ${guildName} adlı sunucunun ${title}:`,

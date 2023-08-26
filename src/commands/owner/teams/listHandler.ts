@@ -8,9 +8,8 @@ import {
     StringSelectMenuInteraction,
 } from 'discord.js';
 import infoHandler from './infoHandler';
-import { ModerationClass } from '@/models';
 
-async function listHandler(client: Client, message: Message, guildData: ModerationClass, botMessage?: Message) {
+async function listHandler(client: Client, message: Message, guildData: Moderation.IGuildData, botMessage?: Message) {
     const members = await message.guild.members.fetch();
 
     const teams = (guildData.teams || []).filter((t) => message.guild.roles.cache.has(t.role));

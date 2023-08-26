@@ -1,10 +1,4 @@
-// name: string;
-// value: string;
-// placeholder: string;
-// time: number;
-// needType: NeedFlags;
-
-import { GuildModel, IMaxMuteOperations, IReason, ModerationClass } from '@/models';
+import { GuildModel, IMaxMuteOperations, IReason } from '@/models';
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -38,7 +32,7 @@ export async function reasonHandler(
     client: Client,
     message: Message,
     option: IQuickReasonOption,
-    guildData: ModerationClass,
+    guildData: Moderation.IGuildData,
     question: Message,
     menuType: 'general' | 'register' | 'penal',
     authorId: string,

@@ -1,6 +1,6 @@
 import { DEFAULTS } from '@/assets';
 import { LimitFlags, PenalFlags } from '@/enums';
-import { ModerationClass, PenalModel } from '@/models';
+import { PenalModel } from '@/models';
 import { Client } from '@/structures';
 import {
     EmbedBuilder,
@@ -283,7 +283,7 @@ async function muteUser(
     question: Message,
     user: User,
     member: GuildMember,
-    guildData: ModerationClass,
+    guildData: Moderation.IGuildData,
     timing: number,
     reason: string,
     image?: string,

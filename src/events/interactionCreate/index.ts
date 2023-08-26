@@ -1,4 +1,3 @@
-import { ModerationClass } from '@/models';
 import { Events } from 'discord.js';
 import checkRealAcc from './checkRealAcc';
 import checkSuspect from './checkSuspect';
@@ -10,7 +9,9 @@ import solvingAuthCall from './solvingAuthCall';
 const InteractionCreate: Moderation.IEvent<Events.InteractionCreate> = {
     name: Events.InteractionCreate,
     execute: async (client, interaction) => {
-        const guildData = client.servers.get(interaction.guildId) || new ModerationClass();
+        const guildData = client.servers.get(interaction.guildId);
+        if (!guildData) return;
+
         if (
             (interaction.isButton() || interaction.isStringSelectMenu()) &&
             ['fastlogin', 'suspect-control', 'monthlyroles-yes', 'monthlyroles-no'].includes(interaction.customId)

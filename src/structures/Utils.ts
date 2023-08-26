@@ -9,6 +9,7 @@ import {
     Collection,
     EmbedBuilder,
     Guild,
+    GuildChannel,
     GuildMember,
     Message,
     Snowflake,
@@ -19,8 +20,10 @@ import {
     inlineCode,
     time,
 } from 'discord.js';
-import { PenalClass } from '@/models';
+import { IRank, PenalClass, StaffClass, StaffModel } from '@/models';
 import { EMOJIS } from '@/assets';
+import { Document } from 'mongoose';
+import { TaskFlags } from '@/enums';
 
 export class Utils {
     private client: Client;
@@ -84,6 +87,101 @@ export class Utils {
                 }),
             ],
         });
+    }
+
+    async checkRegisterTask(document: Document<unknown, any, StaffClass> & StaffClass) {
+        if (document.pointsRating > document.allPoints) return;
+
+        const task = document.tasks.find((t) => t.type === TaskFlags.Register);
+        if (!task || task.completed) return;
+
+        document.markModified('tasks');
+        task.currentCount += 1;
+        if (task.currentCount >= task.count) {
+            task.currentCount = task.count;
+            task.completed = true;
+        }
+    }
+
+    checkStaff(member: GuildMember, guildData: Moderation.IGuildData) {
+        return guildData.ranks && guildData.ranks.length && guildData.ranks.some((r) => member.roles.cache.has(r.role));
+    }
+
+    getRank(roles: string[], ranks: IRank[]) {
+        if (!(ranks || []).length) {
+            return { newRank: undefined, currentRank: undefined };
+        }
+
+        const sortedRanks = ranks.slice().sort((a, b) => a.point - b.point);
+        const currentIndex = sortedRanks.findIndex((rank) => roles.includes(rank.role));
+
+        return {
+            newRank: sortedRanks[currentIndex + 1] || undefined,
+            currentRank: sortedRanks[currentIndex] || undefined,
+        };
+    }
+
+    async checkRank(member: GuildMember, document: StaffClass, guildData: Moderation.IGuildData) {
+        const { currentRank, newRank } = this.getRank(
+            member.roles.cache.map((r) => r.id),
+            guildData.ranks,
+        );
+        if (!currentRank) return;
+
+        const now = Date.now();
+        if (
+            !newRank ||
+            document.pointsRating > document.allPoints ||
+            currentRank.point > document.totalPoints ||
+            (currentRank.roleTime && currentRank.roleTime * (1000 * 60 * 60 * 24 * 7) > now - document.roleStartTime) ||
+            (currentRank.taskCount && currentRank.taskCount > document.tasks.filter((t) => t.completed).length)
+        )
+            return;
+
+        if (newRank.extraRole !== currentRank.extraRole) {
+            if (!member.roles.cache.has(currentRank.extraRole)) await member.roles.remove(currentRank.extraRole);
+            if (!member.roles.cache.has(newRank.extraRole)) await member.roles.add(newRank.extraRole);
+        }
+
+        if (member.roles.cache.has(newRank.role)) await member.roles.add(newRank.role);
+        if (member.roles.cache.has(currentRank.role)) await member.roles.remove(currentRank.role);
+
+        await StaffModel.updateOne(
+            { user: member.id, guild: member.guild.id },
+            {
+                $set: {
+                    pointsRating: this.pointsRating(member.guild, newRank),
+                    bonusPoints: 0,
+                    invitePoints: 0,
+                    messagePoints: 0,
+                    publicPoints: 0,
+                    registerPoints: 0,
+                    responsibilityPoints: 0,
+                    sleepPoints: 0,
+                    totalPoints: 0,
+                    inGeneralMeeting: false,
+                    inPersonalMeeting: false,
+                    roleStartTime: now,
+                    staffTakePoints: 0,
+                    problemResolvePoints: 0,
+                    tasks: [],
+                },
+            },
+            { upsert: true, setDefaultsOnInsert: true },
+        );
+    }
+
+    pointsRating(guild: Guild, rank: IRank) {
+        console.log(rank)
+        const rankHalfPoint = Math.floor(rank.point / 2);
+
+        const role = guild.roles.cache.get(rank.role);
+        if (!role) return rankHalfPoint;
+
+        const roleMembersCount = role.members.size;
+        if (!roleMembersCount || 3 > roleMembersCount) return rankHalfPoint;
+
+        return Math.min(rankHalfPoint + Math.pow(roleMembersCount, 2) + 500 * roleMembersCount + 250, rank.point);
     }
 
     getEmoji(name: string) {

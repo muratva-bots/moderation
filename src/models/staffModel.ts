@@ -1,4 +1,13 @@
+import { TaskFlags } from '@/enums';
 import { prop, getModelForClass, modelOptions } from '@typegoose/typegoose';
+
+export interface IStaffTask {
+    channel?: string;
+    type: TaskFlags;
+    count: number;
+    currentCount: number;
+    completed: boolean;
+}
 
 @modelOptions({ options: { customName: 'Staffs', allowMixed: 0 } })
 export class StaffClass {
@@ -72,7 +81,7 @@ export class StaffClass {
     public oldRoles: object[];
 
     @prop({ type: () => [Object], default: [] })
-    public tasks: object[];
+    public tasks: IStaffTask[];
 }
 
 export const StaffModel = getModelForClass(StaffClass);

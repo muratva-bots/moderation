@@ -1,8 +1,7 @@
-import { ModerationClass } from '@/models';
 import { Client } from '@/structures';
 import { ButtonInteraction, channelMention, TextChannel } from 'discord.js';
 
-async function solvingAuthCall(client: Client, interaction: ButtonInteraction, guildData: ModerationClass) {
+async function solvingAuthCall(client: Client, interaction: ButtonInteraction, guildData: Moderation.IGuildData) {
     if (interaction.customId == 'solvingauth-call') {
         const interactionMember = interaction.guild.members.cache.get(interaction.user.id);
         if (!interactionMember) return;

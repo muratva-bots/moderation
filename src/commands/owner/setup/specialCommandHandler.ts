@@ -1,4 +1,4 @@
-import { GuildModel, IReason, ISpecialCommand, ModerationClass } from '@/models';
+import { GuildModel, IReason, ISpecialCommand } from '@/models';
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -38,7 +38,7 @@ export async function specialCommandHandler(
     client: Client,
     message: Message,
     question: Message,
-    guildData: ModerationClass,
+    guildData: Moderation.IGuildData,
 ) {
     const timeFinished = new ActionRowBuilder<ButtonBuilder>({
         components: [

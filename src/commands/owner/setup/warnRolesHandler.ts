@@ -1,4 +1,4 @@
-import { GuildModel, IWarnRoles, ModerationClass } from '@/models';
+import { GuildModel, IWarnRoles } from '@/models';
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -28,7 +28,7 @@ export async function warnRolesHandler(
     client: Client,
     message: Message,
     option: IWarnRoleOption,
-    guildData: ModerationClass,
+    guildData:Moderation.IGuildData,
     question: Message,
     menuType: 'general' | 'register' | 'penal',
     authorId: string,

@@ -1,4 +1,4 @@
-import { GuildModel, ModerationClass } from '@/models';
+import { GuildModel } from '@/models';
 import { Client } from '@/structures';
 import {
     ActionRowBuilder,
@@ -27,7 +27,7 @@ export async function limitHandler(
     client: Client,
     message: Message,
     option: ILimitOption,
-    guildData: ModerationClass,
+    guildData: Moderation.IGuildData,
     question: Message,
     menuType: 'general' | 'register' | 'penal',
     authorId: string,

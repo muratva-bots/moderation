@@ -3,11 +3,10 @@ import { connect } from 'mongoose';
 
 import { Utils } from './Utils';
 import config from '../../config.json';
-import { ModerationClass } from '@/models';
 
 export class Client extends Core {
     commands = new Collection<string, Moderation.ICommand>();
-    servers = new Collection<string, ModerationClass>();
+    servers = new Collection<string, Moderation.IGuildData>();
     afkUsers = new Collection<string, Moderation.IAFK>();
     limits = new Collection<string, Moderation.ILimit>();
     snipes = {

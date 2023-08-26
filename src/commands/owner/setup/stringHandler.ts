@@ -1,4 +1,4 @@
-import { GuildModel, ModerationClass } from '@/models';
+import { GuildModel } from '@/models';
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -28,7 +28,7 @@ export async function stringHandler(
     client: Client,
     message: Message,
     option: IStringOption,
-    guildData: ModerationClass,
+    guildData:Moderation.IGuildData,
     question: Message,
     menuType: 'general' | 'register' | 'penal',
     authorId: string,

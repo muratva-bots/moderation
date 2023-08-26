@@ -1,4 +1,4 @@
-import { GuildModel, IMonthlyRole, ModerationClass } from '@/models';
+import { GuildModel, IMonthlyRole } from '@/models';
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -29,7 +29,7 @@ export async function monthlyRolesHandler(
     client: Client,
     message: Message,
     option: IMonthlyOption,
-    guildData: ModerationClass,
+    guildData: Moderation.IGuildData,
     question: Message,
     menuType: 'general' | 'register' | 'penal',
     authorId: string,

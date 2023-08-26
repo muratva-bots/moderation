@@ -1,4 +1,4 @@
-import { ModerationClass, UserModel } from '@/models';
+import { StaffModel, UserModel } from '@/models';
 import {
     EmbedBuilder,
     inlineCode,
@@ -14,10 +14,10 @@ import {
     roleMention,
     ButtonInteraction,
     ComponentType,
-    StringSelectMenuInteraction,
 } from 'discord.js';
 import { quarantineUser } from '../penal/quarantine';
 import { NameFlags, RegisterFlags } from '@/enums';
+import { Client } from '@/structures';
 
 const titles = {
     [NameFlags.Register]: 'Kayıt Olma',
@@ -40,6 +40,7 @@ const Command: Moderation.ICommand = {
         message.member.permissions.has(PermissionFlagsBits.ModerateMembers) ||
         (guildData.registerAuth && guildData.registerAuth.some((r) => message.member.roles.cache.has(r))),
     execute: async ({ client, message, args, guildData }) => {
+        if (!guildData.menuRegister) return;
 
         if (guildData.registerSystem == false) {
             message.channel.send({
@@ -179,7 +180,7 @@ const Command: Moderation.ICommand = {
             !guildData.womanRoles?.some((r) => message.guild.roles.cache.has(r)) &&
             !guildData.manRoles?.some((r) => message.guild.roles.cache.has(r))
         ) {
-            await register(member, message, guildData, name);
+            await register(client, member, message, guildData, name);
             await member.roles.remove(guildData.unregisterRoles);
             await member.roles.add([guildData.registeredRole]);
             if (message.guild.roles.cache.has(guildData.familyRole) && hasTag) member.roles.add(guildData.familyRole);
@@ -295,21 +296,7 @@ const Command: Moderation.ICommand = {
                     .then((msg) => setTimeout(() => msg.delete(), 5000));
             }
 
-            await UserModel.updateOne(
-                { id: member.id, guild: message.guildId },
-                {
-                    $push: {
-                        names: {
-                            admin: message.author.id,
-                            type: NameFlags.Register,
-                            time: Date.now(),
-                            role: collected.customId === 'woman' ? guildData.womanRoles[0] : guildData.manRoles[0],
-                            name: name ? name : undefined,
-                        },
-                    },
-                },
-                { upsert: true },
-            );
+            register(client, member, message, guildData, name);
 
             await UserModel.updateOne(
                 { id: message.author.id, guild: message.guildId },
@@ -364,7 +351,7 @@ const Command: Moderation.ICommand = {
 
 export default Command;
 
-async function register(member: GuildMember, message: Message, guildData: ModerationClass, name?: string) {
+async function register(client: Client, member: GuildMember, message: Message, guildData: Moderation.IGuildData, name?: string) {
     if (name) await member.setNickname(name);
 
     await UserModel.updateOne(
@@ -386,4 +373,14 @@ async function register(member: GuildMember, message: Message, guildData: Modera
         { upsert: true },
     );
 
+    if (client.utils.checkStaff(message.member, guildData)) {
+        const staffDocument = await StaffModel.findOneAndUpdate(
+            { id: message.member.id, guild: message.guildId },
+            { $inc: { registerPoints: guildData.registerPoints, totalPoints: guildData.registerPoints, allPoints: guildData.registerPoints } },
+            { upsert: true, setDefaultsOnInsert: true, new: true }
+        );
+        await client.utils.checkRegisterTask(staffDocument);
+        await client.utils.checkRank(message.member, staffDocument, guildData);
+        staffDocument.save();
+    }
 }

@@ -1,4 +1,4 @@
-import { GuildModel, ModerationClass } from '@/models';
+import { GuildModel } from '@/models';
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -26,7 +26,7 @@ export async function roleHandler(
     client: Client,
     message: Message,
     option: IRoleOption,
-    guildData: ModerationClass,
+    guildData: Moderation.IGuildData,
     question: Message,
     menuType: 'general' | 'register' | 'penal',
     authorId: string,
@@ -133,7 +133,7 @@ export async function roleHandler(
     });
 }
 
-function createComponent(message: Message, option: IRoleOption, guildData: ModerationClass) {
+function createComponent(message: Message, option: IRoleOption, guildData:Moderation.IGuildData) {
     const roles = [...(option.isMultiple ? guildData[option.value] || [] : [guildData[option.value]])].filter((r) =>
         message.guild.roles.cache.has(r),
     ) as string[];
