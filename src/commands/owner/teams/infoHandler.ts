@@ -1,4 +1,4 @@
-import { GuildModel, ITeam } from '@/models';
+import { GuildModel, ITeam, ModerationClass } from '@/models';
 import { Client } from '@/structures';
 import {
     ActionRowBuilder,
@@ -18,7 +18,7 @@ async function infoHandler(
     client: Client,
     message: Message,
     team: ITeam,
-    guildData:Moderation.IGuildData,
+    guildData: ModerationClass,
     members: Collection<string, GuildMember>,
     botMessage: Message,
     previousRow: ActionRowBuilder<StringSelectMenuBuilder>,
