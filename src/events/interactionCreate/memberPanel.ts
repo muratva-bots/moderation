@@ -285,6 +285,8 @@ async function memberPanel(client: Client, interaction: ButtonInteraction, guild
     }
 
     if (interaction.customId === 'booster') {
+        if (!interactionMember.premiumSince) return;
+        
         const limit = client.utils.checkLimit(interaction.user.id, 1019, 1, 1000 * 60 * 60);
         if (limit.hasLimit) {
             interaction.reply({
