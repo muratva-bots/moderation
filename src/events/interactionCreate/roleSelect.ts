@@ -59,9 +59,7 @@ async function roleSelect(
                 return interaction.reply({
                     content: `Bu roller sadece ${roleMention(
                         guildData.familyRole,
-                    )}> veya ${interaction.guild.roles.cache
-                        .filter((r) => r.managed && r.editable)
-                        .first()}rollerine özeldir.`,
+                    )}> rolüne sahip olanlara veya booster's özeldir.`,
                     ephemeral: true,
                 });
 
