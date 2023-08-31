@@ -29,7 +29,7 @@ async function guildCommandHandler(client: Client, message: Message, guildData: 
         return;
     }
 
-    if (command.type === SpecialCommandFlags.Team) teamHandler(client, message, command);
+    if (command.type === SpecialCommandFlags.Team) teamHandler(client, message, command, args);
     if (command.type === SpecialCommandFlags.Role) roleHandler(client, message, command, args);
     if (command.type === SpecialCommandFlags.Punishment) punishmentHandler(client, message, command, args);
     if (command.type === SpecialCommandFlags.Message) message.channel.send(command.content);
