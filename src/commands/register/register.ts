@@ -14,6 +14,7 @@ import {
     roleMention,
     ButtonInteraction,
     ComponentType,
+    userMention,
 } from 'discord.js';
 import { quarantineUser } from '../penal/quarantine';
 import { NameFlags, RegisterFlags } from '@/enums';
@@ -220,10 +221,15 @@ const Command: Moderation.ICommand = {
 
         const embed = new EmbedBuilder({
             color: client.utils.getRandomColor(),
+            author: {
+                name: message.author.username,
+                icon_url: message.author.displayAvatarURL({ forceStatic: true })
+            },
             description:
                 document.names.length > 0
                     ? [
-                        `Bu Kullanıcının Sunucudaki Eski İsimleri [ ${bold(document.names.length.toString())} ]`,
+                        `${member} kişisinin ismi "${bold(name)}" olarak değiştirildi, bu üye daha önce bu isimlerle kayıt olmuş.\n`,
+                        `${client.utils.getEmoji("redtick")} Kişinin toplamda ${bold(document.names.length.toString())} isim kayıtı bulundu.`,
                         `${document.names
                             .slice(
                                 document.names.length ? document.names.length - 10 : 0,
@@ -240,7 +246,8 @@ const Command: Moderation.ICommand = {
                                     .filter(Boolean)
                                     .join(' '),
                             )
-                            .join('\n')}`,
+                            .join('\n')}\n`,
+                            `Kişinin önceki isimlerine ${inlineCode(`${client.config.PREFIXES[0]}isimler @üye`)} komutuyla bakarak kayıt işlemini gerçekleştirmeniz önerilir.`
                     ].join('\n')
                     : name
                         ? `${member} kişisinin ismi "**${name}**" olarak değiştirildi.`

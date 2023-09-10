@@ -55,26 +55,55 @@ const Command: Moderation.ICommand = {
 			(rol) =>
 				rol.permissions.has(
 					PermissionsBitField.Flags.Administrator,
-				) && !rol.managed,
+				) 
 		);
 		const GuildManage = message.guild.roles.cache.filter(
 			(rol) =>
 				rol.permissions.has(
 					PermissionsBitField.Flags.ManageGuild,
-				) && !rol.managed,
+				) 
 		);
 		const RoleManage = message.guild.roles.cache.filter(
 			(rol) =>
 				rol.permissions.has(
 					PermissionsBitField.Flags.ManageRoles,
-				) && !rol.managed,
+				) 
 		);
 		const ChannelManage = message.guild.roles.cache.filter(
 			(rol) =>
 				rol.permissions.has(
 					PermissionsBitField.Flags.ManageChannels,
-				) && !rol.managed,
+				) 
 		);
+
+        const AdminMembers = message.guild.members.cache.filter(
+			(member) =>
+				member.permissions.has(
+					PermissionsBitField.Flags.Administrator,
+				),
+		);
+
+        const ManageGuildMembers = message.guild.members.cache.filter(
+			(member) =>
+				member.permissions.has(
+					PermissionsBitField.Flags.ManageGuild,
+				) && !member.permissions.has(PermissionsBitField.Flags.Administrator),
+		);
+
+        const ManageRoleMembers = message.guild.members.cache.filter(
+			(member) =>
+				member.permissions.has(
+					PermissionsBitField.Flags.ManageRoles,
+				) && !member.permissions.has(PermissionsBitField.Flags.Administrator),
+		);
+
+        const ManageChannelMembers = message.guild.members.cache.filter(
+			(member) =>
+				member.permissions.has(
+					PermissionsBitField.Flags.ManageChannels,
+				) && !member.permissions.has(PermissionsBitField.Flags.Administrator),
+		);
+
 
         const vanityURL = await message.guild.fetchVanityData();
 
@@ -111,46 +140,19 @@ const Command: Moderation.ICommand = {
             i.deferUpdate()
             if(i.customId === "role-members") {
          question.edit({ embeds: [embed.setDescription([
-            `${codeBlock("fix", `Yönetici: ${Administrator.size} kişi`)}`,
-            `${message.guild.members.cache
-                .filter(
-                    (m) =>
-                        m.permissions.has(
-                            PermissionsBitField.Flags.Administrator,
-                        ) && !m.user.bot,
-                )
+            `${codeBlock("fix", `Yönetici: ${AdminMembers.size} kişi`)}`,
+            `${AdminMembers
                 .map((member) => member)
                 .join(",")}`,
-                `${codeBlock("fix", `Sunucuyu Yönet: ${GuildManage.size} kişi`)}`,
-                `${message.guild.members.cache
-                    .filter(
-                        (m) =>
-                            m.permissions.has(
-                                PermissionsBitField.Flags.ManageGuild,
-                            ) && !m.user.bot,
-                    )
-                    .map((member) => member)
-                    .join(",")}`,
-                  `${codeBlock("fix", `Rol Yönet: ${RoleManage.size} kişi`)}`,
-                  `${message.guild.members.cache
-                    .filter(
-                        (m) =>
-                            m.permissions.has(
-                                PermissionsBitField.Flags.ManageGuild,
-                            ) && !m.user.bot,
-                    )
-                    .map((member) => member)
-                    .join(",")}`,
-                    `${codeBlock("fix", `Kanal Yönet: ${ChannelManage.size} kişi`)}`,
-                    `${message.guild.members.cache
-                        .filter(
-                            (m) =>
-                                m.permissions.has(
-                                    PermissionsBitField.Flags.ManageGuild,
-                                ) && !m.user.bot,
-                        )
-                        .map((member) => member)
-                        .join(",")}`
+                `${codeBlock("fix", `Sunucuyu Yönet: ${ManageGuildMembers.size} kişi`)}`,
+                `${ManageGuildMembers.size > 0 ? ManageGuildMembers.map((member) => member)
+                    .join(",") : "Yönetici Permi Olanlar Bu Listeye Dahil Edilmez."}`,
+                  `${codeBlock("fix", `Rol Yönet: ${ManageRoleMembers.size} kişi`)}`,
+                  `${ManageRoleMembers.size > 0 ? ManageRoleMembers.map((member) => member)
+                    .join(",") : "Yönetici Permi Olanlar Bu Listeye Dahil Edilmez."}`,
+                    `${codeBlock("fix", `Kanal Yönet: ${ManageChannelMembers.size} kişi`)}`,
+                    `${ManageChannelMembers.size > 0 ? ManageChannelMembers.map((member) => member)
+                        .join(",") : "Yönetici Permi Olanlar Bu Listeye Dahil Edilmez."}`,
 
         ].join("\n"))], components: [row] })
     } if(i.customId === "guild-login") {
