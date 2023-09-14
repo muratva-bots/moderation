@@ -9,11 +9,7 @@ function botCommandHandler(client: Client, message: Message, guildData: Moderati
     const command = client.commands.find(
         (command) => command.usages.includes(commandName?.toLowerCase()) && !command.isDisabled,
     );
-    console.log(command)
-    const ownerID =
-        client.application.owner instanceof Team
-            ? (client.application.owner as Team).ownerId
-            : client.application.owner.id;
+
     if (
         !command ||
         (guildData.chatChannel &&
@@ -60,7 +56,7 @@ function botCommandHandler(client: Client, message: Message, guildData: Moderati
         canExecute = true;
 
     if (
-        message.author.id !== ownerID &&
+        message.author.id !== client.config.BOT_OWNERS.includes(message.author.id) &&
         message.author.id !== message.guild.ownerId &&
         message.member.permissions.has(PermissionFlagsBits.Administrator)
     ) {
