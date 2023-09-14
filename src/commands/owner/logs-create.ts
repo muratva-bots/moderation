@@ -19,7 +19,8 @@ const logChannelNames = [
     'message-log',
     'voice-log',
     'staff-logs',
-    'auto-downgrade-staff'
+    'auto-downgrade-staff',
+    'guard-yt'
 ];
 
 const Command: Moderation.ICommand = {
